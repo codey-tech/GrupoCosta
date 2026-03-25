@@ -11,7 +11,7 @@ import { TbUrgent } from "react-icons/tb";
 import { MdHealthAndSafety } from "react-icons/md";
 import { FaInstagram, FaFacebookSquare } from "react-icons/fa";
 import { FaCalendarDays } from "react-icons/fa6";
-import Header from "../components/Header";
+import Header from "../../components/Header";
 
 export default function page() {
 

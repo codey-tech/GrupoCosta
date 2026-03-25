@@ -1,10 +1,17 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { createContext, useContext, useEffect, useRef } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
+
+/** Ref estável com `.current` = instância Lenis ou null (após destroy). */
+const LenisContext = createContext(null);
+
+export function useLenis() {
+  return useContext(LenisContext);
+}
 
 const LENIS_OPTIONS = {
   lerp: 0.07,
@@ -16,13 +23,13 @@ export default function LenisProvider({ children }) {
   const rafRef = useRef(0);
 
   useEffect(() => {
-    const lenis = new Lenis(LENIS_OPTIONS);
-    lenisRef.current = lenis;
+    const instance = new Lenis(LENIS_OPTIONS);
+    lenisRef.current = instance;
 
-    lenis.on("scroll", ScrollTrigger.update);
+    instance.on("scroll", ScrollTrigger.update);
 
     function raf(time) {
-      lenis.raf(time);
+      instance.raf(time);
       rafRef.current = requestAnimationFrame(raf);
     }
     rafRef.current = requestAnimationFrame(raf);
@@ -32,7 +39,7 @@ export default function LenisProvider({ children }) {
       if (!link) return;
       e.preventDefault();
       const el = document.getElementById("contato");
-      if (el) lenis.scrollTo(el, { offset: 0, duration: 1.2 });
+      if (el) instance.scrollTo(el, { offset: 0, duration: 1.2 });
     };
     document.addEventListener("click", onDocClick, true);
 
@@ -46,11 +53,13 @@ export default function LenisProvider({ children }) {
       document.removeEventListener("click", onDocClick, true);
       clearTimeout(t1);
       clearTimeout(t2);
-      lenis.destroy();
+      instance.destroy();
       lenisRef.current = null;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, []);
 
-  return <>{children}</>;
+  return (
+    <LenisContext.Provider value={lenisRef}>{children}</LenisContext.Provider>
+  );
 }
