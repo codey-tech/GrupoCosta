@@ -14,6 +14,7 @@ import {
 import Image from 'next/image';
 
 gsap.registerPlugin(ScrollTrigger);
+ScrollTrigger.config({ ignoreMobileResize: true });
 
 export default function Page() {
   const container = useRef();
@@ -27,11 +28,21 @@ export default function Page() {
 
   // Fallback de segurança para o Loading: se o vídeo demorar mais de 3.5s, libera o site.
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3500);
-    return () => clearTimeout(timer);
-  }, []);
+    if (isLoading) {
+      document.body.style.overflow = 'hidden';
+      
+      // Fallback de segurança: libera após 3.5s caso o vídeo trave (comum no 3G)
+      const timer = setTimeout(() => setIsLoading(false), 3500);
+      return () => clearTimeout(timer);
+    } else {
+      document.body.style.overflow = '';
+      
+      // Quando o loading sai, damos 100ms para a tela se acomodar e mandamos o GSAP recalcular as alturas
+      setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 100);
+    }
+  }, [isLoading]);
 
   // Controle do background do Header dinâmico no scroll
   useEffect(() => {
@@ -309,8 +320,9 @@ export default function Page() {
         PRELOADER PREMIUM (TELA DE CARREGAMENTO)
         ========================================= */}
     <div 
-      className={`fixed inset-0 z-[99999] bg-slate-950 flex flex-col items-center justify-center transition-transform duration-[1200ms] ease-[cubic-bezier(0.76,0,0.24,1)] ${
-        isLoading ? 'translate-y-0' : '-translate-y-full'
+      // 👇 Adicionado opacity e pointer-events-none na condição do isLoading
+      className={`fixed inset-0 z-[99999] bg-slate-950 flex flex-col items-center justify-center transition-all duration-[1200ms] ease-[cubic-bezier(0.76,0,0.24,1)] ${
+        isLoading ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'
       }`}
     >
       <div className={`flex flex-col items-center gap-8 transition-opacity duration-500 delay-200 ${isLoading ? 'opacity-100' : 'opacity-0'}`}>
@@ -363,7 +375,7 @@ export default function Page() {
       </nav>
 
       {/* HERO SECTION */}
-      <section className="relative h-screen flex flex-col justify-center px-6 md:px-12 bg-slate-950">
+      <section className="relative h-[100dvh] flex flex-col justify-center px-6 md:px-12 bg-slate-950">
         <div className="absolute inset-0 z-0">
           <video 
             autoPlay 
@@ -404,7 +416,7 @@ export default function Page() {
       </section>
 
       {/* BENEFÍCIOS */}
-      <section id="beneficios" className="stacking-container h-screen w-full bg-slate-50 flex items-center justify-center md:justify-start relative overflow-hidden border-b border-slate-200">
+      <section id="beneficios" className="stacking-container h-[100dvh] w-full bg-slate-50 flex items-center justify-center md:justify-start relative overflow-hidden border-b border-slate-200">
         <div className="absolute top-30 md:top-32 md:right-20 text-center md:text-right opacity-20 pointer-events-none">
           <h2 className="text-5xl md:text-[8vw] font-black tracking-tighter leading-none text-slate-400 uppercase">
             Nossos <br/> Benefícios
