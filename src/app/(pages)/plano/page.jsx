@@ -11,15 +11,27 @@ import {
   Hospital, Info, Check, ChevronDown, Building, Users, 
   FlaskConical, Map, Accessibility, Percent, MessageCircle, Phone
 } from 'lucide-react';
+import Image from 'next/image';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Page() {
   const container = useRef();
+  
+  // ESTADOS
+  const [isLoading, setIsLoading] = useState(true); // Controla a tela de loading
   const [isScrolled, setIsScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState(0);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [selectedPlanForCheckout, setSelectedPlanForCheckout] = useState(null);
+
+  // Fallback de segurança para o Loading: se o vídeo demorar mais de 3.5s, libera o site.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3500);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Controle do background do Header dinâmico no scroll
   useEffect(() => {
@@ -35,14 +47,17 @@ export default function Page() {
 
   // ÚNICO BLOCO GSAP (Cérebro das Animações)
   useGSAP(() => {
-    // 1. Animação de entrada do Hero
+    // 🚨 REGRA DE OURO: Não roda a animação de entrada até o loading terminar
+    if (isLoading) return;
+
+    // 1. Animação de entrada do Hero (Agora sincronizada com a saída do loading)
     gsap.from(".hero-text", {
       y: 50,
       opacity: 0,
       duration: 1,
       stagger: 0.15,
       ease: "power3.out",
-      delay: 0.1
+      delay: 0.5 // Dá tempo da "cortina" de loading subir antes do texto aparecer
     });
 
     // 2. Animação de entrada suave dos blocos gerais
@@ -111,7 +126,7 @@ export default function Page() {
       clearProps: "all"
     });
 
-  }, { scope: container }); // Tudo atrelado ao mesmo escopo do container principal!
+  }, { scope: container, dependencies: [isLoading] }); // <-- Adicionamos isLoading nas dependências do GSAP!
 
   const faqs = [
     {
@@ -289,7 +304,34 @@ export default function Page() {
 
   return (
     <LenisProvider>
-    <div ref={container} className="min-h-screen bg-[#fafafa] text-slate-900 font-sans selection:bg-purple-200">
+    
+    {/* =========================================
+        PRELOADER PREMIUM (TELA DE CARREGAMENTO)
+        ========================================= */}
+    <div 
+      className={`fixed inset-0 z-[99999] bg-slate-950 flex flex-col items-center justify-center transition-transform duration-[1200ms] ease-[cubic-bezier(0.76,0,0.24,1)] ${
+        isLoading ? 'translate-y-0' : '-translate-y-full'
+      }`}
+    >
+      <div className={`flex flex-col items-center gap-8 transition-opacity duration-500 delay-200 ${isLoading ? 'opacity-100' : 'opacity-0'}`}>
+        
+        {/* Ícone Pulsante */}
+        <div className="relative w-24 h-24 flex items-center justify-center">
+          <div className="absolute inset-0 bg-purple-600 rounded-full animate-ping opacity-20" />
+          <div className="absolute inset-2 bg-purple-500/20 rounded-full animate-pulse" />
+          <Image src="/logogrupo.png" alt="Logo" width={60} height={60} className="relative z-10" />
+        </div>
+
+        {/* Logo */}
+        <div className="text-4xl font-black tracking-tighter uppercase text-white flex flex-col items-center gap-1">
+          <div>Plano<span className="text-purple-600 italic font-light">Costa</span></div>
+          <div className="text-[10px] font-bold tracking-[0.4em] text-slate-500 uppercase mt-2">Preparando Experiência</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div ref={container} className={`min-h-screen bg-[#fafafa] text-slate-900 font-sans selection:bg-purple-200 ${isLoading ? 'h-screen overflow-hidden' : ''}`}>
       
       {/* NAVBAR */}
       <nav 
@@ -323,7 +365,15 @@ export default function Page() {
       {/* HERO SECTION */}
       <section className="relative h-screen flex flex-col justify-center px-6 md:px-12 bg-slate-950">
         <div className="absolute inset-0 z-0">
-          <video autoPlay muted loop playsInline className="w-full h-full object-cover opacity-40">
+          <video 
+            autoPlay 
+            muted 
+            loop 
+            playsInline 
+            className="w-full h-full object-cover opacity-40"
+            // 👇 GATILHO QUE AVISA QUE O VÍDEO CARREGOU 👇
+            onCanPlayThrough={() => setIsLoading(false)}
+          >
             <source src="/hero.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-gradient-to-t from-slate-50/80 via-transparent to-transparent" />
@@ -396,10 +446,8 @@ export default function Page() {
       </section>
 
       {/* REDE DE CONVÊNIOS - MÓDULOS HOLOGRÁFICOS 3D */}
-      {/* 1. Removi o overflow-hidden da section principal para o sticky voltar a funcionar */}
       <section id="rede" className="py-32 bg-slate-950 text-white relative">
         
-        {/* 2. Isolei o background dentro de uma div com overflow-hidden próprio */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
           <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-purple-600/10 blur-[150px] rounded-full" />
@@ -407,7 +455,6 @@ export default function Page() {
 
         <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-start gap-16 relative z-10">
           
-          {/* LADO ESQUERDO: Painel de Controle Sticky */}
           <div className="lg:w-1/3 lg:sticky lg:top-32 space-y-8 fade-up z-10 pb-12 perspective-[1000px]">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 text-purple-400 text-[10px] font-black tracking-[0.3em] uppercase mb-2 border border-purple-500/20 backdrop-blur-md">
               <MapPin size={12} /> Malha de Cobertura
@@ -421,7 +468,6 @@ export default function Page() {
               Conexão direta com as principais instituições de saúde da Região Metropolitana e Vale do Taquari.
             </p>
             
-            {/* Mapa de Dados 3D */}
             <div className="relative p-8 bg-white/5 backdrop-blur-xl rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden transform-style-3d hover:rotate-y-[5deg] hover:rotate-x-[2deg] transition-transform duration-700">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-transparent" />
               
@@ -431,7 +477,6 @@ export default function Page() {
               <ul className="grid grid-cols-2 gap-y-5 gap-x-2 font-bold text-sm text-slate-400">
                 {["Taquari", "Porto Alegre", "Lajeado", "Tabaí", "Estrela", "Triunfo", "Montenegro", "Teutônia", "Canoas", "Paverama"].map((cidade, i) => (
                   <li key={i} className="flex items-center gap-3 group cursor-default">
-                    {/* Ponto do mapa com radar ping */}
                     <div className="relative w-2 h-2 flex items-center justify-center">
                       <div className="absolute w-full h-full bg-purple-500 rounded-full group-hover:scale-150 transition-transform" />
                       <div className="absolute w-4 h-4 bg-purple-400/50 rounded-full animate-ping opacity-75" />
@@ -443,7 +488,6 @@ export default function Page() {
             </div>
           </div>
 
-          {/* LADO DIREITO: Módulos Holográficos 3D */}
           <div className="lg:w-2/3 flex flex-col space-y-10 w-full perspective-[1500px]">
             {especialidadesRede.map((categoria, index) => {
               const Icon = categoria.icon;
@@ -454,20 +498,14 @@ export default function Page() {
                   className="fade-up relative w-full group cursor-crosshair"
                   style={{ transformStyle: 'preserve-3d' }}
                 >
-                  {/* Caixa Base (O Vidro) */}
                   <div className="relative p-8 md:p-10 bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-[2.5rem] transition-all duration-700 ease-out group-hover:bg-slate-800/60 group-hover:border-white/20 group-hover:shadow-[0_0_50px_rgba(0,0,0,0.5)] group-hover:-translate-y-2 group-hover:rotate-x-[-2deg]"
                        style={{ transformStyle: 'preserve-3d' }}>
                     
-                    {/* Header do Card com Ícone 3D */}
                     <div className="flex flex-col md:flex-row md:items-center gap-6 mb-8 transform transition-transform duration-700 group-hover:translate-z-[30px]">
                       
-                      {/* Ícone 3D Isométrico */}
                       <div className="relative w-16 h-16 shrink-0 perspective-[500px]" style={{ transformStyle: 'preserve-3d' }}>
-                        {/* Camada 1: Sombra */}
                         <div className="absolute inset-0 bg-black/50 rounded-2xl blur-md transform translate-z-[-10px] group-hover:translate-z-[-20px] transition-transform duration-700" />
-                        {/* Camada 2: Base de cor */}
                         <div className={`absolute inset-0 bg-gradient-to-br ${categoria.color} opacity-20 rounded-2xl border border-white/10 transform translate-z-[0px]`} />
-                        {/* Camada 3: O Ícone Flutuante com Neon */}
                         <div className="absolute inset-0 flex items-center justify-center text-white transform translate-z-[20px] group-hover:translate-z-[40px] transition-transform duration-700 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">
                           <Icon size={32} strokeWidth={1.5} />
                         </div>
@@ -483,10 +521,8 @@ export default function Page() {
                       </div>
                     </div>
 
-                    {/* Divisor Holográfico */}
                     <div className="w-full h-px bg-gradient-to-r from-white/10 via-white/5 to-transparent mb-8 transform transition-transform duration-700 group-hover:translate-z-[10px]" />
 
-                    {/* Grid de Itens que saltam no eixo Z */}
                     <ul 
                       className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6 transform transition-transform duration-700 group-hover:translate-z-[50px]"
                       style={{ transformStyle: 'preserve-3d' }}
@@ -513,7 +549,6 @@ export default function Page() {
       <section id="empresas" className="py-32 px-6 bg-white relative overflow-hidden border-t border-slate-200">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 fade-up">
           
-          {/* LADO ESQUERDO: Textos Formais e Diretos */}
           <div className="lg:w-1/2 relative z-10">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-sm bg-slate-100 text-slate-600 text-[10px] font-black tracking-[0.2em] uppercase mb-6 border-l-2 border-purple-600">
               <Briefcase size={14} className="text-purple-600" /> Soluções Corporativas
@@ -564,31 +599,25 @@ export default function Page() {
             </a>
           </div>
 
-          {/* LADO DIREITO: Elemento 3D Isométrico (CSS/Tailwind) */}
           <div className="lg:w-1/2 w-full flex justify-center relative z-10 py-12 lg:py-0">
-            {/* Container com Perspectiva */}
             <div 
               className="relative w-full max-w-sm aspect-square mx-auto group" 
               style={{ perspective: '1000px' }}
             >
-              {/* Objeto 3D que rotaciona e flutua no hover */}
               <div 
                 className="w-full h-full relative transition-all duration-1000 ease-out group-hover:-translate-y-6" 
                 style={{ transformStyle: 'preserve-3d', transform: 'rotateX(55deg) rotateZ(-45deg)' }}
               >
                 
-                {/* Camada 1: Base (Sombra e Chão) */}
                 <div 
                   className="absolute inset-0 bg-slate-100/80 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.1)] border border-white" 
                   style={{ transform: 'translateZ(0px)' }}
                 ></div>
                 
-                {/* Camada 2: Estrutura / Conexões */}
                 <div 
                   className="absolute inset-0 bg-white/40 backdrop-blur-md rounded-3xl border border-white/80 shadow-xl flex items-center justify-center transition-transform duration-1000 group-hover:bg-white/60" 
                   style={{ transform: 'translateZ(40px)' }}
                 >
-                  {/* Grid abstrato simulando rede de saúde */}
                   <div className="w-[80%] h-[80%] border border-slate-200/50 rounded-2xl grid grid-cols-2 grid-rows-2">
                     <div className="border-r border-b border-slate-200/50"></div>
                     <div className="border-b border-slate-200/50"></div>
@@ -597,7 +626,6 @@ export default function Page() {
                   </div>
                 </div>
 
-                {/* Camada 3: O Núcleo (Escudo/Marca) - Dark Mode para contraste */}
                 <div 
                   className="absolute inset-0 bg-slate-950 rounded-3xl shadow-2xl border border-slate-800 flex flex-col items-center justify-center gap-4 text-white transition-transform duration-1000 group-hover:shadow-purple-900/40" 
                   style={{ transform: 'translateZ(80px)' }}
@@ -611,10 +639,9 @@ export default function Page() {
                   </div>
                 </div>
 
-                {/* Elementos flutuantes extras (Pílulas de status) */}
                 <div 
                   className="absolute -top-4 -right-4 bg-white px-4 py-2 rounded-lg shadow-lg border border-slate-100 flex items-center gap-2"
-                  style={{ transform: 'translateZ(120px) rotateX(-55deg) rotateZ(45deg)' }} // Desfaz a rotação pai para o texto ficar reto
+                  style={{ transform: 'translateZ(120px) rotateX(-55deg) rotateZ(45deg)' }}
                 >
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                   <span className="text-[9px] font-black uppercase tracking-widest text-slate-800">Suporte Ativo</span>
@@ -623,7 +650,6 @@ export default function Page() {
               </div>
             </div>
             
-            {/* Glow de fundo */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-slate-200 blur-[80px] rounded-full z-0 pointer-events-none" />
           </div>
 
@@ -632,7 +658,6 @@ export default function Page() {
 
       {/* PLANOS FAMILIARES - REDESIGN PREMIUM */}
       <section id="planos" className="py-32 px-6 bg-slate-50 relative overflow-hidden">
-        {/* Glow de fundo sutil para a seção */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-full bg-gradient-to-b from-purple-100/50 to-transparent blur-3xl pointer-events-none -z-10" />
 
         <div className="max-w-7xl mx-auto">
@@ -649,7 +674,6 @@ export default function Page() {
             </div>
           </div>
 
-          {/* Grid de Planos - Alinhado pelo centro para dar destaque ao do meio */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-6 items-center">
             {planos.map((plan, index) => {
               const isFeatured = plan.featured;
@@ -657,21 +681,18 @@ export default function Page() {
               return (
                 <div 
                   key={index}
-                  // 👇 A MUDANÇA ESTÁ AQUI NA LINHA ABAIXO 👇
                   className={`plan-card relative rounded-[2.5rem] p-8 lg:p-10 transition-colors transition-shadow duration-300 flex flex-col h-full ${
                     isFeatured 
                       ? 'bg-slate-950 text-white border border-slate-800 shadow-2xl shadow-purple-900/30 lg:-my-8 z-10' 
                       : 'bg-white text-slate-900 border border-slate-200 shadow-xl shadow-slate-200/50 hover:border-purple-200'
                   }`}
                 >
-                  {/* Badge de Destaque */}
                   {isFeatured && (
                     <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-purple-500/40 whitespace-nowrap">
                       Mais Escolhido
                     </div>
                   )}
 
-                  {/* Header do Card */}
                   <div className="mb-8">
                     <h4 className={`text-xl font-black tracking-tighter mb-2 ${isFeatured ? 'text-white' : 'text-slate-900'}`}>
                       Plano {plan.name}
@@ -681,7 +702,6 @@ export default function Page() {
                     </p>
                   </div>
 
-                  {/* Preço */}
                   <div className="mb-8 flex items-end gap-1">
                     <span className="text-sm font-bold text-purple-500 mb-2">R$</span>
                     <span className={`text-6xl font-black tracking-tighter leading-none ${isFeatured ? 'text-white' : 'text-slate-900'}`}>
@@ -692,10 +712,8 @@ export default function Page() {
                     </span>
                   </div>
 
-                  {/* Divisor */}
                   <hr className={`mb-8 border-t ${isFeatured ? 'border-slate-800' : 'border-slate-100'}`} />
 
-                  {/* Lista de Benefícios */}
                   <ul className="space-y-6 mb-12 flex-grow">
                     {[
                       { icon: <Users size={18}/>, title: plan.users, desc: plan.usersDetail },
@@ -719,7 +737,6 @@ export default function Page() {
                     ))}
                   </ul>
 
-                  {/* Botão de Ação */}
                   <button
                     onClick={() => openCheckout(plan)}
                     className={`w-full py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-300 group flex items-center justify-center gap-2 ${
@@ -740,12 +757,10 @@ export default function Page() {
 
       {/* FAQ - DESIGN PREMIUM DE DUAS COLUNAS */}
       <section id="faq" className="py-32 px-6 bg-white relative overflow-hidden border-t border-slate-200">
-        {/* Elemento decorativo de fundo */}
         <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-bl from-slate-50 to-transparent pointer-events-none" />
         
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16 lg:gap-24 relative z-10">
           
-          {/* LADO ESQUERDO: Títulos e CTA Sticky (Fica fixo enquanto o usuário rola as perguntas) */}
           <div className="lg:w-5/12 lg:sticky lg:top-40 h-fit fade-up">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-sm bg-purple-50 text-purple-600 text-[10px] font-black tracking-[0.2em] uppercase mb-6 border-l-2 border-purple-600">
               <MessageCircle size={14} /> Dúvidas Frequentes
@@ -759,12 +774,10 @@ export default function Page() {
               Ainda tem alguma dúvida sobre os benefícios, coberturas ou como funciona a adesão ao Plano Costa?
             </p>
 
-            {/* Card de Suporte Secundário */}
             <div className="p-8 bg-slate-50 border border-slate-200 rounded-[2rem] flex flex-col gap-6 relative overflow-hidden group hover:border-purple-300 transition-colors duration-500">
               <div className="absolute top-0 right-0 w-32 h-32 bg-purple-400/10 blur-2xl rounded-full group-hover:scale-150 transition-transform duration-700" />
               
               <div className="flex -space-x-4 relative z-10">
-                {/* Ícones simulando equipe de atendimento */}
                 <div className="w-12 h-12 rounded-full border-2 border-slate-50 bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center text-white shadow-md"><Users size={20}/></div>
                 <div className="w-12 h-12 rounded-full border-2 border-slate-50 bg-gradient-to-br from-slate-800 to-slate-950 flex items-center justify-center text-white shadow-md"><Phone size={20}/></div>
               </div>
@@ -779,7 +792,6 @@ export default function Page() {
             </div>
           </div>
 
-          {/* LADO DIREITO: Accordion de Perguntas Moderno */}
           <div className="lg:w-7/12 flex flex-col gap-4 fade-up">
             {faqs.map((faq, index) => {
               const isOpen = openFaq === index;
@@ -800,7 +812,6 @@ export default function Page() {
                       {faq.q}
                     </span>
                     
-                    {/* Ícone Circular Interativo */}
                     <div className={`shrink-0 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-500 border ${
                       isOpen 
                         ? 'bg-purple-600 border-purple-600 text-white' 
@@ -810,7 +821,6 @@ export default function Page() {
                     </div>
                   </button>
                   
-                  {/* ANIMAÇÃO COM CSS GRID (O Segredo do Accordion Suave) */}
                   <div 
                     className={`grid transition-all duration-500 ease-in-out ${
                       isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
@@ -823,7 +833,6 @@ export default function Page() {
                     </div>
                   </div>
                   
-                  {/* Detalhe de Design: Linha lateral roxa que cresce quando o item é aberto */}
                   <div className={`absolute top-0 left-0 w-1.5 bg-gradient-to-b from-purple-400 to-purple-600 transition-all duration-500 ease-out rounded-l-[2rem] ${
                     isOpen ? 'h-full opacity-100' : 'h-0 opacity-0'
                   }`} />
@@ -839,7 +848,6 @@ export default function Page() {
       <section id="contato" className="py-32 px-6 bg-slate-50 border-t border-slate-200">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-16 items-stretch">
           
-          {/* Lado Esquerdo: Textos e Botões de Ação */}
           <div className="lg:w-1/2 flex flex-col justify-between fade-up">
             <div className="mb-12">
               <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-purple-600 mb-4">Fale Conosco</h2>
@@ -870,11 +878,9 @@ export default function Page() {
             </div>
           </div>
 
-          {/* Lado Direito: Mapa e Endereço da Sede */}
           <div className="lg:w-1/2 w-full fade-up">
             <div className="bg-white border border-slate-200 rounded-[2rem] overflow-hidden hover:shadow-xl transition-shadow flex flex-col h-full min-h-[450px]">
               
-              {/* Iframe do Google Maps */}
               <div className="flex-grow bg-slate-200 relative w-full h-[300px] md:h-[350px]">
                 <iframe 
                   src="https://maps.google.com/maps?q=Rua+Sete+de+Setembro,+2356+-+Centro,+Taquari+-+RS&t=&z=16&ie=UTF8&iwloc=&output=embed" 
@@ -921,7 +927,6 @@ export default function Page() {
       </footer>
 
     </div>
-      {/* RENDERIZA O MODAL POR CIMA DE TUDO QUANDO ABERTO */}
       {isCheckoutOpen && (
         <CheckoutModal 
           isOpen={isCheckoutOpen} 
