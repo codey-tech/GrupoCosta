@@ -20,7 +20,6 @@ const LENIS_OPTIONS = {
 
 export default function LenisProvider({ children }) {
   const lenisRef = useRef(null);
-  const rafRef = useRef(0);
 
   useEffect(() => {
     const instance = new Lenis(LENIS_OPTIONS);
@@ -28,11 +27,11 @@ export default function LenisProvider({ children }) {
 
     instance.on("scroll", ScrollTrigger.update);
 
-    function raf(time) {
-      instance.raf(time);
-      rafRef.current = requestAnimationFrame(raf);
-    }
-    rafRef.current = requestAnimationFrame(raf);
+    const onTick = (time) => {
+      instance.raf(time * 1000);
+    };
+    gsap.ticker.add(onTick);
+    gsap.ticker.lagSmoothing(0);
 
     const onDocClick = (e) => {
       const link = e.target?.closest?.('a[href="#contato"]');
@@ -55,7 +54,7 @@ export default function LenisProvider({ children }) {
       clearTimeout(t2);
       instance.destroy();
       lenisRef.current = null;
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      gsap.ticker.remove(onTick);
     };
   }, []);
 

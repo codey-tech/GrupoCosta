@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Só escaneia código em `src/` — evita que arquivos na raiz (README, etc.) gerem
+   classes arbitrárias inválidas como `bg-[url(...)]` no build/dev. */
+@source "../**/*.{js,jsx,ts,tsx}";
 
 html {
     scroll-behavior: smooth;
