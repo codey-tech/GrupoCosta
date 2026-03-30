@@ -484,10 +484,10 @@ export default function Page() {
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-transparent" />
               
               <h4 className="text-xs font-black uppercase tracking-widest mb-6 text-slate-300 flex items-center gap-2">
-                Nossos Polos Ativos:
+                Área de Abrangência:
               </h4>
               <ul className="grid grid-cols-2 gap-y-5 gap-x-2 font-bold text-sm text-slate-400">
-                {["Taquari", "Porto Alegre", "Lajeado", "Tabaí", "Estrela", "Triunfo", "Montenegro", "Teutônia", "Canoas", "Paverama"].map((cidade, i) => (
+                {["Taquari", "Porto Alegre", "Lajeado", "Tabaí", "Estrela", "Montenegro", "Teutônia", "Canoas"].map((cidade, i) => (
                   <li key={i} className="flex items-center gap-3 group cursor-default">
                     <div className="relative w-2 h-2 flex items-center justify-center">
                       <div className="absolute w-full h-full bg-purple-500 rounded-full group-hover:scale-150 transition-transform" />
