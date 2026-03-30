@@ -257,7 +257,7 @@ export default function CentroClinicoLight() {
 
   return (
     <LenisProvider>
-    <div ref={container} className="bg-[#FDF9EE] text-[#1C1C15] font-sans selection:bg-[#CAC6BC] selection:text-[#1C1C15] overflow-x-hidden">
+    <div ref={container} className="select-none bg-[#FDF9EE] text-[#1C1C15] font-sans selection:bg-[#CAC6BC] selection:text-[#1C1C15] overflow-x-hidden">
       
       {/* PRELOADER */}
       <div className={`fixed inset-0 z-[99999] bg-[#FDF9EE] flex flex-col items-center justify-center transition-all duration-1000 ease-[cubic-bezier(0.76,0,0.24,1)] ${isLoading ? 'translate-y-0' : '-translate-y-full'}`}>
@@ -308,7 +308,7 @@ export default function CentroClinicoLight() {
             <div className="overflow-hidden hero-line pb-1 md:pb-2"><span className="inline-block font-light">Cuidar de você é a</span></div>
             <div className="overflow-hidden hero-line pb-1 md:pb-2"><span className="inline-block font-black italic text-[#323129]">nossa prioridade.</span></div>
           </h1>
-          <p className="hero-fade mt-6 md:mt-8 text-base sm:text-lg md:text-2xl text-[#605E56] max-w-2xl font-light leading-relaxed px-4 md:px-0">
+          <p className="select-copy hero-fade mt-6 md:mt-8 text-base sm:text-lg md:text-2xl text-[#605E56] max-w-2xl font-light leading-relaxed px-4 md:px-0">
             Atendimento humanizado e saúde de qualidade, <strong className="font-semibold text-[#1C1C15]">todos os dias.</strong>
           </p>
           <div className="mt-12 md:mt-16 flex flex-col items-center gap-3 hero-fade opacity-70">
@@ -374,7 +374,7 @@ export default function CentroClinicoLight() {
 
         <div ref={sobreContentRef} className="absolute inset-0 w-full h-full z-20 flex flex-col justify-end pb-[4vh] md:pb-[10vh] px-4 md:px-6 opacity-0 pointer-events-auto">
           <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row gap-6 md:gap-12 items-center">
-            <div className="w-full md:w-1/2 space-y-4 md:space-y-5 text-center md:text-left">
+            <div className="select-copy w-full md:w-1/2 space-y-4 md:space-y-5 text-center md:text-left">
               <h2 className="text-[9px] md:text-[10px] font-bold tracking-[0.4em] uppercase text-[#79776E] mb-2">Nossa História</h2>
               <p className="text-base md:text-xl text-[#605E56] font-light leading-relaxed">
                 O Centro Clínico Costa nasceu com a missão de oferecer atendimento de saúde humanizado e de qualidade para toda a família. Com uma equipe qualificada e diversas especialidades, estamos sempre próximos de você, cuidando do que mais importa: a sua saúde.
@@ -387,7 +387,7 @@ export default function CentroClinicoLight() {
                <div className="w-[85%] md:w-full max-w-lg aspect-[4/3] bg-[#EFEBE0] rounded-3xl md:rounded-[2rem] overflow-hidden relative border border-[#E6E2D7] shadow-xl">
                   <div className="absolute inset-0 opacity-80 mix-blend-multiply bg-[url('/clinica/fachada.webp')] bg-cover bg-center img-parallax scale-125" />
                </div>
-               <div className="absolute -bottom-4 md:-bottom-6 right-4 md:left-auto md:-left-8 bg-[#FDF9EE] p-3 md:p-6 rounded-2xl md:rounded-3xl shadow-xl border border-[#E6E2D7] flex items-center gap-3 md:gap-4">
+               <div className="select-copy absolute -bottom-4 md:-bottom-6 right-4 md:left-auto md:-left-8 bg-[#FDF9EE] p-3 md:p-6 rounded-2xl md:rounded-3xl shadow-xl border border-[#E6E2D7] flex items-center gap-3 md:gap-4">
                  <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-[#1C1C15] text-[#FDF9EE] flex items-center justify-center">
                    <Shield size={16} className="md:w-5 md:h-5" />
                  </div>
@@ -412,7 +412,7 @@ export default function CentroClinicoLight() {
               <h3 className="text-4xl md:text-7xl font-light tracking-tighter leading-tight mb-6 md:mb-8">
                 Foco no paciente, <br className="hidden sm:block"/><span className="font-black italic text-white">agilidade no diagnóstico.</span>
               </h3>
-              <p className="text-base md:text-xl text-[#AEABA1] font-light leading-relaxed mb-10 max-w-2xl px-4 md:px-0">
+              <p className="select-copy text-base md:text-xl text-[#AEABA1] font-light leading-relaxed mb-10 max-w-2xl px-4 md:px-0">
                 Nossas instalações foram planejadas para garantir um fluxo de atendimento inteligente. Segurança médica e respeito ao seu tempo em um ambiente de alto padrão.
               </p>
             </div>
@@ -429,7 +429,7 @@ export default function CentroClinicoLight() {
                 <h3 className="text-3xl md:text-5xl font-black tracking-tighter mb-4 md:mb-6 text-white">
                   Atendimento <br className="hidden sm:block"/><span className="font-light italic text-[#939187]">Confortável</span>
                 </h3>
-                <p className="text-sm md:text-lg text-[#AEABA1] font-light leading-relaxed mb-4 md:mb-8 hidden sm:block">
+                <p className="select-copy text-sm md:text-lg text-[#AEABA1] font-light leading-relaxed mb-4 md:mb-8 hidden sm:block">
                   Salas projetadas para acolhimento e avaliação clínica. Oferecemos estrutura para médicos autônomos trabalharem com total independência.
                 </p>
             </div>
@@ -459,10 +459,10 @@ export default function CentroClinicoLight() {
                 <span className="text-[#AEABA1] font-bold uppercase tracking-widest text-[10px] md:text-xs">1 Sala Técnica</span>
               </div>
               <h3 className="text-3xl md:text-5xl font-black tracking-tighter mb-4 md:mb-6 text-white">Centro de <br className="hidden sm:block"/><span className="font-light italic text-[#939187]">Diagnóstico</span></h3>
-              <p className="text-sm md:text-lg text-[#AEABA1] font-light leading-relaxed mb-6 md:mb-8 hidden sm:block">
+              <p className="select-copy text-sm md:text-lg text-[#AEABA1] font-light leading-relaxed mb-6 md:mb-8 hidden sm:block">
                 Equipada para avaliações complementares imediatas. Tecnologia médica confiável para direcionar o seu tratamento sem precisar sair da clínica.
               </p>
-              <div className="flex flex-wrap justify-center md:justify-start gap-2">
+              <div className="select-copy flex flex-wrap justify-center md:justify-start gap-2">
                 {exames.slice(0, 4).map((exame, i) => (
                   <span key={i} className="px-3 md:px-4 py-1.5 md:py-2 bg-[#323129] border border-[#48473F] rounded-full text-[10px] md:text-xs font-bold text-[#CAC6BC]">
                     {exame}
@@ -482,7 +482,7 @@ export default function CentroClinicoLight() {
           <h3 className="text-3xl md:text-5xl font-light tracking-tighter text-[#1C1C15] leading-tight">
             Conheça os profissionais que fazem <br className="hidden md:block" /> parte do nosso <span className="font-black italic text-[#323129]">Centro Clínico.</span>
           </h3>
-          <p className="text-sm md:text-base text-[#605E56] font-medium mt-4 max-w-lg mx-auto md:mx-0">
+          <p className="select-copy text-sm md:text-base text-[#605E56] font-medium mt-4 max-w-lg mx-auto md:mx-0">
             Profissionais altamente capacitados prontos para oferecer o melhor atendimento nas mais diversas áreas da saúde.
           </p>
         </div>
@@ -503,7 +503,7 @@ export default function CentroClinicoLight() {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C15]/90 via-[#1C1C15]/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
               </div>
 
-              <div className="absolute bottom-0 left-0 w-full p-5 md:p-6 flex flex-col justify-end">
+              <div className="select-copy absolute bottom-0 left-0 w-full p-5 md:p-6 flex flex-col justify-end">
                 <h4 className="text-[9px] md:text-[10px] font-bold tracking-widest uppercase text-[#CAC6BC] mb-1">{prof.spec}</h4>
                 <h5 className="text-lg md:text-xl font-black text-[#FDF9EE] leading-tight mb-3 md:mb-4">{prof.name}</h5>
                 <div className="inline-flex items-center gap-2 text-[10px] md:text-xs font-bold uppercase tracking-widest text-[#E6E2D7] group-hover:text-white transition-colors">
@@ -525,7 +525,7 @@ export default function CentroClinicoLight() {
             <h3 className="text-4xl md:text-7xl font-light tracking-tighter text-[#1C1C15] leading-[0.9] mb-6 md:mb-8">
               Agende sua <br className="hidden sm:block"/> <span className="font-black italic text-[#323129]">consulta.</span>
             </h3>
-            <p className="text-base md:text-lg text-[#605E56] font-light mb-10 md:mb-12 max-w-md mx-auto lg:mx-0 leading-relaxed">
+            <p className="select-copy text-base md:text-lg text-[#605E56] font-light mb-10 md:mb-12 max-w-md mx-auto lg:mx-0 leading-relaxed">
               Atendemos na modalidade <strong className="font-semibold text-[#1C1C15]">Particular</strong> e através do convênio <strong className="font-semibold text-[#1C1C15]">Plano Costa</strong>. Entre em contato para verificar horários disponíveis.
             </p>
             
@@ -534,7 +534,7 @@ export default function CentroClinicoLight() {
                 href={WHATSAPP_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 group text-center sm:text-left rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366]/50"
+                className="select-copy flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 group text-center sm:text-left rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366]/50"
               >
                 <div className="w-12 h-12 md:w-14 md:h-14 bg-[#25D366] rounded-full flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                   <FaWhatsapp className="text-white" size={26} aria-hidden />
@@ -544,7 +544,7 @@ export default function CentroClinicoLight() {
                   <div className="text-xl md:text-2xl font-black text-[#1C1C15] group-hover:text-[#128C7E] transition-colors">(51) 2129-4040</div>
                 </div>
               </a>
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 text-center sm:text-left">
+              <div className="select-copy flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 text-center sm:text-left">
                 <div className="w-12 h-12 md:w-14 md:h-14 bg-[#1C1C15] rounded-full flex items-center justify-center shrink-0"><MapPin className="text-[#FDF9EE]" size={20} /></div>
                 <div>
                   <div className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-[#79776E] mb-1">Endereço</div>
@@ -555,7 +555,7 @@ export default function CentroClinicoLight() {
           </div>
 
           <div className="w-full lg:w-1/2 fade-up">
-            <form className="bg-[#FDF9EE] p-6 sm:p-8 md:p-12 rounded-[2rem] md:rounded-[2.5rem] border border-[#E6E2D7] shadow-xl relative overflow-hidden">
+            <form className="select-copy bg-[#FDF9EE] p-6 sm:p-8 md:p-12 rounded-[2rem] md:rounded-[2.5rem] border border-[#E6E2D7] shadow-xl relative overflow-hidden">
                <div className="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-[#EFEBE0] rounded-bl-full -z-0 opacity-50 pointer-events-none" />
                <div className="relative z-10 flex flex-col gap-5 md:gap-6">
                   <div>
@@ -593,7 +593,7 @@ export default function CentroClinicoLight() {
                 title="Mapa Centro Clínico Costa"
               />
             </div>
-            <div className="p-6 md:p-8 flex items-center gap-6 bg-[#FDF9EE] z-10 relative border-t border-[#E6E2D7]">
+            <div className="select-copy p-6 md:p-8 flex items-center gap-6 bg-[#FDF9EE] z-10 relative border-t border-[#E6E2D7]">
               <div className="w-12 h-12 md:w-14 md:h-14 bg-[#EFEBE0] rounded-2xl flex items-center justify-center text-[#1C1C15] shrink-0">
                 <MapPin size={28} strokeWidth={1.5} />
               </div>
@@ -617,7 +617,7 @@ export default function CentroClinicoLight() {
              <div className="text-xl md:text-2xl tracking-tighter text-[#FDF9EE]">
                <span className="font-light">Centro Clínico</span> <span className="font-bold italic text-[#CAC6BC]">Costa</span>
              </div>
-             <p className="text-[#AEABA1] font-light text-xs md:text-sm leading-relaxed max-w-[250px] sm:max-w-none">
+             <p className="select-copy text-[#AEABA1] font-light text-xs md:text-sm leading-relaxed max-w-[250px] sm:max-w-none">
                Nascemos com a missão de oferecer atendimento de saúde humanizado e de qualidade, focado no bem-estar de toda a sua família.
              </p>
              <div className="flex gap-4 mt-2 justify-center sm:justify-start">
@@ -645,7 +645,7 @@ export default function CentroClinicoLight() {
 
           <div>
              <h4 className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-[#79776E] mb-4 md:mb-6">Horário</h4>
-             <ul className="flex flex-col gap-3 md:gap-4 text-[#CAC6BC] font-light text-xs md:text-sm w-full max-w-[200px] mx-auto sm:mx-0">
+             <ul className="select-copy flex flex-col gap-3 md:gap-4 text-[#CAC6BC] font-light text-xs md:text-sm w-full max-w-[200px] mx-auto sm:mx-0">
                <li className="flex justify-between border-b border-[#323129] pb-2 md:pb-3">
                   <span>Seg a Sex</span>
                   <span className="font-bold text-[#FDF9EE]">08:00 - 18:00</span>
@@ -665,7 +665,7 @@ export default function CentroClinicoLight() {
         
         <div className="max-w-7xl mx-auto pt-6 md:pt-8 border-t border-[#323129] flex flex-col md:flex-row justify-between items-center md:items-end gap-8">
           <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center justify-center md:justify-start gap-4 sm:gap-6 text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-[#79776E] text-center md:text-left">
-            <div>© {new Date().getFullYear()} Centro Clínico Costa. Taquari/RS.</div>
+            <div className="select-copy">© {new Date().getFullYear()} Centro Clínico Costa. Taquari/RS.</div>
           </div>
           <div className="text-center md:text-right shrink-0">
             <div className="text-[8px] font-black uppercase tracking-[0.4em] text-[#79776E] mb-2">Desenvolvido por</div>

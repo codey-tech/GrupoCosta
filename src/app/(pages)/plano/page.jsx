@@ -9,9 +9,13 @@ import {
   Shield, Stethoscope, Truck, Heart, Briefcase, 
   MapPin, Plus, Microscope, Activity, ShoppingBag, 
   Hospital, Info, Check, ChevronDown, Building, Users, 
-  FlaskConical, Map, Accessibility, Percent, MessageCircle, Phone
+  FlaskConical, Map, Accessibility, Percent, MessageCircle, Phone,
+  Clipboard
 } from 'lucide-react';
 import Image from 'next/image';
+import { FaWhatsapp } from 'react-icons/fa';
+import CopyToClipboard from 'react-copy-to-clipboard';
+import { toast, ToastContainer } from 'react-toastify';
 
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
@@ -142,19 +146,19 @@ export default function Page() {
   const faqs = [
     {
       q: "Quando poderei acessar os benefícios do Plano Costa?",
-      a: "Imediatamente após contratar o serviço. Não há carência para começar a utilizar os nossos descontos em consultas e exames."
+      a: "Imediatamente após aderir ao plano. Não há carência para começar a utilizar os serviços com planos familiares. 30 dias após a adesão no caso do plano individual."
     },
     {
       q: "A ambulância 24h possui algum custo?",
-      a: "A nossa ambulância é totalmente gratuita exclusivamente para casos de emergência ocorridos dentro do perímetro urbano de Taquari."
+      a: "A nossa ambulância é totalmente gratuita exclusivamente para casos de emergência ocorridos dentro do perímetro urbano de Taquari para clientes dos planos familiares."
     },
     {
       q: "Como funciona a locação de equipamentos?",
-      a: "Associados têm acesso facilitado e valores especiais para locação de itens como andadores, cadeiras de rodas, camas hospitalares, muletas e nebulizadores."
+      a: "Clientes têm acesso facilitado e valores especiais para locação de itens como andadores, cadeiras de rodas, camas hospitalares, muletas e nebulizadores."
     },
     {
       q: "Onde o plano oferece cobertura?",
-      a: "Nossa rede de parceiros abrange diversas cidades, incluindo Taquari, Lajeado, Estrela, Montenegro, Canoas, Porto Alegre, Tabaí, Triunfo, Teutônia e Paverama."
+      a: "Nossa rede de parceiros abrange diversas cidades, incluindo Taquari, Lajeado, Estrela, Montenegro, Canoas, Porto Alegre, Tabaí, Teutônia."
     }
   ];
 
@@ -343,7 +347,7 @@ export default function Page() {
       </div>
     </div>
 
-    <div ref={container} className={`min-h-screen bg-[#fafafa] text-slate-900 font-sans selection:bg-purple-200 ${isLoading ? 'h-screen overflow-hidden' : ''}`}>
+    <div ref={container} className={`select-none min-h-screen bg-[#fafafa] text-slate-900 font-sans selection:bg-purple-200 ${isLoading ? 'h-screen overflow-hidden' : ''}`}>
       
       {/* NAVBAR */}
       <nav 
@@ -394,15 +398,15 @@ export default function Page() {
         <div className="relative z-10 max-w-7xl mx-auto w-full pt-20">
           <div className="overflow-hidden mb-6">
             <h1 className="hero-text text-5xl md:text-7xl lg:text-[6.5vw] leading-[1] font-black tracking-tighter text-white">
-              Conectando você a <br/> serviços de saúde de <br/> <span className="text-purple-400 italic">excelência.</span>
+              Conectando você a <br/> cuidados de saúde de <br/> <span className="text-purple-400 italic">excelência.</span>
             </h1>
           </div>
           
           <div className="hero-text flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mt-8">
-            <p className="text-xl text-slate-300 max-w-xl font-medium leading-relaxed">
+            <p className="select-copy text-xl text-slate-300 max-w-xl font-medium leading-relaxed">
               Planos assistenciais acessíveis e completos, com cobertura que vai além do essencial.
             </p>
-            <div className="flex items-center gap-6">
+            <div className="select-copy flex items-center gap-6">
               <div className="w-16 h-16 rounded-full border border-purple-500/30 flex items-center justify-center animate-[spin_10s_linear_infinite]">
                 <Plus className="text-purple-400" />
               </div>
@@ -443,7 +447,7 @@ export default function Page() {
                   {ben.title}
                 </h4>
 
-                <ul className="space-y-3 mt-auto">
+                <ul className="select-copy space-y-3 mt-auto">
                   {ben.items.map((item, i) => (
                     <li key={i} className="flex items-start gap-3 text-sm font-bold text-slate-600">
                       <Check size={18} className="text-purple-600 shrink-0 mt-0.5" />
@@ -476,8 +480,8 @@ export default function Page() {
               Estrutura de <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-400 italic font-light">Atendimento.</span>
             </h3>
             
-            <p className="text-lg text-slate-400 font-medium mb-6 leading-relaxed">
-              Conexão direta com as principais instituições de saúde da Região Metropolitana e Vale do Taquari.
+            <p className="select-copy text-lg text-slate-400 font-medium mb-6 leading-relaxed">
+              Conexão direta com as principais instituições e profissionais de saúde da região.
             </p>
             
             <div className="relative p-8 bg-white/5 backdrop-blur-xl rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden transform-style-3d hover:rotate-y-[5deg] hover:rotate-x-[2deg] transition-transform duration-700">
@@ -486,7 +490,7 @@ export default function Page() {
               <h4 className="text-xs font-black uppercase tracking-widest mb-6 text-slate-300 flex items-center gap-2">
                 Área de Abrangência:
               </h4>
-              <ul className="grid grid-cols-2 gap-y-5 gap-x-2 font-bold text-sm text-slate-400">
+              <ul className="select-copy grid grid-cols-2 gap-y-5 gap-x-2 font-bold text-sm text-slate-400">
                 {["Taquari", "Porto Alegre", "Lajeado", "Tabaí", "Estrela", "Montenegro", "Teutônia", "Canoas"].map((cidade, i) => (
                   <li key={i} className="flex items-center gap-3 group cursor-default">
                     <div className="relative w-2 h-2 flex items-center justify-center">
@@ -527,7 +531,7 @@ export default function Page() {
                         <h4 className="text-2xl md:text-3xl font-black tracking-tighter italic text-white mb-2">
                           {categoria.title}
                         </h4>
-                        <p className="text-sm text-slate-400 font-medium">
+                        <p className="select-copy text-sm text-slate-400 font-medium">
                           {categoria.desc}
                         </p>
                       </div>
@@ -536,7 +540,7 @@ export default function Page() {
                     <div className="w-full h-px bg-gradient-to-r from-white/10 via-white/5 to-transparent mb-8 transform transition-transform duration-700 group-hover:translate-z-[10px]" />
 
                     <ul 
-                      className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6 transform transition-transform duration-700 group-hover:translate-z-[50px]"
+                      className="select-copy grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6 transform transition-transform duration-700 group-hover:translate-z-[50px]"
                       style={{ transformStyle: 'preserve-3d' }}
                     >
                       {categoria.items.map((item, i) => (
@@ -570,7 +574,7 @@ export default function Page() {
               Solidez e proteção para a sua empresa.
             </h3>
             
-            <p className="text-lg text-slate-600 font-medium mb-10 leading-relaxed max-w-lg">
+            <p className="select-copy text-lg text-slate-600 font-medium mb-10 leading-relaxed max-w-lg">
               Garantimos o bem-estar dos seus colaboradores com uma gestão de saúde eficiente, rede credenciada de excelência e suporte dedicado para a sua organização.
             </p>
             
@@ -581,7 +585,7 @@ export default function Page() {
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-slate-900 mb-1">Cobertura Adaptável</h4>
-                  <p className="text-sm text-slate-500 font-medium">Planos desenhados para PMEs e Grandes Empresas, estendidos a dependentes.</p>
+                  <p className="select-copy text-sm text-slate-500 font-medium">Planos desenhados para PMEs e Grandes Empresas, estendidos a dependentes.</p>
                 </div>
               </div>
 
@@ -591,7 +595,7 @@ export default function Page() {
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-slate-900 mb-1">Gestão Simplificada para o RH</h4>
-                  <p className="text-sm text-slate-500 font-medium">Faturamento unificado e canal de atendimento prioritário para a sua equipe.</p>
+                  <p className="select-copy text-sm text-slate-500 font-medium">Faturamento unificado e canal de atendimento prioritário para a sua equipe.</p>
                 </div>
               </div>
 
@@ -601,7 +605,7 @@ export default function Page() {
                 </div>
                 <div>
                   <h4 className="text-sm font-bold text-slate-900 mb-1">Segurança Ocupacional</h4>
-                  <p className="text-sm text-slate-500 font-medium">Redução de absenteísmo através de prevenção e atendimento rápido.</p>
+                  <p className="select-copy text-sm text-slate-500 font-medium">Redução de absenteísmo através de prevenção e atendimento rápido.</p>
                 </div>
               </div>
             </div>
@@ -680,7 +684,7 @@ export default function Page() {
             <h3 className="text-4xl md:text-6xl font-black tracking-tighter text-slate-950 mb-6">
               Escolha sua <span className="italic font-light text-purple-600">modalidade.</span>
             </h3>
-            <div className="inline-flex items-center gap-3 px-6 py-3 bg-white border border-slate-200 rounded-full text-xs font-bold text-slate-600 shadow-sm">
+            <div className="select-copy inline-flex items-center gap-3 px-6 py-3 bg-white border border-slate-200 rounded-full text-xs font-bold text-slate-600 shadow-sm">
               <Info size={16} className="text-purple-600"/> 
               Taxa de adesão de R$ 49,99 + proporcional ao mês na abertura.
             </div>
@@ -709,7 +713,7 @@ export default function Page() {
                     <h4 className={`text-xl font-black tracking-tighter mb-2 ${isFeatured ? 'text-white' : 'text-slate-900'}`}>
                       Plano {plan.name}
                     </h4>
-                    <p className={`text-xs font-medium leading-relaxed min-h-[32px] ${isFeatured ? 'text-slate-400' : 'text-slate-500'}`}>
+                    <p className={`select-copy text-xs font-medium leading-relaxed min-h-[32px] ${isFeatured ? 'text-slate-400' : 'text-slate-500'}`}>
                       {plan.tagline}
                     </p>
                   </div>
@@ -726,7 +730,7 @@ export default function Page() {
 
                   <hr className={`mb-8 border-t ${isFeatured ? 'border-slate-800' : 'border-slate-100'}`} />
 
-                  <ul className="space-y-6 mb-12 flex-grow">
+                  <ul className="select-copy space-y-6 mb-12 flex-grow">
                     {[
                       { icon: <Users size={18}/>, title: plan.users, desc: plan.usersDetail },
                       { icon: <Map size={18}/>, title: plan.network, desc: plan.networkDetail },
@@ -782,7 +786,7 @@ export default function Page() {
               Tudo o que você <span className="italic text-purple-600 font-light">precisa saber.</span>
             </h3>
             
-            <p className="text-lg text-slate-500 font-medium mb-10 leading-relaxed max-w-md">
+            <p className="select-copy text-lg text-slate-500 font-medium mb-10 leading-relaxed max-w-md">
               Ainda tem alguma dúvida sobre os benefícios, coberturas ou como funciona a adesão ao Plano Costa?
             </p>
 
@@ -796,9 +800,9 @@ export default function Page() {
               
               <div className="relative z-10">
                 <h4 className="text-sm font-bold text-slate-900 mb-1">Precisa de ajuda humana?</h4>
-                <p className="text-xs text-slate-500 font-medium mb-6 leading-relaxed">Nossa equipe de especialistas está pronta para te atender e orientar agora mesmo.</p>
-                <a href="https://wa.me/5121294040" target="_blank" rel="noreferrer" className="inline-flex w-full justify-center items-center gap-3 px-6 py-4 bg-white border border-slate-200 text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-purple-600 hover:text-white hover:border-purple-600 transition-all duration-300">
-                  <MessageCircle size={16} /> Chamar no WhatsApp
+                <p className="select-copy text-xs text-slate-500 font-medium mb-6 leading-relaxed">Nossa equipe de especialistas está pronta para te atender e orientar agora mesmo.</p>
+                <a href="https://wa.me/5121294040" target="_blank" rel="noreferrer" className="select-copy inline-flex w-full justify-center items-center gap-3 px-6 py-4 bg-white border border-slate-200 text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-purple-600 hover:text-white hover:border-purple-600 transition-all duration-300">
+                  <FaWhatsapp size={16} /> Chamar no WhatsApp
                 </a>
               </div>
             </div>
@@ -839,7 +843,7 @@ export default function Page() {
                     }`}
                   >
                     <div className="overflow-hidden">
-                      <div className="p-6 md:p-8 pt-0 text-slate-500 font-medium leading-relaxed text-sm md:text-base">
+                      <div className="select-copy p-6 md:p-8 pt-0 text-slate-500 font-medium leading-relaxed text-sm md:text-base">
                         {faq.a}
                       </div>
                     </div>
@@ -866,26 +870,30 @@ export default function Page() {
               <h3 className="text-5xl md:text-7xl font-black tracking-tighter text-slate-950 mb-6 leading-[0.9]">
                 Estamos aqui <br/><span className="italic text-purple-600">por você.</span>
               </h3>
-              <p className="text-lg text-slate-500 font-medium leading-relaxed max-w-md">
+              <p className="select-copy text-lg text-slate-500 font-medium leading-relaxed max-w-md">
                 Equipe especializada pronta para tirar suas dúvidas, agendar consultas e oferecer o suporte que sua família merece.
               </p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-auto">
-              <a href="https://wa.me/5121294040" target="_blank" rel="noreferrer" className="p-8 bg-white border border-slate-200 rounded-[2rem] hover:border-purple-300 hover:shadow-xl transition-all group cursor-pointer flex flex-col justify-center">
+              <a href="https://wa.me/5121294040" target="_blank" rel="noreferrer" className="select-copy p-8 bg-white border border-slate-200 rounded-[2rem] hover:border-purple-300 hover:shadow-xl transition-all group cursor-pointer flex flex-col justify-center">
                 <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform">
-                  <MessageCircle size={28} strokeWidth={1.5} />
+                  <FaWhatsapp size={28} strokeWidth={1.5} />
                 </div>
                 <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Suporte & WhatsApp</h4>
                 <div className="text-2xl font-black text-slate-900 group-hover:text-purple-600 transition-colors">(51) 2129-4040</div>
               </a>
 
-              <div className="p-8 bg-slate-950 border border-slate-800 rounded-[2rem] hover:shadow-xl transition-all group text-white flex flex-col justify-center">
+              <div className="select-copy p-8 bg-slate-950 border border-slate-800 rounded-[2rem] hover:shadow-xl transition-all group text-white flex flex-col justify-center">
                 <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform">
                   <Phone size={28} strokeWidth={1.5} />
                 </div>
                 <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Emergências 24h</h4>
-                <div className="text-2xl font-black text-white">0800-000-4356</div>
+                <div className="text-xl font-black text-white flex items-center gap-2">0800-000-4356
+                <CopyToClipboard text="0800-000-4356" onCopy={() => toast('Número copiado para área de transferência')}>
+                  <Clipboard className="text-white text-xs font-bold uppercase tracking-widest"></Clipboard>
+                </CopyToClipboard>
+                </div>
               </div>
             </div>
           </div>
@@ -904,7 +912,7 @@ export default function Page() {
                 ></iframe>
               </div>
               
-              <div className="p-8 flex items-center gap-6 bg-white z-10 relative">
+              <div className="select-copy p-8 flex items-center gap-6 bg-white z-10 relative">
                 <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 shrink-0">
                   <MapPin size={28} strokeWidth={1.5} />
                 </div>
@@ -925,7 +933,7 @@ export default function Page() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end gap-12">
           <div>
             <div className="text-3xl font-black tracking-tighter uppercase mb-6">Plano<span className="text-purple-600 italic font-light">Costa</span></div>
-            <div className="text-xs font-bold text-slate-500 uppercase tracking-widest leading-loose">
+            <div className="select-copy text-xs font-bold text-slate-500 uppercase tracking-widest leading-loose">
               Suporte: (51) 2129-4040<br/>
               Emergência: 0800-000-4356<br/>
               Sede: Rua Sete de Setembro, n°2356
@@ -946,6 +954,7 @@ export default function Page() {
           plan={selectedPlanForCheckout} 
         />
       )}
+      <ToastContainer />
     </LenisProvider>
   );
 };

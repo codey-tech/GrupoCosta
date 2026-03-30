@@ -7,3 +7,11 @@
 html {
     scroll-behavior: smooth;
 }
+
+/* Conteúdo que pode ser copiado (textos úteis) — use dentro de páginas com select-none no root */
+@layer utilities {
+    .select-copy {
+        user-select: text;
+        -webkit-user-select: text;
+    }
+}
