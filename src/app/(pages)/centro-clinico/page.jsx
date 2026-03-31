@@ -46,13 +46,24 @@ export default function CentroClinicoLight() {
   const [isSendingContato, setIsSendingContato] = useState(false);
   const [contatoFeedback, setContatoFeedback] = useState({ type: "", message: "" });
 
+  // OTIMIZAÇÃO 1: Resize listener com debounce passivo
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    let timeoutId;
+    const checkMobile = () => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        setIsMobile(window.innerWidth < 768);
+      }, 150);
+    };
+    checkMobile(); // Check inicial
+    window.addEventListener('resize', checkMobile, { passive: true });
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+      clearTimeout(timeoutId);
+    };
   }, []);
 
+  // OTIMIZAÇÃO 2: Controle de preloader simplificado
   useEffect(() => {
     if (isLoading) {
       document.body.style.overflow = 'hidden';
@@ -62,11 +73,10 @@ export default function CentroClinicoLight() {
       document.body.style.overflow = '';
       const syncLenisAndGSAP = () => {
         ScrollTrigger.refresh();
-        window.dispatchEvent(new Event('resize'));
       };
-      setTimeout(syncLenisAndGSAP, 100);
-      setTimeout(syncLenisAndGSAP, 500);
-      setTimeout(syncLenisAndGSAP, 1000);
+      // Reduzimos o número excessivo de disparos de resize window
+      setTimeout(syncLenisAndGSAP, 200);
+      setTimeout(syncLenisAndGSAP, 800);
     }
   }, [isLoading]);
 
@@ -95,13 +105,23 @@ export default function CentroClinicoLight() {
       xToS3(x * 0.03); yToS3(y * 0.03);
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [isLoading]);
 
+  // OTIMIZAÇÃO 3: RequestAnimationFrame para o Scroll State (Evita engasgo da Nav)
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 50);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -112,11 +132,22 @@ export default function CentroClinicoLight() {
       window.dispatchEvent(new Event("resize"));
     });
 
-    // 1. Idle Animation
+    // OTIMIZAÇÃO 4: Idle Animation (Pausa quando o Hero sai da tela)
     gsap.utils.toArray('.floating-shape').forEach((shape) => {
-      gsap.to(shape, {
+      const anim = gsap.to(shape, {
         y: "random(-20, 20)", x: "random(-15, 15)", rotation: "random(-15, 15)",
         duration: "random(3, 5)", repeat: -1, yoyo: true, ease: "sine.inOut",
+        force3D: true, // GPU Acceleration
+      });
+      
+      ScrollTrigger.create({
+        trigger: heroSectionRef.current,
+        start: "top bottom",
+        end: "bottom top",
+        onEnter: () => anim.play(),
+        onLeave: () => anim.pause(),
+        onEnterBack: () => anim.play(),
+        onLeaveBack: () => anim.pause(),
       });
     });
 
@@ -124,21 +155,21 @@ export default function CentroClinicoLight() {
     const tl = gsap.timeline();
     tl.fromTo(".hero-line span", 
       { y: 100, opacity: 0, skewY: 5 },
-      { y: 0, opacity: 1, skewY: 0, duration: 1.2, stagger: 0.1, ease: "power4.out", delay: 0.2 }
+      { y: 0, opacity: 1, skewY: 0, duration: 1.2, stagger: 0.1, ease: "power4.out", delay: 0.2, force3D: true }
     )
     .fromTo(".hero-fade", 
       { opacity: 0, y: 20 }, 
-      { opacity: 1, y: 0, duration: 1, ease: "power2.out" }, "-=0.8"
+      { opacity: 1, y: 0, duration: 1, ease: "power2.out", force3D: true }, "-=0.8"
     )
     .fromTo(".floating-shape", 
       { opacity: 0, scale: 0 }, 
-      { opacity: 1, scale: 1, duration: 1, stagger: 0.1, ease: "back.out(1.5)" }, "-=0.5"
+      { opacity: 1, scale: 1, duration: 1, stagger: 0.1, ease: "back.out(1.5)", force3D: true }, "-=0.5"
     );
 
     // 3. Parallax Hero
     const heroParallaxTargets = [heroTextRef.current, ".floating-shape"].filter(Boolean);
     gsap.to(heroParallaxTargets.length ? heroParallaxTargets : ".floating-shape", {
-      y: -250, opacity: 0, ease: "none",
+      y: -250, opacity: 0, ease: "none", force3D: true,
       scrollTrigger: { trigger: heroSectionRef.current, start: "top top", end: "bottom top", scrub: true }
     });
 
@@ -148,12 +179,13 @@ export default function CentroClinicoLight() {
       gsap.to(sobreBgParallaxRef.current, {
         yPercent: 0, 
         ease: "none", 
+        force3D: true,
         scrollTrigger: { trigger: heroSectionRef.current, start: "top top", end: "bottom top", scrub: true }
       });
     }
 
     // ------------------------------------------------------------------------
-    // 4. Seção Sobre - CORREÇÃO DE SOBREPOSIÇÃO 
+    // 4. Seção Sobre - OTIMIZADA COM force3D
     // ------------------------------------------------------------------------
     const viewportRef = Math.max(window.innerWidth, window.innerHeight);
     const initialSobreScale = isMobile ? 80 : Math.max(36, viewportRef / 52);
@@ -183,26 +215,25 @@ export default function CentroClinicoLight() {
     sobreScrollTl.to({}, { duration: delayZoom }); 
 
     sobreScrollTl
-      .to(".zoom-target", { scale: 1, x: 0, y: 0, duration: 3.5, ease: "none" }, delayZoom)
-      .to(".sobre-overlay", { opacity: 1, duration: 0.9, ease: "none" }, delayZoom);
+      .to(".zoom-target", { scale: 1, x: 0, y: 0, duration: 3.5, ease: "none", force3D: true }, delayZoom)
+      .to(".sobre-overlay", { opacity: 1, duration: 0.9, ease: "none", force3D: true }, delayZoom);
 
     if (sobreBgRef.current) {
-      sobreScrollTl.to(sobreBgRef.current, { scale: 1, duration: 3.5, ease: "none" }, delayZoom);
+      sobreScrollTl.to(sobreBgRef.current, { scale: 1, duration: 3.5, ease: "none", force3D: true }, delayZoom);
     }
 
-    // NOVO: Puxa o título muito mais para o topo no mobile (-450px) para não bater no texto
     const yMoverDistance = isMobile ? -450 : -300;
 
     sobreScrollTl
       .to(".color-text", { fill: "#1C1C15", duration: 0.3, ease: "none" }, delayZoom + 3.0)
-      .to(".y-mover", { y: yMoverDistance, duration: 1.5, ease: "none" }, delayZoom + 3.5)
-      .to(sobreContentRef.current, { opacity: 1, y: 0, duration: 1.5, ease: "none" }, delayZoom + 3.8);
+      .to(".y-mover", { y: yMoverDistance, duration: 1.5, ease: "none", force3D: true }, delayZoom + 3.5)
+      .to(sobreContentRef.current, { opacity: 1, y: 0, duration: 1.5, ease: "none", force3D: true }, delayZoom + 3.8);
 
     // 5. Parallax Imagens Internas
     gsap.utils.toArray('.img-parallax').forEach(img => {
       if (horizontalContainerRef.current && horizontalContainerRef.current.contains(img)) return;
       gsap.to(img, {
-        yPercent: 15, ease: "none",
+        yPercent: 15, ease: "none", force3D: true,
         scrollTrigger: { trigger: img.parentElement, start: "top bottom", end: "bottom top", scrub: true }
       });
     });
@@ -213,7 +244,7 @@ export default function CentroClinicoLight() {
     if (teamCards.length) {
       gsap.set(teamCards, { opacity: 0, y: 56, scale: 0.98 });
       gsap.to(teamCards, {
-        opacity: 1, y: 0, scale: 1, duration: 0.75, ease: "power3.out", stagger: { each: 0.1, from: "start" },
+        opacity: 1, y: 0, scale: 1, duration: 0.75, ease: "power3.out", stagger: { each: 0.1, from: "start" }, force3D: true,
         scrollTrigger: {
           id: "team-grid-cascade", trigger: teamGridRef.current, start: "top 82%", toggleActions: "play none none none",
           once: true, invalidateOnRefresh: true,
@@ -221,14 +252,14 @@ export default function CentroClinicoLight() {
       });
     }
 
-    // 6. HORIZONTAL SCROLL
+    // 6. HORIZONTAL SCROLL - Forçando Aceleração da Placa de Vídeo
     if (horizontalWrapperRef.current && horizontalContainerRef.current) {
       ScrollTrigger.getById("centro-horizontal")?.kill();
       const wrapper = horizontalWrapperRef.current;
       const scrollContainer = horizontalContainerRef.current;
       
       gsap.to(wrapper, {
-        x: "-200vw", ease: "none",
+        x: "-200vw", ease: "none", force3D: true,
         scrollTrigger: {
           id: "centro-horizontal", trigger: scrollContainer, start: "top top",
           end: () => `+=${window.innerWidth * 2}`, pin: true, pinSpacing: true, scrub: true, invalidateOnRefresh: true
@@ -240,7 +271,7 @@ export default function CentroClinicoLight() {
     gsap.utils.toArray('.fade-up').forEach((elem) => {
       gsap.from(elem, {
         scrollTrigger: { trigger: elem, start: "top 85%" },
-        y: 50, opacity: 0, duration: 1, ease: "power3.out"
+        y: 50, opacity: 0, duration: 1, ease: "power3.out", force3D: true
       });
     });
 
@@ -290,15 +321,15 @@ export default function CentroClinicoLight() {
       setContatoForm({ nome: "", telefone: "", mensagem: "" });
       setContatoFeedback({
         type: "success",
-        message: "Contato enviado com sucesso. Nossa equipe retornara em breve.",
+        message: "Contato enviado com sucesso. Nossa equipe retornará em breve.",
       });
       toast.success("Contato enviado com sucesso.");
     } catch (error) {
       setContatoFeedback({
         type: "error",
-        message: error.message || "Nao foi possivel enviar agora. Tente novamente.",
+        message: error.message || "Não foi possivel enviar agora. Tente novamente.",
       });
-      toast.error(error.message || "Nao foi possivel enviar agora. Tente novamente.");
+      toast.error(error.message || "Não foi possivel enviar agora. Tente novamente.");
     } finally {
       setIsSendingContato(false);
     }
@@ -498,7 +529,7 @@ export default function CentroClinicoLight() {
           <div className="h-panel w-[100vw] h-full shrink-0 flex flex-col md:flex-row items-center justify-center px-6 md:px-20 gap-8 md:gap-12 relative">
             <div className="w-full md:w-1/2 h-[35vh] sm:h-[45vh] md:h-[70vh] rounded-[1.5rem] md:rounded-[2rem] overflow-hidden relative order-2 md:order-1 mb-12 md:mb-0">
               <div className="absolute inset-0 bg-[#323129]" />
-              <div className="absolute inset-0  bg-[url('/clinica/exames.webp')] bg-cover bg-center img-parallax scale-125" />
+              <div className="absolute inset-0 bg-[url('/clinica/exames.webp')] bg-cover bg-center img-parallax scale-125" />
             </div>
             <div className="w-full md:w-1/2 max-w-xl order-1 md:order-2 text-center md:text-left mt-16 md:mt-0">
               <div className="inline-flex items-center gap-3 mb-4 md:mb-6">
@@ -544,9 +575,12 @@ export default function CentroClinicoLight() {
               className="team-card group relative min-w-0 w-full rounded-[1.5rem] md:rounded-3xl overflow-hidden bg-[#EFEBE0] shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer"
             >
               <div className="aspect-[4/5] overflow-hidden relative">
+                {/* OTIMIZAÇÃO: loading lazy e decoding async */}
                 <img
                   src={prof.img}
                   alt={prof.name}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C15]/90 via-[#1C1C15]/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
@@ -634,7 +668,7 @@ export default function CentroClinicoLight() {
 
         </div>
 
-        {/* Mapa — mesmo embed da página Plano */}
+        {/* Mapa */}
         <div className="w-full fade-up">
           <div className="bg-[#FDF9EE] border border-[#E6E2D7] rounded-[2rem] overflow-hidden hover:shadow-xl transition-shadow flex flex-col h-full min-h-[450px]">
             <div className="flex-grow bg-[#E6E2D7]/60 relative w-full h-[300px] md:h-[350px]">
