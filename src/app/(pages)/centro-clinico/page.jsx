@@ -41,6 +41,9 @@ export default function CentroClinicoLight() {
   const [isLoading, setIsLoading] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [contatoForm, setContatoForm] = useState({ nome: "", telefone: "", mensagem: "" });
+  const [isSendingContato, setIsSendingContato] = useState(false);
+  const [contatoFeedback, setContatoFeedback] = useState({ type: "", message: "" });
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -254,6 +257,42 @@ export default function CentroClinicoLight() {
   ];
 
   const exames = ["ECG", "Teste Ergométrico", "Holter", "MAPA", "Espirometria", "Eletroencefalograma (Vigília)"];
+
+  const handleContatoChange = (field, value) => {
+    setContatoForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleContatoSubmit = async (e) => {
+    e.preventDefault();
+    setContatoFeedback({ type: "", message: "" });
+    setIsSendingContato(true);
+
+    try {
+      const response = await fetch("/api/contato-clinica", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(contatoForm),
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Erro ao enviar contato.");
+      }
+
+      setContatoForm({ nome: "", telefone: "", mensagem: "" });
+      setContatoFeedback({
+        type: "success",
+        message: "Contato enviado com sucesso. Nossa equipe retornara em breve.",
+      });
+    } catch (error) {
+      setContatoFeedback({
+        type: "error",
+        message: error.message || "Nao foi possivel enviar agora. Tente novamente.",
+      });
+    } finally {
+      setIsSendingContato(false);
+    }
+  };
 
   return (
     <LenisProvider>
@@ -555,23 +594,28 @@ export default function CentroClinicoLight() {
           </div>
 
           <div className="w-full lg:w-1/2 fade-up">
-            <form className="select-copy bg-[#FDF9EE] p-6 sm:p-8 md:p-12 rounded-[2rem] md:rounded-[2.5rem] border border-[#E6E2D7] shadow-xl relative overflow-hidden">
+            <form onSubmit={handleContatoSubmit} className="select-copy bg-[#FDF9EE] p-6 sm:p-8 md:p-12 rounded-[2rem] md:rounded-[2.5rem] border border-[#E6E2D7] shadow-xl relative overflow-hidden">
                <div className="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-[#EFEBE0] rounded-bl-full -z-0 opacity-50 pointer-events-none" />
                <div className="relative z-10 flex flex-col gap-5 md:gap-6">
                   <div>
                     <label className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-[#79776E] mb-2 block">Nome Completo</label>
-                    <input type="text" className="w-full bg-transparent border-b border-[#CAC6BC] py-2 md:py-3 text-[#1C1C15] text-sm md:text-base focus:outline-none focus:border-[#1C1C15] transition-colors placeholder:text-[#AEABA1]" placeholder="Como podemos te chamar?" />
+                    <input type="text" value={contatoForm.nome} onChange={(e) => handleContatoChange("nome", e.target.value)} required className="w-full bg-transparent border-b border-[#CAC6BC] py-2 md:py-3 text-[#1C1C15] text-sm md:text-base focus:outline-none focus:border-[#1C1C15] transition-colors placeholder:text-[#AEABA1]" placeholder="Como podemos te chamar?" />
                   </div>
                   <div>
                     <label className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-[#79776E] mb-2 block">Telefone</label>
-                    <input type="tel" className="w-full bg-transparent border-b border-[#CAC6BC] py-2 md:py-3 text-[#1C1C15] text-sm md:text-base focus:outline-none focus:border-[#1C1C15] transition-colors placeholder:text-[#AEABA1]" placeholder="(51) 90000-0000" />
+                    <input type="tel" value={contatoForm.telefone} onChange={(e) => handleContatoChange("telefone", e.target.value)} required className="w-full bg-transparent border-b border-[#CAC6BC] py-2 md:py-3 text-[#1C1C15] text-sm md:text-base focus:outline-none focus:border-[#1C1C15] transition-colors placeholder:text-[#AEABA1]" placeholder="(51) 90000-0000" />
                   </div>
                   <div>
                     <label className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-[#79776E] mb-2 block">Mensagem ou Especialidade</label>
-                    <textarea rows="3" className="w-full bg-transparent border-b border-[#CAC6BC] py-2 md:py-3 text-[#1C1C15] text-sm md:text-base focus:outline-none focus:border-[#1C1C15] transition-colors resize-none placeholder:text-[#AEABA1]" placeholder="Qual a sua necessidade hoje?"></textarea>
+                    <textarea rows="3" value={contatoForm.mensagem} onChange={(e) => handleContatoChange("mensagem", e.target.value)} required className="w-full bg-transparent border-b border-[#CAC6BC] py-2 md:py-3 text-[#1C1C15] text-sm md:text-base focus:outline-none focus:border-[#1C1C15] transition-colors resize-none placeholder:text-[#AEABA1]" placeholder="Qual a sua necessidade hoje?"></textarea>
                   </div>
-                  <button type="button" className="group relative w-full flex items-center justify-center gap-2 bg-[#1C1C15] text-[#FDF9EE] py-4 md:py-5 rounded-full font-bold text-[10px] md:text-xs uppercase tracking-[0.2em] hover:bg-[#323129] transition-all duration-300 mt-2 md:mt-4 overflow-hidden">
-                    <span className="relative z-10">Solicitar Contato</span>
+                  {contatoFeedback.message && (
+                    <p className={`text-xs font-bold ${contatoFeedback.type === "success" ? "text-emerald-700" : "text-red-600"}`}>
+                      {contatoFeedback.message}
+                    </p>
+                  )}
+                  <button disabled={isSendingContato} type="submit" className="group relative w-full flex items-center justify-center gap-2 bg-[#1C1C15] text-[#FDF9EE] py-4 md:py-5 rounded-full font-bold text-[10px] md:text-xs uppercase tracking-[0.2em] hover:bg-[#323129] transition-all duration-300 mt-2 md:mt-4 overflow-hidden disabled:opacity-60 disabled:cursor-not-allowed">
+                    <span className="relative z-10">{isSendingContato ? "Enviando..." : "Solicitar Contato"}</span>
                     <ArrowRight size={16} className="relative z-10 group-hover:translate-x-1 transition-transform" />
                   </button>
                </div>
