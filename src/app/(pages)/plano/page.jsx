@@ -673,6 +673,7 @@ export default function Page() {
       </section>
 
       {/* PLANOS FAMILIARES - REDESIGN PREMIUM */}
+      {/* }
       <section id="planos" className="py-32 px-6 bg-slate-50 relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-full bg-gradient-to-b from-purple-100/50 to-transparent blur-3xl pointer-events-none -z-10" />
 
@@ -770,6 +771,7 @@ export default function Page() {
           </div>
         </div>
       </section>
+      */}
 
       {/* FAQ - DESIGN PREMIUM DE DUAS COLUNAS */}
       <section id="faq" className="py-32 px-6 bg-white relative overflow-hidden border-t border-slate-200">
