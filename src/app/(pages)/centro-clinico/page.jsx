@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { FaInstagram, FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import { toast, ToastContainer } from 'react-toastify';
+import Image from 'next/image';
 
 const WHATSAPP_URL = "https://wa.me/5121294040";
 
@@ -442,7 +443,14 @@ export default function CentroClinicoLight() {
       <div className={`fixed inset-0 z-[99999] bg-[#FDF9EE] flex flex-col items-center justify-center transition-all duration-1000 ease-[cubic-bezier(0.76,0,0.24,1)] ${isLoading ? 'translate-y-0' : '-translate-y-full'}`}>
         <div className="overflow-hidden px-4 text-center">
           <div className={`text-3xl md:text-5xl font-light tracking-tighter text-[#1C1C15] flex flex-wrap justify-center items-center gap-2 transition-transform duration-1000 delay-300 ${isLoading ? 'translate-y-0' : 'translate-y-full'}`}>
-            Centro Clínico <span className="font-bold italic text-[#605E56]">Costa.</span>
+            <Image 
+                src="/logos/centroclinico.svg" 
+                alt="Logo" 
+                width={160} 
+                height={160} 
+                className="w-full h-full"
+                style={{ filter: 'brightness(0) saturate(100%) invert(8%) sepia(5%) saturate(1088%) hue-rotate(20deg) brightness(96%) contrast(91%)' }}
+            />          
           </div>
         </div>
         <div className="w-32 md:w-48 h-[1px] bg-[#E6E2D7] mt-8 relative overflow-hidden">
@@ -453,7 +461,13 @@ export default function CentroClinicoLight() {
       <nav className={`fixed top-0 w-full z-50 transition-all duration-700 ease-out ${isScrolled ? 'bg-[#FDF9EE]/98 md:bg-[#FDF9EE]/95 md:backdrop-blur-xl py-4 px-4 md:px-8 border-b border-[#E6E2D7]' : 'bg-transparent py-6 md:py-8 px-4 md:px-8'}`}>
         <div className="flex justify-between items-center max-w-7xl mx-auto w-full">
           <div className="text-lg md:text-xl tracking-tighter text-[#1C1C15] leading-none">
-            <span className="font-light">Centro Clínico</span> <span className="font-bold italic text-[#48473F]">Costa</span>
+          <Image 
+                src="/logos/centroclinico.svg" 
+                alt="Logo" 
+                width={120} 
+                height={120} 
+                style={{ filter: 'brightness(0) saturate(100%) invert(8%) sepia(5%) saturate(1088%) hue-rotate(20deg) brightness(96%) contrast(91%)' }}
+            />   
           </div>
           <div className="hidden lg:flex gap-12 text-xs font-semibold uppercase tracking-[0.2em]">
             {['Sobre', 'Estrutura', 'Corpo Clínico', 'Contato'].map(item => (
@@ -854,8 +868,14 @@ export default function CentroClinicoLight() {
           
           <div className="flex flex-col gap-4 md:gap-6 lg:pr-8 items-center sm:items-start">
              <div className="text-xl md:text-2xl tracking-tighter text-[#FDF9EE]">
-               <span className="font-light">Centro Clínico</span> <span className="font-bold italic text-[#CAC6BC]">Costa</span>
-             </div>
+             <Image 
+                src="/logos/centroclinico.svg" 
+                alt="Logo" 
+                width={120} 
+                height={120} 
+                style={{ 
+                    filter: 'invert(50%) sepia(6%) saturate(301%) hue-rotate(11deg) brightness(89%) contrast(87%)' 
+                  }}            />                </div>
              <p className="select-copy text-[#AEABA1] font-light text-xs md:text-sm leading-relaxed max-w-[250px] sm:max-w-none">
                Nascemos com a missão de oferecer atendimento de saúde humanizado e de qualidade, focado no bem-estar de toda a sua família.
              </p>
