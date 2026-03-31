@@ -285,8 +285,8 @@ export default function CentroClinicoLight() {
     { name: "Dr. Guilherme Vogt", spec: "Cardiologia", img: "/profissionais/guilherme.webp" },
     { name: "Dra. Ianka Thamylla", spec: "Ginecologia", img: "/profissionais/ianka.webp" },
     { name: "Dr. Cristiano Sbruzzi", spec: "Dermatologia", img: "/profissionais/cristiano.webp" },
-    { name: "Dr. Luiz Augusto", spec: "Psiquiatria", img: "/profissionais/luiz.webp" },
-    { name: "Dra. Caroline Luchese", spec: "Neurologia", img: "/profissionais/caroline.webp" }
+    { name: "Dra. Caroline Luchese", spec: "Neurologia", img: "/profissionais/caroline.webp" },
+    { name: "Dr. Luiz Augusto", spec: "Psiquiatria", img: "/profissionais/luiz.webp" }
   ];
 
   const exames = ["ECG", "Teste Ergométrico", "Holter", "MAPA", "Espirometria", "Eletroencefalograma (Vigília)"];
