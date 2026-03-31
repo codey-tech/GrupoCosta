@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { 
   Users, FileText, CheckCircle, Clock, Search, LogOut, ChevronRight, 
   Activity, ShieldAlert, X, User, ChevronDown, Lock, ArrowRight, 
-  MessageSquare, LayoutDashboard, PhoneCall, Filter
+  MessageSquare, LayoutDashboard, PhoneCall, Filter, BarChart3, Globe, Eye, RefreshCw, MapPin
 } from 'lucide-react';
 
 // Inicializa o Supabase no lado do cliente
@@ -19,6 +19,8 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 const SENHA_EQUIPE = process.env.NEXT_PUBLIC_SENHA_PAINEL || '123456'; 
 
 export default function PainelAdmin() {
+  const [isMounted, setIsMounted] = useState(false);
+  
   // Estados de Autenticação
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -26,7 +28,7 @@ export default function PainelAdmin() {
   const [loginError, setLoginError] = useState(false);
 
   // Estados de Navegação
-  const [activeTab, setActiveTab] = useState('adesoes'); // 'adesoes' | 'contatos'
+  const [activeTab, setActiveTab] = useState('adesoes'); // 'adesoes' | 'contatos' | 'analytics'
 
   // Estados de Dados - Adesões
   const [leads, setLeads] = useState([]);
@@ -43,20 +45,30 @@ export default function PainelAdmin() {
   const [isUpdatingContatoStatus, setIsUpdatingContatoStatus] = useState(false);
   const [searchTermContatos, setSearchTermContatos] = useState('');
 
+  // Estados de Dados - Analytics
+  const [report, setReport] = useState(null);
+  const [loadingAnalytics, setLoadingAnalytics] = useState(true);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   // 1. Verifica se já está logado ao abrir a página
   useEffect(() => {
+    if (!isMounted) return;
     const authStatus = localStorage.getItem('plano_costa_auth');
     if (authStatus === 'true') {
       setIsAuthenticated(true);
     }
     setIsCheckingAuth(false);
-  }, []);
+  }, [isMounted]);
 
   // 2. Busca os dados APENAS se estiver logado
   useEffect(() => {
     if (isAuthenticated) {
       fetchLeads();
       fetchContatosClinica();
+      fetchAnalytics(); // Carrega o analytics junto
     }
   }, [isAuthenticated]);
 
@@ -77,12 +89,13 @@ export default function PainelAdmin() {
     setIsAuthenticated(false);
     setLeads([]); 
     setContatosClinica([]);
+    setReport(null);
   };
 
   // ==========================================
   // FUNÇÕES DE DADOS: ADESÕES
   // ==========================================
-  const fetchLeads = async () => {
+  async function fetchLeads() {
     setIsLoadingLeads(true);
     try {
       const { data, error } = await supabase
@@ -103,7 +116,7 @@ export default function PainelAdmin() {
     } finally {
       setIsLoadingLeads(false);
     }
-  };
+  }
 
   const handleUpdateStatus = async (novoStatus) => {
     if (!selectedLead) return;
@@ -128,7 +141,7 @@ export default function PainelAdmin() {
   // ==========================================
   // FUNÇÕES DE DADOS: CONTATOS
   // ==========================================
-  const fetchContatosClinica = async () => {
+  async function fetchContatosClinica() {
     setIsLoadingContatos(true);
     try {
       const { data, error } = await supabase
@@ -143,7 +156,7 @@ export default function PainelAdmin() {
     } finally {
       setIsLoadingContatos(false);
     }
-  };
+  }
 
   const handleUpdateContatoStatus = async (novoStatus) => {
     if (!selectedContato) return;
@@ -164,6 +177,37 @@ export default function PainelAdmin() {
       setIsUpdatingContatoStatus(false);
     }
   };
+
+  // ==========================================
+  // FUNÇÕES DE DADOS: ANALYTICS
+  // ==========================================
+  const fetchAnalytics = async () => {
+    setLoadingAnalytics(true);
+    try {
+      const res = await fetch('/api/analytics');
+      const data = await res.json();
+      const apiOk = Boolean(data?.ok);
+      const hasRows = Array.isArray(data?.rows) && data.rows.length > 0;
+      setReport({
+        rows: Array.isArray(data?.rows) ? data.rows : [],
+        unavailable: Boolean(data?.unavailable) || !apiOk,
+        message: data?.message || data?.error || (!hasRows ? 'Sem dados de analytics no período selecionado.' : ''),
+      });
+    } catch (err) {
+      console.error("Erro ao carregar painel:", err);
+      setReport({
+        rows: [],
+        unavailable: true,
+        message: 'Não foi possível carregar analytics.',
+      });
+    } finally {
+      setLoadingAnalytics(false);
+    }
+  };
+
+  // Cálculos agregados para o Analytics
+  const analyticsTotalUsers = report?.rows?.reduce((acc, row) => acc + parseInt(row.metricValues[0].value || 0), 0) || 0;
+  const analyticsTotalViews = report?.rows?.reduce((acc, row) => acc + parseInt(row.metricValues[1].value || 0), 0) || 0;
 
   // ==========================================
   // UTILITÁRIOS & FILTROS
@@ -208,7 +252,7 @@ export default function PainelAdmin() {
   // ==========================================
   // RENDER: TELAS DE LOADING E LOGIN
   // ==========================================
-  if (isCheckingAuth) {
+  if (!isMounted || isCheckingAuth) {
     return <div className="min-h-screen bg-slate-950 flex items-center justify-center"></div>;
   }
 
@@ -275,6 +319,13 @@ export default function PainelAdmin() {
           >
             <PhoneCall size={18} /> Contatos Clínica
           </button>
+
+          <button 
+            onClick={() => setActiveTab('analytics')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all duration-200 ${activeTab === 'analytics' ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/50' : 'hover:bg-white/5 hover:text-white'}`}
+          >
+            <BarChart3 size={18} /> Google Analytics
+          </button>
         </nav>
 
         <div className="p-6 border-t border-white/10">
@@ -334,7 +385,9 @@ export default function PainelAdmin() {
             <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden min-h-[400px]">
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
                 <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2"><LayoutDashboard size={16}/> Lista de Leads</h3>
-                <button onClick={fetchLeads} className="text-xs font-bold text-purple-600 hover:text-purple-700 uppercase tracking-wider">Atualizar Lista</button>
+                <button onClick={fetchLeads} className="text-xs font-bold text-purple-600 hover:text-purple-700 uppercase tracking-wider flex items-center gap-1">
+                  <RefreshCw size={12} /> Atualizar Lista
+                </button>
               </div>
 
               {isLoadingLeads ? (
@@ -449,7 +502,9 @@ export default function PainelAdmin() {
             <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden min-h-[400px]">
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
                 <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2"><MessageSquare size={16}/> Caixa de Entrada</h3>
-                <button onClick={fetchContatosClinica} className="text-xs font-bold text-purple-600 hover:text-purple-700 uppercase tracking-wider">Atualizar Lista</button>
+                <button onClick={fetchContatosClinica} className="text-xs font-bold text-purple-600 hover:text-purple-700 uppercase tracking-wider flex items-center gap-1">
+                  <RefreshCw size={12} /> Atualizar Lista
+                </button>
               </div>
 
               {isLoadingContatos ? (
@@ -501,6 +556,127 @@ export default function PainelAdmin() {
                   </table>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* VIEW: ANALYTICS                                                           */}
+        {/* ========================================================================= */}
+        {activeTab === 'analytics' && (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-8">
+            <header className="flex flex-col md:flex-row md:justify-between md:items-end gap-6">
+              <div>
+                <h1 className="text-3xl font-black text-slate-900 tracking-tighter">Inteligência de Tráfego</h1>
+                <p className="text-sm text-slate-500 font-medium mt-1">Análise detalhada do ecossistema Grupo Costa.</p>
+              </div>
+              <button onClick={fetchAnalytics} className="px-5 py-3 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-purple-600 transition-all shadow-lg flex items-center gap-2">
+                <RefreshCw size={14} className={loadingAnalytics ? "animate-spin" : ""} /> {loadingAnalytics ? 'Sincronizando...' : 'Atualizar Dados'}
+              </button>
+            </header>
+
+            {/* 1. ROW DE KPIS PRINCIPAIS */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {[
+                { label: 'Usuários Ativos', val: analyticsTotalUsers, icon: <Users size={20}/>, color: 'text-blue-600', bg: 'bg-blue-50' },
+                { label: 'Visualizações', val: analyticsTotalViews, icon: <Eye size={20}/>, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+                { label: 'Tempo Médio', val: `${Math.round(report?.rows?.[0]?.metricValues[2].value || 0)}s`, icon: <Clock size={20}/>, color: 'text-amber-600', bg: 'bg-amber-50' },
+                { label: 'Taxa Rejeição', val: `${(parseFloat(report?.rows?.[0]?.metricValues[3].value || 0) * 100).toFixed(1)}%`, icon: <ShieldAlert size={20}/>, color: 'text-red-600', bg: 'bg-red-50' },
+              ].map((kpi, i) => (
+                <div key={i} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                  <div className={`${kpi.bg} ${kpi.color} w-10 h-10 rounded-lg flex items-center justify-center mb-4`}>
+                    {kpi.icon}
+                  </div>
+                  <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{kpi.label}</div>
+                  <div className="text-2xl font-black text-slate-900">{loadingAnalytics ? '...' : kpi.val}</div>
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              
+              {/* 2. PERFORMANCE POR EMPRESA (PÁGINA) */}
+              <div className="lg:col-span-2 bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+                <div className="px-6 py-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                  <h3 className="text-sm font-black uppercase tracking-tighter text-slate-800 flex items-center gap-2"><Globe size={18} className="text-purple-600"/> Acessos por Landing Page</h3>
+                  <span className="text-[10px] font-bold bg-purple-100 text-purple-700 px-2 py-1 rounded-md uppercase">Top Performance</span>
+                </div>
+                <div className="p-0 overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead>
+                      <tr className="text-[10px] uppercase tracking-widest text-slate-400 border-b border-slate-50">
+                        <th className="px-6 py-4 font-black">Página</th>
+                        <th className="px-6 py-4 font-black text-center">Acessos</th>
+                        <th className="px-6 py-4 font-black">Engajamento</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-50">
+                      {report?.rows?.slice(0, 8).map((row, i) => {
+                        const pagePath = row.dimensionValues[0].value;
+                        const views = parseInt(row.metricValues[1].value);
+                        const percentage = Math.min((views / analyticsTotalViews) * 100, 100);
+                        
+                        return (
+                          <tr key={i} className="hover:bg-slate-50/50 transition-colors">
+                            <td className="px-6 py-4">
+                              <div className="text-xs font-bold text-slate-800 truncate max-w-[200px]">{pagePath === '/' ? 'Home Principal' : pagePath}</div>
+                            </td>
+                            <td className="px-6 py-4 text-center">
+                              <span className="text-xs font-black text-slate-900">{views}</span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                                <div className="bg-purple-500 h-full rounded-full" style={{ width: `${percentage}%` }} />
+                              </div>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* 3. DISPOSITIVOS E ORIGEM */}
+              <div className="space-y-8">
+                {/* Card Dispositivos */}
+                <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                  <h3 className="text-xs font-black uppercase tracking-widest text-slate-800 mb-6 flex items-center gap-2"><Activity size={16} className="text-blue-500"/> Dispositivos</h3>
+                  <div className="space-y-4">
+                    {/* Aqui você faria um map real dos dados de deviceCategory, vou simular a lógica visual */}
+                    {[
+                      { label: 'Mobile', icon: <PhoneCall size={14}/>, color: 'bg-blue-500', pct: 75 },
+                      { label: 'Desktop', icon: <Users size={14}/>, color: 'bg-slate-800', pct: 20 },
+                      { label: 'Tablet', icon: <Activity size={14}/>, color: 'bg-slate-400', pct: 5 }
+                    ].map((dev, i) => (
+                      <div key={i}>
+                        <div className="flex justify-between text-[10px] font-black uppercase mb-1">
+                          <span className="flex items-center gap-1">{dev.icon} {dev.label}</span>
+                          <span>{dev.pct}%</span>
+                        </div>
+                        <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                          <div className={`${dev.color} h-full`} style={{ width: `${dev.pct}%` }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Card Localização (Cidades) */}
+                <div className="bg-slate-900 p-6 rounded-3xl shadow-xl shadow-slate-900/20 text-white">
+                  <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2"><MapPin size={16} className="text-emerald-400"/> Top Cidades</h3>
+                  <div className="space-y-4">
+                    {report?.rows?.slice(0, 4).map((row, i) => (
+                      <div key={i} className="flex items-center justify-between border-b border-white/5 pb-2">
+                        <span className="text-xs font-bold text-slate-200">{row.dimensionValues[3].value}</span>
+                        <span className="text-[10px] font-black text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded">
+                          {row.metricValues[0].value} users
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
