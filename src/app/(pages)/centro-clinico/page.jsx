@@ -285,7 +285,8 @@ export default function CentroClinicoLight() {
     { name: "Dr. Guilherme Vogt", spec: "Cardiologia", img: "/profissionais/guilherme.webp" },
     { name: "Dra. Ianka Thamylla", spec: "Ginecologia", img: "/profissionais/ianka.webp" },
     { name: "Dr. Cristiano Sbruzzi", spec: "Dermatologia", img: "/profissionais/cristiano.webp" },
-    { name: "Dr. Luiz Augusto", spec: "Psiquiatria", img: "/profissionais/luiz.webp" }
+    { name: "Dr. Luiz Augusto", spec: "Psiquiatria", img: "/profissionais/luiz.webp" },
+    { name: "Dra. Caroline Luchese", spec: "Neurologia", img: "/profissionais/caroline.webp" }
   ];
 
   const exames = ["ECG", "Teste Ergométrico", "Holter", "MAPA", "Espirometria", "Eletroencefalograma (Vigília)"];
@@ -567,12 +568,22 @@ export default function CentroClinicoLight() {
           </p>
         </div>
 
-        <div ref={teamGridRef} className="team-grid max-w-7xl mx-auto w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+        {/* OTIMIZAÇÃO DE GRID: 
+          Removido o 'xl:grid-cols-4' para travar em 3 colunas no desktop. 
+          Como são 9 médicos, 3 colunas geram uma grade 3x3 perfeita e simétrica. 
+        */}
+        <div ref={teamGridRef} className="team-grid max-w-7xl mx-auto w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {profissionais.map((prof, i) => (
             <a
               key={prof.name}
               href="#contato"
-              className="team-card group relative min-w-0 w-full rounded-[1.5rem] md:rounded-3xl overflow-hidden bg-[#EFEBE0] shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer"
+              className={`team-card group relative min-w-0 w-full rounded-[1.5rem] md:rounded-3xl overflow-hidden bg-[#EFEBE0] shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer ${
+                // MÁGICA DA RESPONSIVIDADE P/ 9 ITENS:
+                // No tablet (sm e md: 2 colunas), o 9º item (índice 8) sobra. Forçamos ele a ocupar a linha inteira (col-span-2),
+                // mas limitamos a largura matematicamente (w-[...]) e centralizamos (mx-auto) para o card não ficar gigante.
+                // No desktop (lg: 3 colunas), resetamos tudo para ele se encaixar no final do 3x3 normal.
+                i === 8 ? "sm:col-span-2 sm:w-[calc(50%-0.5rem)] md:w-[calc(50%-0.75rem)] sm:mx-auto lg:col-span-1 lg:w-full lg:mx-0" : ""
+              }`}
             >
               <div className="aspect-[4/5] overflow-hidden relative">
                 {/* OTIMIZAÇÃO: loading lazy e decoding async */}
