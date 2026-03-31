@@ -13,7 +13,7 @@ import {
   Clipboard
 } from 'lucide-react';
 import Image from 'next/image';
-import { FaWhatsapp } from 'react-icons/fa';
+import { FaWhatsapp, FaInstagram, FaFacebook } from 'react-icons/fa';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { toast, ToastContainer } from 'react-toastify';
 
@@ -929,19 +929,64 @@ export default function Page() {
       </section>
 
       {/* FOOTER */}
-      <footer className="py-20 px-6 border-t border-slate-200 bg-white">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end gap-12">
-          <div>
-            <div className="text-3xl font-black tracking-tighter uppercase mb-6">Plano<span className="text-purple-600 italic font-light">Costa</span></div>
-            <div className="select-copy text-xs font-bold text-slate-500 uppercase tracking-widest leading-loose">
-              Suporte: (51) 2129-4040<br/>
-              Emergência: 0800-000-4356<br/>
-              Sede: Rua Sete de Setembro, n°2356
+      <footer className="bg-slate-950 text-white pt-20 md:pt-24 pb-10 md:pb-12 px-6 relative z-50 rounded-t-[2.5rem] md:rounded-t-[3rem] -mt-6 md:-mt-10 overflow-hidden border-t border-slate-800">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-8 mb-12 md:mb-16 text-center sm:text-left">
+          <div className="flex flex-col gap-4 md:gap-6 lg:pr-8 items-center sm:items-start">
+            <div className="text-xl md:text-2xl tracking-tighter text-white">
+              <span className="font-light">Plano</span> <span className="font-bold italic text-purple-400">Costa</span>
+            </div>
+            <p className="select-copy text-slate-400 font-light text-xs md:text-sm leading-relaxed max-w-[250px] sm:max-w-none">
+              Planos acessíveis e completos para cuidar de quem importa, com cobertura regional e suporte dedicado.
+            </p>
+            <div className="flex gap-4 mt-2 justify-center sm:justify-start">
+              <a href="https://wa.me/5121294040" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-[#25D366] hover:text-white hover:border-[#25D366] transition-colors">
+                <FaWhatsapp size={18} />
+              </a>
+              <a href="https://www.instagram.com/planocosta/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-white hover:text-slate-950 transition-colors">
+                <FaInstagram size={18} />
+              </a>
+              <a href="https://www.facebook.com/planocosta/?locale=pt_BR" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-white hover:text-slate-950 transition-colors">
+                <FaFacebook size={18} />
+              </a>
             </div>
           </div>
-          <div className="text-right">
-            <div className="text-[8px] font-black uppercase tracking-[0.4em] text-slate-400 mb-2">Desenvolvido por</div>
-            <a href="https://codeytech.com.br" className="text-xl font-black text-slate-900 hover:text-purple-600 transition-colors italic">Codey Tech.</a>
+
+          <div>
+            <h4 className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-slate-500 mb-4 md:mb-6">Navegação</h4>
+            <ul className="flex flex-col gap-3 md:gap-4 text-slate-300 font-light text-xs md:text-sm items-center sm:items-start">
+              <li><a href="#beneficios" className="hover:text-white transition-colors">Benefícios</a></li>
+              <li><a href="#rede" className="hover:text-white transition-colors">Rede Credenciada</a></li>
+              <li><a href="#planos" className="hover:text-white transition-colors">Planos</a></li>
+              <li><a href="#contato" className="hover:text-white transition-colors">Contato</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-slate-500 mb-4 md:mb-6">Atendimento</h4>
+            <ul className="select-copy flex flex-col gap-3 md:gap-4 text-slate-300 font-light text-xs md:text-sm w-full max-w-[240px] mx-auto sm:mx-0">
+              <li className="flex justify-between border-b border-slate-800 pb-2 md:pb-3">
+                <span>Suporte</span>
+                <span className="font-bold text-white">(51) 2129-4040</span>
+              </li>
+              <li className="flex justify-between border-b border-slate-800 pb-2 md:pb-3">
+                <span>Emergência</span>
+                <span className="font-bold text-white">0800-000-4356</span>
+              </li>
+              <li className="flex justify-between pt-1 gap-4">
+                <span>Sede</span>
+                <span className="font-bold text-white text-right">Taquari/RS</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto pt-6 md:pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center md:items-end gap-8">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center justify-center md:justify-start gap-4 sm:gap-6 text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-slate-500 text-center md:text-left">
+            <div className="select-copy">© {new Date().getFullYear()} Plano Costa. Taquari/RS.</div>
+          </div>
+          <div className="text-center md:text-right shrink-0">
+            <div className="text-[8px] font-black uppercase tracking-[0.4em] text-slate-500 mb-2">Desenvolvido por</div>
+            <a href="https://codeytech.com.br" target="_blank" rel="noopener noreferrer" className="text-lg md:text-xl font-black text-white hover:text-purple-400 transition-colors italic inline-block">Codey Tech.</a>
           </div>
         </div>
       </footer>
