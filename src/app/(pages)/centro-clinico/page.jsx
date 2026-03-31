@@ -538,9 +538,9 @@ export default function CentroClinicoLight() {
                 </div>
                 <span className="text-[#AEABA1] font-bold uppercase tracking-widest text-[10px] md:text-xs">1 Sala Técnica</span>
               </div>
-              <h3 className="text-3xl md:text-5xl font-black tracking-tighter mb-4 md:mb-6 text-white">Centro de <br className="hidden sm:block"/><span className="font-light italic text-[#939187]">Diagnóstico</span></h3>
+              <h3 className="text-3xl md:text-5xl font-black tracking-tighter mb-4 md:mb-6 text-white">Sala de <br className="hidden sm:block"/><span className="font-light italic text-[#939187]">Exames</span></h3>
               <p className="select-copy text-sm md:text-lg text-[#AEABA1] font-light leading-relaxed mb-6 md:mb-8 hidden sm:block">
-                Equipada para avaliações complementares imediatas. Tecnologia médica confiável para direcionar o seu tratamento sem precisar sair da clínica.
+                Equipada para avaliações complementares imediatas. Tecnologia médica confiável para direcionar o seu tratamento.
               </p>
               <div className="select-copy flex flex-wrap justify-center md:justify-start gap-2">
                 {exames.slice(0, 4).map((exame, i) => (
