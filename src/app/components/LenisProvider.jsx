@@ -13,32 +13,86 @@ export function useLenis() {
   return useContext(LenisContext);
 }
 
-const LENIS_OPTIONS = {
+const BASE_LENIS = {
   lerp: 0.07,
-  smoothWheel: true,
+  wheelMultiplier: 1.08,
 };
+
+/**
+ * Integração Lenis ↔ ScrollTrigger (recomendado pela GSAP + darkroom).
+ * `scrollHeight` é obrigatório: sem ele, `_maxScroll` fica errado e o pin+scrub “morre” no meio.
+ */
+function attachLenisScrollerProxy(lenis) {
+  const docEl = document.documentElement;
+  ScrollTrigger.scrollerProxy(docEl, {
+    scrollTop(value) {
+      if (arguments.length) {
+        lenis.scrollTo(value, { immediate: true });
+      }
+      return lenis.scroll;
+    },
+    getBoundingClientRect() {
+      return {
+        top: 0,
+        left: 0,
+        width: window.innerWidth,
+        height: window.innerHeight,
+      };
+    },
+    scrollHeight: () =>
+      Math.max(docEl.scrollHeight, document.body.scrollHeight),
+  });
+  ScrollTrigger.refresh();
+}
+
+function clearLenisScrollerProxy() {
+  ScrollTrigger.scrollerProxy(document.documentElement, null);
+  ScrollTrigger.refresh();
+}
 
 /**
  * @param {object} props
  * @param {React.ReactNode} props.children
- * @param {number} [props.disableBelowWidth] — abaixo desta largura (px), usa scroll nativo (melhor em mobile + ScrollTrigger).
+ * @param {number} [props.disableBelowWidth] — abaixo desta largura (px), scroll nativo (sem Lenis).
+ * @param {boolean} [props.smoothWheel=true] — `false` desativa só o suavizado da roda (fallback raro).
  */
-export default function LenisProvider({ children, disableBelowWidth }) {
+export default function LenisProvider({
+  children,
+  disableBelowWidth,
+  smoothWheel = true,
+}) {
   const lenisRef = useRef(null);
 
   useEffect(() => {
     let instance = null;
     let onTick = null;
+    let stRefreshRaf = null;
 
     const isNarrow = () =>
       typeof disableBelowWidth === "number" && window.innerWidth < disableBelowWidth;
 
+    const onScrollTriggerRefresh = () => {
+      if (!instance) return;
+      cancelAnimationFrame(stRefreshRaf);
+      stRefreshRaf = requestAnimationFrame(() => {
+        instance.resize();
+        stRefreshRaf = null;
+      });
+    };
+
     const teardown = () => {
-      if (instance && onTick) {
-        gsap.ticker.remove(onTick);
+      ScrollTrigger.removeEventListener("refresh", onScrollTriggerRefresh);
+      cancelAnimationFrame(stRefreshRaf);
+      stRefreshRaf = null;
+
+      if (instance) {
+        if (onTick) {
+          gsap.ticker.remove(onTick);
+          onTick = null;
+        }
+        clearLenisScrollerProxy();
         instance.destroy();
         instance = null;
-        onTick = null;
       }
       lenisRef.current = null;
     };
@@ -50,10 +104,22 @@ export default function LenisProvider({ children, disableBelowWidth }) {
         return;
       }
 
-      instance = new Lenis(LENIS_OPTIONS);
+      instance = new Lenis({
+        ...BASE_LENIS,
+        smoothWheel,
+        wheelMultiplier: smoothWheel ? BASE_LENIS.wheelMultiplier : 1,
+      });
       lenisRef.current = instance;
 
       instance.on("scroll", ScrollTrigger.update);
+
+      if (smoothWheel) {
+        attachLenisScrollerProxy(instance);
+      } else {
+        ScrollTrigger.refresh();
+      }
+
+      ScrollTrigger.addEventListener("refresh", onScrollTriggerRefresh);
 
       onTick = (time) => {
         instance.raf(time * 1000);
@@ -97,7 +163,7 @@ export default function LenisProvider({ children, disableBelowWidth }) {
       clearTimeout(t2);
       teardown();
     };
-  }, [disableBelowWidth]);
+  }, [disableBelowWidth, smoothWheel]);
 
   return (
     <LenisContext.Provider value={lenisRef}>{children}</LenisContext.Provider>

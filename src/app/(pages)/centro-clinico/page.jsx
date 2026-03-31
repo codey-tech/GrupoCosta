@@ -360,7 +360,9 @@ export default function CentroClinicoLight() {
           end: () => `+=${Math.max(window.innerWidth, 320) * 2}`,
           pin: true,
           pinSpacing: true,
-          scrub: true,
+          pinType: "transform",
+          anticipatePin: 1,
+          scrub: 0.65,
           invalidateOnRefresh: true,
         },
       });
@@ -820,10 +822,10 @@ export default function CentroClinicoLight() {
         {/* Mapa */}
         <div className="w-full fade-up">
           <div className="bg-[#FDF9EE] border border-[#E6E2D7] rounded-[2rem] overflow-hidden hover:shadow-xl transition-shadow flex flex-col h-full min-h-[450px]">
-            <div className="flex-grow bg-[#E6E2D7]/60 relative w-full h-[300px] md:h-[350px]">
+            <div className="flex-grow bg-[#EFEBE0] relative w-full h-[300px] md:h-[350px] overflow-hidden">
               <iframe
                 src="https://maps.google.com/maps?q=Rua+Sete+de+Setembro,+2356+-+Centro,+Taquari+-+RS&t=&z=16&ie=UTF8&iwloc=&output=embed"
-                className="absolute inset-0 w-full h-full border-0 grayscale-[20%] contrast-125"
+                className="absolute inset-0 h-full w-full border-0 [filter:sepia(12%)_saturate(0.78)_hue-rotate(8deg)_brightness(1.06)_contrast(0.96)]"
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
