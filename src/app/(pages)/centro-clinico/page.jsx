@@ -11,6 +11,7 @@ import {
   Baby, Smile, Dumbbell, UserRound, Plus,
 } from 'lucide-react';
 import { FaInstagram, FaFacebook, FaWhatsapp } from 'react-icons/fa';
+import { toast, ToastContainer } from 'react-toastify';
 
 const WHATSAPP_URL = "https://wa.me/5121294040";
 
@@ -271,10 +272,17 @@ export default function CentroClinicoLight() {
       const response = await fetch("/api/contato-clinica", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(contatoForm),
+        body: JSON.stringify({
+          nome: contatoForm.nome.trim(),
+          telefone: contatoForm.telefone.trim(),
+          mensagem: contatoForm.mensagem.trim(),
+        }),
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get("content-type") || "";
+      const data = contentType.includes("application/json")
+        ? await response.json()
+        : { success: false, message: "Resposta invalida da API." };
       if (!response.ok || !data.success) {
         throw new Error(data.message || "Erro ao enviar contato.");
       }
@@ -284,11 +292,13 @@ export default function CentroClinicoLight() {
         type: "success",
         message: "Contato enviado com sucesso. Nossa equipe retornara em breve.",
       });
+      toast.success("Contato enviado com sucesso.");
     } catch (error) {
       setContatoFeedback({
         type: "error",
         message: error.message || "Nao foi possivel enviar agora. Tente novamente.",
       });
+      toast.error(error.message || "Nao foi possivel enviar agora. Tente novamente.");
     } finally {
       setIsSendingContato(false);
     }
@@ -726,6 +736,7 @@ export default function CentroClinicoLight() {
       </footer>
 
     </div>
+    <ToastContainer />
     </LenisProvider>
   );
 }
