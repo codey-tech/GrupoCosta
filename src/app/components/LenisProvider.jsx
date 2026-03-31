@@ -18,27 +18,68 @@ const LENIS_OPTIONS = {
   smoothWheel: true,
 };
 
-export default function LenisProvider({ children }) {
+/**
+ * @param {object} props
+ * @param {React.ReactNode} props.children
+ * @param {number} [props.disableBelowWidth] — abaixo desta largura (px), usa scroll nativo (melhor em mobile + ScrollTrigger).
+ */
+export default function LenisProvider({ children, disableBelowWidth }) {
   const lenisRef = useRef(null);
 
   useEffect(() => {
-    const instance = new Lenis(LENIS_OPTIONS);
-    lenisRef.current = instance;
+    let instance = null;
+    let onTick = null;
 
-    instance.on("scroll", ScrollTrigger.update);
+    const isNarrow = () =>
+      typeof disableBelowWidth === "number" && window.innerWidth < disableBelowWidth;
 
-    const onTick = (time) => {
-      instance.raf(time * 1000);
+    const teardown = () => {
+      if (instance && onTick) {
+        gsap.ticker.remove(onTick);
+        instance.destroy();
+        instance = null;
+        onTick = null;
+      }
+      lenisRef.current = null;
     };
-    gsap.ticker.add(onTick);
-    gsap.ticker.lagSmoothing(0);
+
+    const setup = () => {
+      teardown();
+      if (isNarrow()) {
+        ScrollTrigger.refresh();
+        return;
+      }
+
+      instance = new Lenis(LENIS_OPTIONS);
+      lenisRef.current = instance;
+
+      instance.on("scroll", ScrollTrigger.update);
+
+      onTick = (time) => {
+        instance.raf(time * 1000);
+      };
+      gsap.ticker.add(onTick);
+      gsap.ticker.lagSmoothing(0);
+      ScrollTrigger.refresh();
+    };
+
+    setup();
+
+    let resizeT;
+    const onResize = () => {
+      clearTimeout(resizeT);
+      resizeT = setTimeout(setup, 160);
+    };
+    window.addEventListener("resize", onResize, { passive: true });
 
     const onDocClick = (e) => {
       const link = e.target?.closest?.('a[href="#contato"]');
       if (!link) return;
       e.preventDefault();
       const el = document.getElementById("contato");
-      if (el) instance.scrollTo(el, { offset: 0, duration: 1.2 });
+      const lenis = lenisRef.current;
+      if (el && lenis) lenis.scrollTo(el, { offset: 0, duration: 1.2 });
+      else if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     };
     document.addEventListener("click", onDocClick, true);
 
@@ -49,14 +90,14 @@ export default function LenisProvider({ children }) {
     const t2 = setTimeout(refreshSt, 500);
 
     return () => {
+      clearTimeout(resizeT);
+      window.removeEventListener("resize", onResize);
       document.removeEventListener("click", onDocClick, true);
       clearTimeout(t1);
       clearTimeout(t2);
-      instance.destroy();
-      lenisRef.current = null;
-      gsap.ticker.remove(onTick);
+      teardown();
     };
-  }, []);
+  }, [disableBelowWidth]);
 
   return (
     <LenisContext.Provider value={lenisRef}>{children}</LenisContext.Provider>

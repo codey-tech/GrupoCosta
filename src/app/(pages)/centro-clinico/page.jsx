@@ -26,15 +26,11 @@ export default function CentroClinicoLight() {
   // Refs
   const heroSectionRef = useRef();
   const heroTextRef = useRef();
+  const manifestoRef = useRef();
   const sobrePinRef = useRef();
   const sobreBgParallaxRef = useRef(); 
   const sobreBgRef = useRef();
   const sobreContentRef = useRef();
-  const badgeRef = useRef();
-  const shape1Ref = useRef();
-  const shape2Ref = useRef();
-  const shape3Ref = useRef();
-  const shape4Ref = useRef();
   const horizontalContainerRef = useRef(); 
   const horizontalWrapperRef = useRef(); 
   const teamGridRef = useRef(null);
@@ -46,70 +42,37 @@ export default function CentroClinicoLight() {
   const [isSendingContato, setIsSendingContato] = useState(false);
   const [contatoFeedback, setContatoFeedback] = useState({ type: "", message: "" });
 
-  // OTIMIZAÇÃO 1: Resize listener com debounce passivo
+  // Breakpoint alinhado ao Tailwind md (768px): sync imediato + debounce só no resize
   useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
     let timeoutId;
-    const checkMobile = () => {
+    const onResize = () => {
       clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        setIsMobile(window.innerWidth < 768);
-      }, 150);
+      timeoutId = setTimeout(checkMobile, 120);
     };
-    checkMobile(); // Check inicial
-    window.addEventListener('resize', checkMobile, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
     return () => {
-      window.removeEventListener('resize', checkMobile);
+      window.removeEventListener("resize", onResize);
       clearTimeout(timeoutId);
     };
   }, []);
 
-  // OTIMIZAÇÃO 2: Controle de preloader simplificado
+  // Preloader
   useEffect(() => {
     if (isLoading) {
       document.body.style.overflow = 'hidden';
-      const timer = setTimeout(() => setIsLoading(false), 2500);
+      const timer = setTimeout(() => setIsLoading(false), 2200);
       return () => clearTimeout(timer);
     } else {
       document.body.style.overflow = '';
-      const syncLenisAndGSAP = () => {
-        ScrollTrigger.refresh();
-      };
-      // Reduzimos o número excessivo de disparos de resize window
+      const syncLenisAndGSAP = () => ScrollTrigger.refresh();
       setTimeout(syncLenisAndGSAP, 200);
       setTimeout(syncLenisAndGSAP, 800);
     }
   }, [isLoading]);
 
-  // EFEITO MAGNÉTICO (Apenas Desktop)
-  useEffect(() => {
-    if (isLoading) return;
-    const isDesktop = window.matchMedia("(pointer: fine)").matches;
-    if (!isDesktop) return;
-
-    const xToBadge = gsap.quickTo(badgeRef.current, "x", { duration: 0.4, ease: "power2" });
-    const yToBadge = gsap.quickTo(badgeRef.current, "y", { duration: 0.4, ease: "power2" });
-    const xToS1 = gsap.quickTo(shape1Ref.current, "x", { duration: 0.8, ease: "power3" });
-    const yToS1 = gsap.quickTo(shape1Ref.current, "y", { duration: 0.8, ease: "power3" });
-    const xToS2 = gsap.quickTo(shape2Ref.current, "x", { duration: 0.9, ease: "power3" });
-    const yToS2 = gsap.quickTo(shape2Ref.current, "y", { duration: 0.9, ease: "power3" });
-    const xToS3 = gsap.quickTo(shape3Ref.current, "x", { duration: 1.2, ease: "power3" });
-    const yToS3 = gsap.quickTo(shape3Ref.current, "y", { duration: 1.2, ease: "power3" });
-
-    const handleMouseMove = (e) => {
-      const { innerWidth, innerHeight } = window;
-      const x = e.clientX - innerWidth / 2;
-      const y = e.clientY - innerHeight / 2;
-      xToBadge(x * 0.02); yToBadge(y * 0.02);
-      xToS1(x * 0.05); yToS1(y * 0.05);
-      xToS2(x * -0.04); yToS2(y * -0.04);
-      xToS3(x * 0.03); yToS3(y * 0.03);
-    };
-
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [isLoading]);
-
-  // OTIMIZAÇÃO 3: RequestAnimationFrame para o Scroll State (Evita engasgo da Nav)
+  // Controle de Nav
   useEffect(() => {
     let ticking = false;
     const handleScroll = () => {
@@ -128,68 +91,178 @@ export default function CentroClinicoLight() {
   useGSAP(() => {
     if (isLoading) return;
 
-    ScrollTrigger.addEventListener("refresh", () => {
-      window.dispatchEvent(new Event("resize"));
-    });
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // OTIMIZAÇÃO 4: Idle Animation (Pausa quando o Hero sai da tela)
-    gsap.utils.toArray('.floating-shape').forEach((shape) => {
-      const anim = gsap.to(shape, {
-        y: "random(-20, 20)", x: "random(-15, 15)", rotation: "random(-15, 15)",
-        duration: "random(3, 5)", repeat: -1, yoyo: true, ease: "sine.inOut",
-        force3D: true, // GPU Acceleration
-      });
-      
-      ScrollTrigger.create({
-        trigger: heroSectionRef.current,
-        start: "top bottom",
-        end: "bottom top",
-        onEnter: () => anim.play(),
-        onLeave: () => anim.pause(),
-        onEnterBack: () => anim.play(),
-        onLeaveBack: () => anim.pause(),
-      });
-    });
+    const desktop = !isMobile;
 
-    // 2. Hero Reveal
+    /** Acessível: pouca animação, estados finais legíveis */
+    if (reduceMotion) {
+      const tlRm = gsap.timeline();
+      tlRm
+        .fromTo(
+          ".hero-badge",
+          { opacity: 0, y: 12 },
+          { opacity: 1, y: 0, duration: 0.35, ease: "power2.out", force3D: true }
+        )
+        .fromTo(
+          ".hero-line span",
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.4, stagger: 0.05, ease: "power2.out", force3D: true },
+          "-=0.15"
+        )
+        .fromTo(
+          ".hero-desc",
+          { opacity: 0 },
+          { opacity: 1, duration: 0.35, ease: "power2.out", force3D: true },
+          "-=0.2"
+        );
+
+      gsap.set(".floating-card", { opacity: 1, y: 0, scale: 1 });
+
+      if (manifestoRef.current) {
+        const words = manifestoRef.current.querySelectorAll(".scrub-word");
+        gsap.set(words, { opacity: 1 });
+      }
+
+      gsap.set(".zoom-target", { scale: 1, x: 0, y: 0, svgOrigin: "960 600" });
+      gsap.set(".sobre-overlay", { opacity: 1 });
+      gsap.set(".color-text", { fill: "#1C1C15" });
+      gsap.set(".y-mover", { y: isMobile ? -450 : -300 });
+      if (sobreBgRef.current) gsap.set(sobreBgRef.current, { scale: 1 });
+      if (sobreBgParallaxRef.current) gsap.set(sobreBgParallaxRef.current, { yPercent: 0 });
+      if (sobreContentRef.current) gsap.set(sobreContentRef.current, { opacity: 1, y: 0 });
+
+      const teamCardsRm = teamGridRef.current?.querySelectorAll(".team-card") ?? [];
+      if (teamCardsRm.length) gsap.set(teamCardsRm, { opacity: 1, y: 0, scale: 1 });
+
+      gsap.utils.toArray(".fade-up").forEach((elem) => {
+        gsap.set(elem, { opacity: 1, y: 0 });
+      });
+
+      return;
+    }
+
+    // 1. Hero Reveal
     const tl = gsap.timeline();
-    tl.fromTo(".hero-line span", 
-      { y: 100, opacity: 0, skewY: 5 },
-      { y: 0, opacity: 1, skewY: 0, duration: 1.2, stagger: 0.1, ease: "power4.out", delay: 0.2, force3D: true }
-    )
-    .fromTo(".hero-fade", 
-      { opacity: 0, y: 20 }, 
-      { opacity: 1, y: 0, duration: 1, ease: "power2.out", force3D: true }, "-=0.8"
-    )
-    .fromTo(".floating-shape", 
-      { opacity: 0, scale: 0 }, 
-      { opacity: 1, scale: 1, duration: 1, stagger: 0.1, ease: "back.out(1.5)", force3D: true }, "-=0.5"
-    );
 
-    // 3. Parallax Hero
-    const heroParallaxTargets = [heroTextRef.current, ".floating-shape"].filter(Boolean);
-    gsap.to(heroParallaxTargets.length ? heroParallaxTargets : ".floating-shape", {
-      y: -250, opacity: 0, ease: "none", force3D: true,
-      scrollTrigger: { trigger: heroSectionRef.current, start: "top top", end: "bottom top", scrub: true }
-    });
+    tl.fromTo(
+      ".hero-badge",
+      { opacity: 0, scale: 0.8, y: 20 },
+      { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: "back.out(1.5)", delay: 0.2, force3D: true }
+    )
+      .fromTo(
+        ".hero-line span",
+        { y: 100, opacity: 0, skewY: 3 },
+        { y: 0, opacity: 1, skewY: 0, duration: 1.2, stagger: 0.1, ease: "power4.out", force3D: true },
+        "-=0.4"
+      )
+      .fromTo(
+        ".hero-desc",
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 1, ease: "power2.out", force3D: true },
+        "-=0.8"
+      )
+      .fromTo(
+        ".floating-card",
+        { opacity: 0, y: 40, scale: 0.9 },
+        { opacity: 1, y: 0, scale: 1, duration: 1.2, stagger: 0.2, ease: "power3.out", force3D: true },
+        "-=0.6"
+      );
 
-    // 3.5 Efeito Cortina Seguro
-    if (sobreBgParallaxRef.current) {
-      gsap.set(sobreBgParallaxRef.current, { yPercent: -40 });
-      gsap.to(sobreBgParallaxRef.current, {
-        yPercent: 0, 
-        ease: "none", 
-        force3D: true,
-        scrollTrigger: { trigger: heroSectionRef.current, start: "top top", end: "bottom top", scrub: true }
+    if (desktop) {
+      gsap.utils.toArray(".floating-card").forEach((card, index) => {
+        gsap.to(card, {
+          y: index % 2 === 0 ? "-=15" : "+=15",
+          duration: 3 + index,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+          force3D: true,
+        });
       });
     }
 
-    // ------------------------------------------------------------------------
-    // 4. Seção Sobre - OTIMIZADA COM force3D
-    // ------------------------------------------------------------------------
+    if (desktop && heroTextRef.current && heroSectionRef.current) {
+      gsap.to(heroTextRef.current, {
+        y: 150,
+        opacity: 0,
+        ease: "none",
+        force3D: true,
+        scrollTrigger: {
+          trigger: heroSectionRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+    }
+
+    // 2. Manifesto — mobile: um único fade (menos nós que scrub por palavra)
+    if (manifestoRef.current) {
+      if (isMobile) {
+        gsap.fromTo(
+          manifestoRef.current,
+          { opacity: 0.28 },
+          {
+            opacity: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: manifestoRef.current,
+              start: "top 78%",
+              end: "bottom 52%",
+              scrub: 0.35,
+            },
+          }
+        );
+      } else {
+        const words = manifestoRef.current.querySelectorAll(".scrub-word");
+        gsap.fromTo(
+          words,
+          { opacity: 0.15 },
+          {
+            opacity: 1,
+            ease: "none",
+            stagger: 0.1,
+            scrollTrigger: {
+              trigger: manifestoRef.current,
+              start: "top 70%",
+              end: "bottom 60%",
+              scrub: true,
+            },
+          }
+        );
+      }
+    }
+
+    // 3. Cortina do fundo Sobre — só desktop (evita 2 scrubs pesados no pin no mobile)
+    if (desktop && sobreBgParallaxRef.current && sobrePinRef.current) {
+      gsap.set(sobreBgParallaxRef.current, { yPercent: -30 });
+      gsap.to(sobreBgParallaxRef.current, {
+        yPercent: 0,
+        ease: "none",
+        force3D: true,
+        scrollTrigger: {
+          trigger: sobrePinRef.current,
+          start: "top bottom",
+          end: "top top",
+          scrub: true,
+        },
+      });
+    } else if (!desktop && sobreBgParallaxRef.current) {
+      gsap.set(sobreBgParallaxRef.current, { yPercent: 0 });
+    }
+
+    // 4. Seção Sobre (SVG) — mobile: escala inicial menor + menos scroll + scrub suavizado
     const viewportRef = Math.max(window.innerWidth, window.innerHeight);
-    const initialSobreScale = isMobile ? 80 : Math.max(36, viewportRef / 52);
-    
+    const initialSobreScale = isMobile
+      ? Math.min(52, Math.max(40, viewportRef / 24))
+      : Math.max(36, viewportRef / 52);
+    const sobreEnd = isMobile ? "+=195%" : "+=280%";
+    const scrubSobre = isMobile ? 0.42 : true;
+    const zoomDur = isMobile ? 2.85 : 3.5;
+
     gsap.set(".zoom-target", { svgOrigin: "960 600", scale: initialSobreScale, x: 0, y: -240 });
     gsap.set(".sobre-overlay", { opacity: 0 });
     gsap.set(".color-text", { fill: "transparent" });
@@ -200,26 +273,28 @@ export default function CentroClinicoLight() {
     ScrollTrigger.getById("centro-sobre")?.kill();
     const sobreScrollTl = gsap.timeline({
       scrollTrigger: {
-        id: "centro-sobre", 
-        trigger: sobrePinRef.current, 
-        start: "top top", 
-        end: "+=280%", 
-        pin: true, 
-        pinSpacing: true, 
-        scrub: true, 
-        invalidateOnRefresh: true
-      }
+        id: "centro-sobre",
+        trigger: sobrePinRef.current,
+        start: "top top",
+        end: sobreEnd,
+        pin: true,
+        pinSpacing: true,
+        scrub: scrubSobre,
+        invalidateOnRefresh: true,
+        fastScrollEnd: isMobile,
+        ...(isMobile ? { anticipatePin: 1 } : {}),
+      },
     });
 
-    const delayZoom = 1.5; 
-    sobreScrollTl.to({}, { duration: delayZoom }); 
+    const delayZoom = 1.5;
+    sobreScrollTl.to({}, { duration: delayZoom });
 
     sobreScrollTl
-      .to(".zoom-target", { scale: 1, x: 0, y: 0, duration: 3.5, ease: "none", force3D: true }, delayZoom)
+      .to(".zoom-target", { scale: 1, x: 0, y: 0, duration: zoomDur, ease: "none", force3D: true }, delayZoom)
       .to(".sobre-overlay", { opacity: 1, duration: 0.9, ease: "none", force3D: true }, delayZoom);
 
     if (sobreBgRef.current) {
-      sobreScrollTl.to(sobreBgRef.current, { scale: 1, duration: 3.5, ease: "none", force3D: true }, delayZoom);
+      sobreScrollTl.to(sobreBgRef.current, { scale: 1, duration: zoomDur, ease: "none", force3D: true }, delayZoom);
     }
 
     const yMoverDistance = isMobile ? -450 : -300;
@@ -229,52 +304,78 @@ export default function CentroClinicoLight() {
       .to(".y-mover", { y: yMoverDistance, duration: 1.5, ease: "none", force3D: true }, delayZoom + 3.5)
       .to(sobreContentRef.current, { opacity: 1, y: 0, duration: 1.5, ease: "none", force3D: true }, delayZoom + 3.8);
 
-    // 5. Parallax Imagens Internas
-    gsap.utils.toArray('.img-parallax').forEach(img => {
-      if (horizontalContainerRef.current && horizontalContainerRef.current.contains(img)) return;
-      gsap.to(img, {
-        yPercent: 15, ease: "none", force3D: true,
-        scrollTrigger: { trigger: img.parentElement, start: "top bottom", end: "bottom top", scrub: true }
+    if (desktop) {
+      gsap.utils.toArray(".img-parallax").forEach((img) => {
+        if (horizontalContainerRef.current && horizontalContainerRef.current.contains(img)) return;
+        gsap.to(img, {
+          yPercent: 15,
+          ease: "none",
+          force3D: true,
+          scrollTrigger: {
+            trigger: img.parentElement,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
       });
-    });
+    }
 
-    // Grid da equipe
     ScrollTrigger.getById("team-grid-cascade")?.kill();
     const teamCards = teamGridRef.current ? teamGridRef.current.querySelectorAll(".team-card") : [];
     if (teamCards.length) {
       gsap.set(teamCards, { opacity: 0, y: 56, scale: 0.98 });
       gsap.to(teamCards, {
-        opacity: 1, y: 0, scale: 1, duration: 0.75, ease: "power3.out", stagger: { each: 0.1, from: "start" }, force3D: true,
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: isMobile ? 0.55 : 0.75,
+        ease: "power3.out",
+        stagger: { each: isMobile ? 0.06 : 0.1, from: "start" },
+        force3D: true,
         scrollTrigger: {
-          id: "team-grid-cascade", trigger: teamGridRef.current, start: "top 82%", toggleActions: "play none none none",
-          once: true, invalidateOnRefresh: true,
+          id: "team-grid-cascade",
+          trigger: teamGridRef.current,
+          start: "top 82%",
+          toggleActions: "play none none none",
+          once: true,
+          invalidateOnRefresh: true,
         },
       });
     }
 
-    // 6. HORIZONTAL SCROLL - Forçando Aceleração da Placa de Vídeo
-    if (horizontalWrapperRef.current && horizontalContainerRef.current) {
+    if (desktop && horizontalWrapperRef.current && horizontalContainerRef.current) {
       ScrollTrigger.getById("centro-horizontal")?.kill();
       const wrapper = horizontalWrapperRef.current;
       const scrollContainer = horizontalContainerRef.current;
-      
+
       gsap.to(wrapper, {
-        x: "-200vw", ease: "none", force3D: true,
+        x: "-200vw",
+        ease: "none",
+        force3D: true,
         scrollTrigger: {
-          id: "centro-horizontal", trigger: scrollContainer, start: "top top",
-          end: () => `+=${window.innerWidth * 2}`, pin: true, pinSpacing: true, scrub: true, invalidateOnRefresh: true
-        }
+          id: "centro-horizontal",
+          trigger: scrollContainer,
+          start: "top top",
+          end: () => `+=${Math.max(window.innerWidth, 320) * 2}`,
+          pin: true,
+          pinSpacing: true,
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
       });
     }
 
-    // 7. Reveal seções
-    gsap.utils.toArray('.fade-up').forEach((elem) => {
+    gsap.utils.toArray(".fade-up").forEach((elem) => {
       gsap.from(elem, {
         scrollTrigger: { trigger: elem, start: "top 85%" },
-        y: 50, opacity: 0, duration: 1, ease: "power3.out", force3D: true
+        y: 50,
+        opacity: 0,
+        duration: isMobile ? 0.72 : 1,
+        ease: "power3.out",
+        force3D: true,
       });
     });
-
   }, { scope: container, dependencies: [isLoading, isMobile] });
 
   const profissionais = [
@@ -291,9 +392,7 @@ export default function CentroClinicoLight() {
 
   const exames = ["ECG", "Teste Ergométrico", "Holter", "MAPA", "Espirometria", "Eletroencefalograma (Vigília)"];
 
-  const handleContatoChange = (field, value) => {
-    setContatoForm((prev) => ({ ...prev, [field]: value }));
-  };
+  const handleContatoChange = (field, value) => setContatoForm(prev => ({ ...prev, [field]: value }));
 
   const handleContatoSubmit = async (e) => {
     e.preventDefault();
@@ -312,32 +411,29 @@ export default function CentroClinicoLight() {
       });
 
       const contentType = response.headers.get("content-type") || "";
-      const data = contentType.includes("application/json")
-        ? await response.json()
-        : { success: false, message: "Resposta invalida da API." };
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || "Erro ao enviar contato.");
-      }
+      const data = contentType.includes("application/json") ? await response.json() : { success: false, message: "Resposta invalida." };
+      if (!response.ok || !data.success) throw new Error(data.message || "Erro ao enviar.");
 
       setContatoForm({ nome: "", telefone: "", mensagem: "" });
-      setContatoFeedback({
-        type: "success",
-        message: "Contato enviado com sucesso. Nossa equipe retornará em breve.",
-      });
+      setContatoFeedback({ type: "success", message: "Enviado com sucesso." });
       toast.success("Contato enviado com sucesso.");
     } catch (error) {
-      setContatoFeedback({
-        type: "error",
-        message: error.message || "Não foi possivel enviar agora. Tente novamente.",
-      });
-      toast.error(error.message || "Não foi possivel enviar agora. Tente novamente.");
+      setContatoFeedback({ type: "error", message: error.message || "Erro. Tente novamente." });
+      toast.error(error.message || "Erro. Tente novamente.");
     } finally {
       setIsSendingContato(false);
     }
   };
 
+  // Helper para dividir texto para o efeito Scrub
+  const renderScrubText = (text) => {
+    return text.split(" ").map((word, i) => (
+      <span key={i} className="scrub-word inline-block mr-2 lg:mr-3">{word}</span>
+    ));
+  };
+
   return (
-    <LenisProvider>
+    <LenisProvider disableBelowWidth={768}>
     <div ref={container} className="select-none bg-[#FDF9EE] text-[#1C1C15] font-sans selection:bg-[#CAC6BC] selection:text-[#1C1C15] overflow-x-hidden">
       
       {/* PRELOADER */}
@@ -352,8 +448,8 @@ export default function CentroClinicoLight() {
         </div>
       </div>
 
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-700 ease-out ${isScrolled ? 'bg-[#FDF9EE]/95 backdrop-blur-xl py-4 px-4 md:px-6 border-b border-[#E6E2D7]' : 'bg-transparent py-6 md:py-8 px-4 md:px-6'}`}>
-        <div className="flex justify-between items-center max-w-7xl mx-auto">
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-700 ease-out ${isScrolled ? 'bg-[#FDF9EE]/98 md:bg-[#FDF9EE]/95 md:backdrop-blur-xl py-4 px-4 md:px-8 border-b border-[#E6E2D7]' : 'bg-transparent py-6 md:py-8 px-4 md:px-8'}`}>
+        <div className="flex justify-between items-center max-w-7xl mx-auto w-full">
           <div className="text-lg md:text-xl tracking-tighter text-[#1C1C15] leading-none">
             <span className="font-light">Centro Clínico</span> <span className="font-bold italic text-[#48473F]">Costa</span>
           </div>
@@ -371,46 +467,90 @@ export default function CentroClinicoLight() {
         </div>
       </nav>
 
-      {/* HERO SECTION */}
-      <section ref={heroSectionRef} className="relative h-[100dvh] flex flex-col justify-center px-6 bg-[#FDF9EE] z-20 shadow-[0_20px_50px_rgba(28,28,21,0.1)]">
-        <div className="absolute inset-0 z-0 overflow-clip pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-[70vw] h-[70vw] md:w-[50vw] md:h-[50vw] bg-[#EFEBE0]/60 rounded-full blur-[60px] md:blur-[100px]" />
-          <div ref={shape1Ref} className="floating-shape absolute top-[15%] right-[5%] md:right-[15%] text-[#E6E2D7] opacity-0"><Plus size={60} strokeWidth={1} /></div>
-          <div ref={shape2Ref} className="floating-shape absolute bottom-[20%] md:bottom-[25%] left-[5%] md:left-[10%] w-12 h-6 md:w-16 md:h-8 rounded-full border border-[#CAC6BC] bg-[#F5F0E5] opacity-0 rotate-12" />
-          <div ref={shape3Ref} className="floating-shape absolute top-[25%] md:top-[30%] left-[10%] md:left-[20%] w-6 h-6 md:w-8 md:h-8 rounded-full bg-[#E6E2D7] opacity-0" />
-          <div ref={shape4Ref} className="floating-shape absolute bottom-[15%] md:bottom-[20%] right-[10%] md:right-[25%] text-[#CAC6BC] opacity-0"><Activity size={32} strokeWidth={1.5} /></div>
+      {/* HERO SECTION - EDITORIAL MÉDICO PREMIUM */}
+      <section ref={heroSectionRef} className="relative min-h-[100dvh] flex flex-col justify-center items-center pt-24 pb-12 px-4 md:px-8 bg-[#FDF9EE] z-20 overflow-hidden">
+        
+        {/* Floating Background Elements (Abstract/Medical) */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-[20%] right-[10%] w-[40vw] h-[40vw] bg-[#EFEBE0]/40 rounded-full blur-[40px] md:blur-[80px]" />
+          <div className="absolute bottom-[10%] left-[5%] w-[30vw] h-[30vw] bg-[#EFEBE0]/60 rounded-full blur-[32px] md:blur-[60px]" />
         </div>
 
-        <div ref={heroTextRef} className="relative z-10 max-w-7xl mx-auto w-full flex flex-col items-center text-center mt-16 md:mt-10">
-          <div ref={badgeRef} className="hero-fade inline-flex items-center gap-2 px-4 py-2 md:px-5 md:py-2 rounded-full border border-[#CAC6BC] bg-[#F5F0E5]/80 backdrop-blur-md text-[9px] md:text-[10px] font-bold tracking-[0.3em] uppercase text-[#605E56] mb-6 md:mb-8 will-change-transform">
-            <HeartPulse size={14} className="text-[#323129]" /> Cuidado & Tecnologia
+        <div ref={heroTextRef} className="relative z-10 max-w-7xl mx-auto w-full flex flex-col items-center text-center mt-8">
+          
+          <div className="hero-badge inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#CAC6BC] bg-[#F5F0E5]/92 md:bg-[#F5F0E5]/80 md:backdrop-blur-md text-[9px] md:text-[10px] font-bold tracking-[0.3em] uppercase text-[#605E56] mb-8 shadow-sm">
+            <HeartPulse size={14} className="text-[#1C1C15]" /> Atendimento Humanizado
           </div>
-          <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-[6vw] leading-[0.95] tracking-tighter text-[#1C1C15] flex flex-col items-center">
+
+          <h1 className="text-5xl sm:text-6xl md:text-[6.5vw] leading-[0.9] tracking-tighter text-[#1C1C15] flex flex-col items-center z-20 relative">
             <div className="overflow-hidden hero-line pb-1 md:pb-2"><span className="inline-block font-light">Cuidar de você é a</span></div>
-            <div className="overflow-hidden hero-line pb-1 md:pb-2"><span className="inline-block font-black italic text-[#323129]">nossa prioridade.</span></div>
+            <div className="overflow-hidden hero-line pb-1 md:pb-2"><span className="inline-block font-black italic text-[#323129]">Nossa prioridade.</span></div>
           </h1>
-          <p className="select-copy hero-fade mt-6 md:mt-8 text-base sm:text-lg md:text-2xl text-[#605E56] max-w-2xl font-light leading-relaxed px-4 md:px-0">
-            Atendimento humanizado e saúde de qualidade, <strong className="font-semibold text-[#1C1C15]">todos os dias.</strong>
+
+          <p className="hero-desc mt-8 text-base md:text-xl text-[#605E56] max-w-2xl font-light leading-relaxed px-4 md:px-0 z-20">
+            Atendimento humanizado e saúde de qualidade, todos os dias.
           </p>
-          <div className="mt-12 md:mt-16 flex flex-col items-center gap-3 hero-fade opacity-70">
-            <div className="text-[8px] md:text-[9px] uppercase tracking-widest text-[#79776E]">Role para descobrir</div>
-            <div className="w-[1px] h-8 md:h-12 bg-[#E6E2D7] relative overflow-hidden">
+
+          <div className="hero-desc mt-10 md:mt-14 flex flex-col items-center gap-3">
+            <div className="text-[8px] md:text-[9px] uppercase tracking-[0.2em] font-bold text-[#79776E]">Descubra a Clínica</div>
+            <div className="w-[1px] h-12 bg-[#E6E2D7] relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-1/2 bg-[#323129] animate-[slideDown_2s_infinite]" />
             </div>
           </div>
         </div>
+
+        {/* Floating Images (Assimetria Premium) */}
+        <div className="hidden lg:block floating-card absolute left-[5%] top-[35%] w-64 aspect-[4/5] rounded-3xl overflow-hidden border-4 border-[#FDF9EE] shadow-2xl rotate-[-4deg]">
+          <div className="absolute inset-0 bg-[#1C1C15]/10 z-10" />
+          <img src="/clinica/hero1.webp" alt="Consultório" className="w-full h-full object-cover" />
+          <div className="absolute bottom-4 left-4 right-4 bg-[#FDF9EE]/90 backdrop-blur px-4 py-3 rounded-xl z-20 flex items-center gap-3">
+            <Stethoscope size={18} className="text-[#323129]" />
+            <span className="text-xs font-bold text-[#1C1C15]">+10 Especialidades</span>
+          </div>
+        </div>
+
+        <div className="hidden lg:block floating-card absolute right-[5%] top-[25%] w-56 aspect-square rounded-full overflow-hidden border-4 border-[#FDF9EE] shadow-xl rotate-[6deg]">
+          <div className="absolute inset-0 bg-[#1C1C15]/10 z-10" />
+          <img src="/clinica/hero2.webp" alt="Fachada da Clínica" className="w-full h-full object-cover" />
+        </div>
       </section>
 
-      {/* SEÇÃO SOBRE */}
-      <section ref={sobrePinRef} id="sobre" className="h-[100dvh] w-full relative bg-[#F5F0E5] overflow-clip border-t border-[#E6E2D7]">
+      {/* SCRUB MANIFESTO SECTION */}
+      <section className="relative py-24 md:py-40 px-4 md:px-8 bg-[#FDF9EE] z-20">
+        <div className="max-w-5xl mx-auto text-center md:text-left">
+          <p ref={manifestoRef} className="text-2xl sm:text-4xl md:text-5xl lg:text-[3.5vw] font-medium tracking-tight leading-[1.3] text-[#1C1C15]">
+            {renderScrubText("Nós acreditamos que a saúde não se resume apenas a tratar sintomas, mas a acolher pessoas. No Centro Clínico Costa, a")}
+            <span className="scrub-word inline-block mr-2 lg:mr-3 font-black italic text-[#605E56]">tecnologia de ponta</span>
+            {renderScrubText("e o")}
+            <span className="scrub-word inline-block mr-2 lg:mr-3 font-black italic text-[#605E56]">cuidado humano</span>
+            {renderScrubText("andam sempre juntos para garantir o seu bem-estar.")}
+          </p>
+        </div>
+      </section>
+
+      {/* SEÇÃO SOBRE (COM ANIMAÇÃO SVG ORIGINAL INTACTA) */}
+      <section
+        ref={sobrePinRef}
+        id="sobre"
+        className="h-[100dvh] w-full relative bg-[#F5F0E5] overflow-clip border-t border-[#E6E2D7] [contain:layout_paint] isolate"
+      >
         <div className="absolute inset-0 w-full h-full z-0 overflow-clip pointer-events-none">
           <div ref={sobreBgParallaxRef} className="w-full h-full will-change-transform">
-            <div ref={sobreBgRef} className="w-full h-full bg-cover bg-center will-change-transform" style={{ backgroundImage: `url('${SOBRE_BG_IMAGE}')` }} />
+            <div
+              ref={sobreBgRef}
+              className="w-full h-full bg-cover bg-center will-change-transform [transform:translateZ(0)]"
+              style={{ backgroundImage: `url('${SOBRE_BG_IMAGE}')` }}
+            />
           </div>
         </div>
         
-        {/* SVG COM COORDENADAS RECALCULADAS NO MOBILE P/ NÃO ESMAGAR */}
-        <svg className="absolute inset-0 w-full h-full z-10 pointer-events-none" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+        {/* SVG MASK */}
+        <svg
+          className="absolute inset-0 w-full h-full z-10 pointer-events-none [&_text]:[shape-rendering:geometricPrecision]"
+          viewBox="0 0 1920 1080"
+          preserveAspectRatio="xMidYMid slice"
+          style={{ transform: "translateZ(0)" }}
+        >
           <defs>
             <mask id="gta-true-mask">
               <rect x="0" y="0" width="1920" height="1080" fill="white" />
@@ -453,7 +593,7 @@ export default function CentroClinicoLight() {
           </g>
         </svg>
 
-        <div ref={sobreContentRef} className="absolute inset-0 w-full h-full z-20 flex flex-col justify-end pb-[4vh] md:pb-[10vh] px-4 md:px-6 opacity-0 pointer-events-auto">
+        <div ref={sobreContentRef} className="absolute inset-0 w-full h-full z-20 flex flex-col justify-end pb-[4vh] md:pb-[10vh] px-4 md:px-8 opacity-0 pointer-events-auto">
           <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row gap-6 md:gap-12 items-center">
             <div className="select-copy w-full md:w-1/2 space-y-4 md:space-y-5 text-center md:text-left">
               <h2 className="text-[9px] md:text-[10px] font-bold tracking-[0.4em] uppercase text-[#79776E] mb-2">Nossa História</h2>
@@ -482,11 +622,18 @@ export default function CentroClinicoLight() {
         </div>
       </section>
 
-      {/* HORIZONTAL SCROLL */}
-      <section ref={horizontalContainerRef} id="estrutura" className="h-[100dvh] w-full overflow-clip bg-[#1C1C15] text-[#FDF9EE] relative z-30">
-        <div ref={horizontalWrapperRef} className="flex flex-nowrap h-full w-[300vw] will-change-transform">
+      {/* HORIZONTAL SCROLL (desktop) — mobile: empilhado, sem pin + translate X */}
+      <section
+        ref={horizontalContainerRef}
+        id="estrutura"
+        className="min-h-0 md:h-[100dvh] w-full overflow-x-hidden md:overflow-clip bg-[#1C1C15] text-[#FDF9EE] relative z-30 [content-visibility:auto]"
+      >
+        <div
+          ref={horizontalWrapperRef}
+          className="flex flex-col md:flex-row md:flex-nowrap w-full md:h-full md:w-[300vw] md:will-change-transform"
+        >
           
-          <div className="h-panel w-[100vw] h-full shrink-0 flex items-center justify-center px-4 md:px-20 relative border-r border-[#323129]">
+          <div className="w-full md:w-[100vw] min-h-[72vh] md:min-h-0 md:h-full shrink-0 flex items-center justify-center py-16 md:py-0 px-4 md:px-20 relative md:border-r border-[#323129] border-b md:border-b-0">
             <div className="max-w-3xl text-center flex flex-col items-center">
               <Activity className="text-[#939187] mb-6 md:mb-8" size={40} strokeWidth={1} />
               <h2 className="text-[9px] md:text-[10px] font-bold tracking-[0.4em] uppercase text-[#CAC6BC] mb-4 md:mb-6">Nossa Estrutura</h2>
@@ -499,7 +646,7 @@ export default function CentroClinicoLight() {
             </div>
           </div>
 
-          <div className="h-panel w-[100vw] h-full shrink-0 flex flex-col md:flex-row items-center justify-center px-6 md:px-20 gap-8 md:gap-12 relative border-r border-[#323129]">  
+          <div className="w-full md:w-[100vw] min-h-[72vh] md:min-h-0 md:h-full shrink-0 flex flex-col md:flex-row items-center justify-center py-12 md:py-0 px-6 md:px-20 gap-8 md:gap-12 relative md:border-r border-[#323129] border-b md:border-b-0">  
             <div className="w-full md:w-1/2 max-w-xl text-center md:text-left mt-16 md:mt-0">
                 <div className="inline-flex items-center gap-3 mb-4 md:mb-6">
                   <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-[#605E56] flex items-center justify-center text-[#FDF9EE]">
@@ -527,7 +674,7 @@ export default function CentroClinicoLight() {
             </div>
           </div>
 
-          <div className="h-panel w-[100vw] h-full shrink-0 flex flex-col md:flex-row items-center justify-center px-6 md:px-20 gap-8 md:gap-12 relative">
+          <div className="w-full md:w-[100vw] min-h-[72vh] md:min-h-0 md:h-full shrink-0 flex flex-col md:flex-row items-center justify-center py-12 md:py-0 px-6 md:px-20 gap-8 md:gap-12 relative pb-20 md:pb-0">
             <div className="w-full md:w-1/2 h-[35vh] sm:h-[45vh] md:h-[70vh] rounded-[1.5rem] md:rounded-[2rem] overflow-hidden relative order-2 md:order-1 mb-12 md:mb-0">
               <div className="absolute inset-0 bg-[#323129]" />
               <div className="absolute inset-0 bg-[url('/clinica/exames.webp')] bg-cover bg-center img-parallax scale-125" />
@@ -557,7 +704,7 @@ export default function CentroClinicoLight() {
       </section>
 
       {/* EQUIPE MÉDICA */}
-      <section id="corpo-clinico" className="py-24 md:py-32 px-4 md:px-6 bg-[#FDF9EE] relative z-40 border-t border-[#E6E2D7] w-full">
+      <section id="corpo-clinico" className="py-24 md:py-32 px-4 md:px-8 bg-[#FDF9EE] relative z-40 border-t border-[#E6E2D7] w-full">
         <div className="max-w-7xl mx-auto mb-12 md:mb-16 fade-up text-center md:text-left">
           <h2 className="text-[9px] md:text-[10px] font-bold tracking-[0.4em] uppercase text-[#79776E] mb-3 md:mb-4">Especialistas em Taquari</h2>
           <h3 className="text-3xl md:text-5xl font-light tracking-tighter text-[#1C1C15] leading-tight">
@@ -568,25 +715,16 @@ export default function CentroClinicoLight() {
           </p>
         </div>
 
-        {/* OTIMIZAÇÃO DE GRID: 
-          Removido o 'xl:grid-cols-4' para travar em 3 colunas no desktop. 
-          Como são 9 médicos, 3 colunas geram uma grade 3x3 perfeita e simétrica. 
-        */}
         <div ref={teamGridRef} className="team-grid max-w-7xl mx-auto w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {profissionais.map((prof, i) => (
             <a
               key={prof.name}
               href="#contato"
               className={`team-card group relative min-w-0 w-full rounded-[1.5rem] md:rounded-3xl overflow-hidden bg-[#EFEBE0] shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer ${
-                // MÁGICA DA RESPONSIVIDADE P/ 9 ITENS:
-                // No tablet (sm e md: 2 colunas), o 9º item (índice 8) sobra. Forçamos ele a ocupar a linha inteira (col-span-2),
-                // mas limitamos a largura matematicamente (w-[...]) e centralizamos (mx-auto) para o card não ficar gigante.
-                // No desktop (lg: 3 colunas), resetamos tudo para ele se encaixar no final do 3x3 normal.
                 i === 8 ? "sm:col-span-2 sm:w-[calc(50%-0.5rem)] md:w-[calc(50%-0.75rem)] sm:mx-auto lg:col-span-1 lg:w-full lg:mx-0" : ""
               }`}
             >
               <div className="aspect-[4/5] overflow-hidden relative">
-                {/* OTIMIZAÇÃO: loading lazy e decoding async */}
                 <img
                   src={prof.img}
                   alt={prof.name}
@@ -610,7 +748,7 @@ export default function CentroClinicoLight() {
       </section>
 
       {/* SEÇÃO DE CONTATO */}
-      <section id="contato" className="py-24 md:py-32 px-4 md:px-6 bg-[#F5F0E5] relative z-40 border-t border-[#E6E2D7]">
+      <section id="contato" className="py-24 md:py-32 px-4 md:px-8 bg-[#F5F0E5] relative z-40 border-t border-[#E6E2D7]">
         <div className="max-w-7xl mx-auto flex flex-col gap-12 md:gap-16">
         <div className="flex flex-col lg:flex-row gap-12 md:gap-16 items-center">
           
