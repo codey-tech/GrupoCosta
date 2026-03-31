@@ -563,7 +563,6 @@ export default function Page() {
 
       {/* PLANOS EMPRESARIAIS - CORPORATIVO FORMAL & 3D */}
       {/* 
-      
       <section id="empresas" className="py-32 px-6 bg-white relative overflow-hidden border-t border-slate-200">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 fade-up">
           
