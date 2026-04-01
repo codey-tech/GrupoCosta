@@ -460,13 +460,13 @@ export default function Page() {
 
       {/* BENEFÍCIOS */}
       <section id="beneficios" className="stacking-container w-full bg-slate-50 md:h-[100dvh] md:flex md:items-center md:justify-center md:justify-start relative overflow-hidden border-b border-slate-200 py-20 md:py-0">
-        <div className="absolute top-30 md:top-32 md:right-20 text-center md:text-right opacity-20 pointer-events-none">
+        <div className="absolute top-8 left-1/2 -translate-x-1/2 md:top-32 md:left-auto md:right-20 md:translate-x-0 text-center md:text-right opacity-20 pointer-events-none z-20">
           <h2 className="text-5xl md:text-[8vw] font-black tracking-tighter leading-none text-slate-400 uppercase">
             Nossos <br/> Benefícios
           </h2>
         </div>
 
-        <div className="mt-24 md:mt-0 relative w-full md:w-[300px] md:h-[600px] flex flex-col md:flex-row items-center gap-6 md:gap-0 px-6 md:px-0">
+        <div className="mt-40 md:mt-0 relative w-full md:w-[300px] md:h-[600px] flex flex-col md:flex-row items-center gap-6 md:gap-0 px-6 md:px-0">
           {beneficiosAgrupados.map((ben, index) => (
             <div 
               key={index} 
