@@ -1,12 +1,35 @@
 "use client";
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
-import { X, LayoutGrid, HeartPulse, Church, ArrowRight, Activity, Plus, Smile, Bird, Ambulance, Heart } from 'lucide-react';
+import { X, LayoutGrid, HeartPulse, ArrowRight, Activity, Bird, Ambulance, Heart } from 'lucide-react';
 
 const GroupSwitcher = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const overlayRef = useRef();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isOpen]);
 
   useGSAP(() => {
     if (isOpen) {
@@ -56,9 +79,10 @@ const GroupSwitcher = () => {
       </button>
 
       {/* OVERLAY SPLIT-SCREEN */}
-      <div 
+      {mounted && createPortal(
+      <div
         ref={overlayRef}
-        className="fixed inset-0 z-[100] hidden flex-col md:flex-row bg-[#000] overflow-y-auto md:overflow-hidden"
+        className="fixed inset-0 z-[99999] hidden h-[100dvh] w-screen flex-col md:flex-row bg-[#000] overflow-y-auto md:overflow-hidden"
       >
         {/* BOTÃO FECHAR GLOBAL */}
         <button 
@@ -134,7 +158,9 @@ const GroupSwitcher = () => {
           </a>
         </div>
 
-      </div>
+      </div>,
+      document.body
+      )}
     </>
   );
 };
