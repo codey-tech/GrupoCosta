@@ -206,40 +206,44 @@ export default function CentroClinicoLight() {
       });
     }
 
-    // 2. Manifesto — mobile: um único fade (menos nós que scrub por palavra)
+    // 2. Manifesto — scrub mais estável e previsível
+    ScrollTrigger.getById("centro-manifesto-mobile")?.kill();
+    ScrollTrigger.getById("centro-manifesto-desktop")?.kill();
+
     if (manifestoRef.current) {
       if (isMobile) {
         gsap.fromTo(
           manifestoRef.current,
-          { opacity: 0.28 },
+          { opacity: 0.36, y: 10 },
           {
             opacity: 1,
-            ease: "none",
+            y: 0,
+            duration: 0.6,
+            ease: "power2.out",
             scrollTrigger: {
+              id: "centro-manifesto-mobile",
               trigger: manifestoRef.current,
-              start: "top 78%",
-              end: "bottom 52%",
-              scrub: 0.35,
+              start: "top 84%",
+              end: "top 56%",
+              scrub: 0.45,
             },
           }
         );
       } else {
         const words = manifestoRef.current.querySelectorAll(".scrub-word");
-        gsap.fromTo(
-          words,
-          { opacity: 0.15 },
-          {
-            opacity: 1,
-            ease: "none",
-            stagger: 0.1,
-            scrollTrigger: {
-              trigger: manifestoRef.current,
-              start: "top 70%",
-              end: "bottom 60%",
-              scrub: true,
-            },
-          }
-        );
+        gsap.set(words, { opacity: 0.12 });
+        gsap.to(words, {
+          opacity: 1,
+          ease: "none",
+          stagger: { each: 0.06, from: "start" },
+          scrollTrigger: {
+            id: "centro-manifesto-desktop",
+            trigger: manifestoRef.current,
+            start: "top 72%",
+            end: "bottom 58%",
+            scrub: 0.6,
+          },
+        });
       }
     }
 
@@ -545,9 +549,11 @@ export default function CentroClinicoLight() {
         <div className="max-w-5xl mx-auto text-center md:text-left">
           <p ref={manifestoRef} className="text-2xl sm:text-4xl md:text-5xl lg:text-[3.5vw] font-medium tracking-tight leading-[1.3] text-[#1C1C15]">
             {renderScrubText("Nós acreditamos que a saúde não se resume apenas a tratar sintomas, mas a acolher pessoas. No Centro Clínico Costa, a")}
-            <span className="scrub-word inline-block mr-2 lg:mr-3 font-black italic text-[#605E56]">tecnologia de ponta</span>
-            {renderScrubText("e o")}
-            <span className="scrub-word inline-block mr-2 lg:mr-3 font-black italic text-[#605E56]">cuidado humano</span>
+            <span className="scrub-word inline-block mr-2 lg:mr-3 font-black italic text-[#605E56]">tecnologia,</span>
+            {renderScrubText("o")}
+            <span className="scrub-word inline-block mr-2 lg:mr-3 font-black italic text-[#605E56]">cuidado</span>
+            {renderScrubText("e o ")}
+            <span className="scrub-word inline-block mr-2 lg:mr-3 font-black italic text-[#605E56]">conforto</span>
             {renderScrubText("andam sempre juntos para garantir o seu bem-estar.")}
           </p>
         </div>
@@ -677,10 +683,10 @@ export default function CentroClinicoLight() {
               <Activity className="text-[#939187] mb-6 md:mb-8" size={40} strokeWidth={1} />
               <h2 className="text-[9px] md:text-[10px] font-bold tracking-[0.4em] uppercase text-[#CAC6BC] mb-4 md:mb-6">Nossa Estrutura</h2>
               <h3 className="text-4xl md:text-7xl font-light tracking-tighter leading-tight mb-6 md:mb-8">
-                Foco no paciente, <br className="hidden sm:block"/><span className="font-black italic text-white">agilidade no diagnóstico.</span>
+                Foco no paciente, <br className="hidden sm:block"/><span className="font-black italic text-white">atendimento humanizado.</span>
               </h3>
               <p className="select-copy text-base md:text-xl text-[#AEABA1] font-light leading-relaxed mb-10 max-w-2xl px-4 md:px-0">
-                Nossas instalações foram planejadas para garantir um fluxo de atendimento inteligente. Segurança médica e respeito ao seu tempo em um ambiente de alto padrão.
+              Excelência que acolhe: nossa equipe especializada alia alta capacidade técnica a um atendimento feito com afeto e cuidado.
               </p>
             </div>
           </div>
@@ -694,10 +700,10 @@ export default function CentroClinicoLight() {
                   <span className="text-[#AEABA1] font-bold uppercase tracking-widest text-[10px] md:text-xs">3 Consultórios</span>
                 </div>
                 <h3 className="text-3xl md:text-5xl font-black tracking-tighter mb-4 md:mb-6 text-white">
-                  Atendimento <br className="hidden sm:block"/><span className="font-light italic text-[#939187]">Confortável</span>
+                  Conforto & <br className="hidden sm:block"/><span className="font-light italic text-[#939187]">Bem Estar</span>
                 </h3>
                 <p className="select-copy text-sm md:text-lg text-[#AEABA1] font-light leading-relaxed mb-4 md:mb-8 hidden sm:block">
-                  Salas projetadas para acolhimento e avaliação clínica. Oferecemos estrutura para médicos autônomos trabalharem com total independência.
+                Ambientes modernos projetados para o seu total acolhimento e bem-estar. Uma infraestrutura completa pensada em cada detalhe para o seu máximo conforto.
                 </p>
             </div>
 
