@@ -7,6 +7,7 @@ import { X, LayoutGrid, HeartPulse, ArrowRight, Activity, Bird, Ambulance, Heart
 
 const GroupSwitcher = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeSide, setActiveSide] = useState("saude");
   const [mounted, setMounted] = useState(false);
   const overlayRef = useRef();
 
@@ -16,6 +17,7 @@ const GroupSwitcher = () => {
 
   useEffect(() => {
     if (!isOpen) return;
+    setActiveSide("saude");
 
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -67,15 +69,27 @@ const GroupSwitcher = () => {
     ]
   };
 
+  const saudeExpanded = activeSide === "saude";
+  const lutoExpanded = activeSide === "luto";
+
   return (
     <>
-      {/* TRIGGER BUTTON (Mantido neutro para combinar com a nav de qualquer site) */}
+      {/* TRIGGER DESKTOP (inline no header) */}
       <button 
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 px-4 py-2 rounded-full border border-[#CAC6BC] hover:bg-[#1C1C15] hover:text-[#FDF9EE] transition-all duration-300 group"
+        className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full border border-[#CAC6BC] hover:bg-[#1C1C15] hover:text-[#FDF9EE] transition-all duration-300 group"
       >
         <LayoutGrid size={16} className="group-hover:rotate-90 transition-transform duration-500" />
         <span className="text-[10px] font-bold uppercase tracking-widest">Grupo Costa</span>
+      </button>
+
+      {/* TRIGGER MOBILE (flutuante, otimiza espaço no header) */}
+      <button
+        onClick={() => setIsOpen(true)}
+        aria-label="Abrir Group Switcher"
+        className="md:hidden fixed bottom-5 right-5 z-[9998] h-12 w-12 rounded-full bg-[#1C1C15] text-[#FDF9EE] shadow-xl border border-white/15 flex items-center justify-center active:scale-95 transition-transform"
+      >
+        <LayoutGrid size={18} />
       </button>
 
       {/* OVERLAY SPLIT-SCREEN */}
@@ -95,15 +109,24 @@ const GroupSwitcher = () => {
         {/* =========================================
             COLUNA SAÚDE (Lado Esquerdo - Claro)
         ========================================== */}
-        <div className="flex-1 w-full bg-[#F8FAFC] p-8 md:p-16 lg:p-24 flex flex-col justify-center relative min-h-[50vh] md:min-h-screen">
-          <div className="max-w-md w-full ml-auto md:mr-12">
+        <div
+          onMouseEnter={() => setActiveSide("saude")}
+          className={`w-full bg-[#F8FAFC] p-8 md:p-16 lg:p-24 flex flex-col justify-center relative min-h-[50vh] md:min-h-screen transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+            activeSide === "luto" ? "md:w-[15%]" : "md:w-[85%]"
+          }`}
+        >
+          <div className="max-w-md w-full md:mx-auto">
             
             <div className="menu-anim mb-10">
               <span className="block text-xs tracking-[0.3em] text-blue-900/50 mb-3 uppercase font-light">Vitalidade & Cuidado</span>
               <h3 className="text-5xl md:text-7xl font-serif text-blue-950 tracking-tighter">Saúde.</h3>
             </div>
 
-            <div className="flex flex-col gap-4">
+            <div
+              className={`flex flex-col gap-4 transition-all duration-300 ${
+                saudeExpanded ? "opacity-100 md:translate-x-0" : "opacity-100 md:opacity-0 md:pointer-events-none md:translate-x-4"
+              }`}
+            >
               {groupData.saude.map((item, i) => (
                 <a key={i} href={item.url} className="menu-anim group flex items-center justify-between p-5 md:p-6 rounded-2xl bg-white border border-blue-900/10 hover:border-blue-900/30 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-500">
                   <div className="flex items-center gap-4">
@@ -123,15 +146,24 @@ const GroupSwitcher = () => {
         {/* =========================================
             COLUNA LUTO (Lado Direito - Escuro)
         ========================================== */}
-        <div className="flex-1 w-full bg-[#121212] p-8 md:p-16 lg:p-24 flex flex-col justify-center relative border-t md:border-t-0 md:border-l border-white/5 min-h-[50vh] md:min-h-screen">
-          <div className="max-w-md w-full mr-auto md:ml-12">
+        <div
+          onMouseEnter={() => setActiveSide("luto")}
+          className={`w-full bg-[#121212] p-8 md:p-16 lg:p-24 flex flex-col justify-center relative border-t md:border-t-0 md:border-l border-white/5 min-h-[50vh] md:min-h-screen transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${
+            activeSide === "luto" ? "md:w-[85%]" : "md:w-[15%]"
+          }`}
+        >
+          <div className="max-w-md w-full md:mx-auto">
             
             <div className="menu-anim mb-10">
               <span className="block text-xs tracking-[0.3em] text-white/30 mb-3 uppercase font-light">Respeito & Memória</span>
               <h3 className="text-5xl md:text-7xl font-serif text-white tracking-tighter">Luto.</h3>
             </div>
 
-            <div className="flex flex-col gap-4">
+            <div
+              className={`flex flex-col gap-4 transition-all duration-300 ${
+                lutoExpanded ? "opacity-100 md:translate-x-0" : "opacity-100 md:opacity-0 md:pointer-events-none md:translate-x-4"
+              }`}
+            >
               {groupData.luto.map((item, i) => (
                 <a key={i} href={item.url} className="menu-anim group flex items-center justify-between p-5 md:p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-500">
                   <div className="flex items-center gap-4">
