@@ -112,34 +112,51 @@ export default function Page() {
       const cards = gsap.utils.toArray('.stack-card');
       
       if (cards.length > 0) {
-        gsap.set(cards, {
-          x: isMobile ? "20vw" : "100vw",
-          y: isMobile ? "8vh" : "50vh",
-          opacity: 0,
-          rotation: isMobile ? 0 : 15,
-        });
+        // Mobile: sem pin/scrub para evitar "travamento" de rolagem.
+        if (isMobile) {
+          gsap.set(cards, { clearProps: "all" });
+          gsap.from(cards, {
+            y: 26,
+            opacity: 0,
+            duration: 0.55,
+            stagger: 0.08,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: "#beneficios",
+              start: "top 78%",
+              toggleActions: "play none none none"
+            }
+          });
+        } else {
+          gsap.set(cards, {
+            x: "100vw",
+            y: "50vh",
+            opacity: 0,
+            rotation: 15,
+          });
 
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: ".stacking-container",
-            start: "top top", 
-            end: `+=${cards.length * (isMobile ? 70 : 100)}%`,
-            pin: true, 
-            scrub: isMobile ? 0.35 : 1, 
-          }
-        });
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: ".stacking-container",
+              start: "top top", 
+              end: `+=${cards.length * 100}%`,
+              pin: true, 
+              scrub: 1, 
+            }
+          });
 
-        cards.forEach((card, index) => {
-          tl.to(card, {
-            x: isMobile ? 0 : index * 40, 
-            y: isMobile ? index * 12 : index * 25, 
-            opacity: 1,
-            rotation: 0, 
-            duration: 0.4, 
-            ease: "power3.out"
-          })
-          .to({}, { duration: 0.6 }); 
-        });
+          cards.forEach((card, index) => {
+            tl.to(card, {
+              x: index * 40, 
+              y: index * 25, 
+              opacity: 1,
+              rotation: 0, 
+              duration: 0.4, 
+              ease: "power3.out"
+            })
+            .to({}, { duration: 0.6 }); 
+          });
+        }
       }
 
       // 4. ANIMAÇÃO 3D DOS PLANOS (Modalidades)
@@ -339,7 +356,7 @@ export default function Page() {
   };
 
   return (
-    <LenisProvider>
+    <LenisProvider disableBelowWidth={768}>
     
     {/* =========================================
         PRELOADER PREMIUM (TELA DE CARREGAMENTO)
@@ -442,18 +459,18 @@ export default function Page() {
       </section>
 
       {/* BENEFÍCIOS */}
-      <section id="beneficios" className="stacking-container h-[100dvh] w-full bg-slate-50 flex items-center justify-center md:justify-start relative overflow-hidden border-b border-slate-200">
+      <section id="beneficios" className="stacking-container w-full bg-slate-50 md:h-[100dvh] md:flex md:items-center md:justify-center md:justify-start relative overflow-hidden border-b border-slate-200 py-20 md:py-0">
         <div className="absolute top-30 md:top-32 md:right-20 text-center md:text-right opacity-20 pointer-events-none">
           <h2 className="text-5xl md:text-[8vw] font-black tracking-tighter leading-none text-slate-400 uppercase">
             Nossos <br/> Benefícios
           </h2>
         </div>
 
-        <div className=" mt-40 md:mt-0 relative w-[300px] h-[500px] md:h-[600px] flex items-center pt-20">
+        <div className="mt-24 md:mt-0 relative w-full md:w-[300px] md:h-[600px] flex flex-col md:flex-row items-center gap-6 md:gap-0 px-6 md:px-0">
           {beneficiosAgrupados.map((ben, index) => (
             <div 
               key={index} 
-              className="stack-card absolute top-4 md:top-16 mx-auto md:left-20 w-[300px] h-[380px] md:w-[420px] md:h-[400px] p-8 md:p-10 rounded-[2rem] shadow-2xl border border-slate-200 bg-white md:bg-white/80 md:backdrop-blur-lg flex flex-col justify-between"
+              className="stack-card relative md:absolute md:top-16 md:left-20 w-full max-w-[340px] md:w-[420px] h-auto md:h-[400px] p-8 md:p-10 rounded-[2rem] shadow-2xl border border-slate-200 bg-white md:bg-white/80 md:backdrop-blur-lg flex flex-col justify-between"
               style={{ zIndex: index }}
             >
               <div className="absolute top-4 right-6 text-6xl md:text-8xl font-black text-purple-100 tracking-tighter pointer-events-none select-none z-0">
