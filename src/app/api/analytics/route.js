@@ -1,18 +1,23 @@
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
 import { NextResponse } from 'next/server';
 
-// Inicializa o cliente com as credenciais do seu .env.local
-const client = new BetaAnalyticsDataClient({
-  credentials: {
-    client_email: process.env.GA_CLIENT_EMAIL,
-    // O replace é vital para corrigir as quebras de linha da chave privada
-    private_key: process.env.GA_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-  },
-});
+// Garante execução server-side no Node e sem cache estático.
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+function normalizePrivateKey(value) {
+  if (!value) return '';
+  // Suporta valor com \n escapado e também com quebras reais.
+  return value.replace(/\\n/g, '\n').replace(/^"|"$/g, '');
+}
 
 export async function GET() {
   const propertyId = process.env.GA_PROPERTY_ID;
-  if (!propertyId || !process.env.GA_CLIENT_EMAIL || !process.env.GA_PRIVATE_KEY) {
+  const clientEmail = process.env.GA_CLIENT_EMAIL;
+  const privateKey = normalizePrivateKey(process.env.GA_PRIVATE_KEY);
+
+  if (!propertyId || !clientEmail || !privateKey) {
     return NextResponse.json({
       ok: false,
       unavailable: true,
@@ -23,7 +28,13 @@ export async function GET() {
   }
 
   try {
-    // Substitua o bloco do runReport na sua API por este:
+    const client = new BetaAnalyticsDataClient({
+      credentials: {
+        client_email: clientEmail,
+        private_key: privateKey,
+      },
+    });
+
     const [response] = await client.runReport({
         property: `properties/${propertyId}`,
         dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }], // Aumentamos para 30 dias para ter mais base
@@ -46,6 +57,7 @@ export async function GET() {
     console.error('Erro na API do Analytics:', error);
     const reason = error?.reason || error?.statusDetails?.[0]?.reason || '';
     const isServiceDisabled = reason === 'SERVICE_DISABLED' || error?.code === 7;
+    const isPermissionDenied = reason === 'PERMISSION_DENIED' || error?.code === 7;
 
     if (isServiceDisabled) {
       return NextResponse.json({
@@ -57,8 +69,18 @@ export async function GET() {
       });
     }
 
+    if (isPermissionDenied) {
+      return NextResponse.json({
+        ok: false,
+        unavailable: true,
+        reason: 'analytics_permission_denied',
+        message: 'Conta de serviço sem permissão na propriedade GA4.',
+        rows: [],
+      });
+    }
+
     return NextResponse.json(
-      { ok: false, error: 'Erro ao buscar dados de analytics', rows: [] },
+      { ok: false, error: 'Erro ao buscar dados de analytics', reason, rows: [] },
       { status: 500 }
     );
   }
