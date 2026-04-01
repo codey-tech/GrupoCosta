@@ -30,7 +30,8 @@ export default function Page() {
   const [openFaq, setOpenFaq] = useState(0);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [selectedPlanForCheckout, setSelectedPlanForCheckout] = useState(null);
-  const [isMobile, setIsMobile] = useState(false);
+  
+  // 🚨 ESTADO isMobile REMOVIDO: Causava re-renders excessivos no mobile devido à barra de endereço
 
   // Em alguns aparelhos mobile o preload de mídia pode não concluir corretamente.
   // Para evitar loader infinito, no mobile pulamos o preloader e liberamos a página.
@@ -49,28 +50,12 @@ export default function Page() {
     } else {
       document.body.style.overflow = '';
       
-      // Quando o loading sai, damos 100ms para a tela se acomodar e mandamos o GSAP recalcular as alturas
+      // Quando o loading sai, damos tempo para a tela se acomodar e mandamos o GSAP recalcular as alturas
       setTimeout(() => {
         ScrollTrigger.refresh();
-      }, 100);
+      }, 200);
     }
   }, [isLoading]);
-
-    // Breakpoint alinhado ao Tailwind md (768px): sync imediato + debounce só no resize
-    useEffect(() => {
-      const checkMobile = () => setIsMobile(window.innerWidth < 768);
-      checkMobile();
-      let timeoutId;
-      const onResize = () => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(checkMobile, 120);
-      };
-      window.addEventListener("resize", onResize, { passive: true });
-      return () => {
-        window.removeEventListener("resize", onResize);
-        clearTimeout(timeoutId);
-      };
-    }, []);
 
   // Controle do background do Header dinâmico no scroll
   useEffect(() => {
@@ -78,91 +63,104 @@ export default function Page() {
       setIsScrolled(window.scrollY > 80);
     };
     
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true }); // passive: true melhora a performance de scroll
     handleScroll(); 
     
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // ÚNICO BLOCO GSAP (Cérebro das Animações)
+  // ÚNICO BLOCO GSAP (Cérebro das Animações) - 🚨 OTIMIZADO COM MATCHMEDIA
   useGSAP(() => {
-    // 🚨 REGRA DE OURO: Não roda a animação de entrada até o loading terminar
+    // Não roda a animação de entrada até o loading terminar
     if (isLoading) return;
 
-    // 1. Animação de entrada do Hero (Agora sincronizada com a saída do loading)
-    gsap.from(".hero-text", {
-      y: 50,
-      opacity: 0,
-      duration: 1,
-      stagger: 0.15,
-      ease: "power3.out",
-      delay: 0.5 // Dá tempo da "cortina" de loading subir antes do texto aparecer
-    });
+    // matchMedia() é a forma nativa do GSAP lidar com responsividade sem bugar o React
+    let mm = gsap.matchMedia();
 
-    // 2. Animação de entrada suave dos blocos gerais
-    gsap.utils.toArray('.fade-up').forEach((elem) => {
-      gsap.from(elem, {
-        scrollTrigger: {
-          trigger: elem,
-          start: "top 85%", 
-          toggleActions: "play none none none"
-        },
-        y: 40,
+    mm.add({
+      isMobile: "(max-width: 767px)",
+      isDesktop: "(min-width: 768px)"
+    }, (context) => {
+      let { isMobile } = context.conditions;
+
+      // 1. Animação de entrada do Hero
+      gsap.from(".hero-text", {
+        y: 50,
         opacity: 0,
-        duration: 0.8,
-        ease: "power3.out"
-      });
-    });
-
-    // 3. ANIMAÇÃO ESTILO "LENIS BRINGS THE HEAT" (Cards Benefícios)
-    const cards = gsap.utils.toArray('.stack-card');
-    
-    if (cards.length > 0) {
-      gsap.set(cards, {
-        x: isMobile ? "20vw" : "100vw",
-        y: isMobile ? "8vh" : "50vh",
-        opacity: 0,
-        rotation: isMobile ? 0 : 15,
+        duration: 1,
+        stagger: 0.15,
+        ease: "power3.out",
+        delay: 0.5 
       });
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: ".stacking-container",
-          start: "top top", 
-          end: `+=${cards.length * (isMobile ? 70 : 100)}%`,
-          pin: true, 
-          scrub: isMobile ? 0.35 : 1, 
-        }
-      });
-
-      cards.forEach((card, index) => {
-        tl.to(card, {
-          x: isMobile ? 0 : index * 40, 
-          y: isMobile ? index * 12 : index * 25, 
-          opacity: 1,
-          rotation: 0, 
-          duration: 0.4, 
+      // 2. Animação de entrada suave dos blocos gerais
+      gsap.utils.toArray('.fade-up').forEach((elem) => {
+        gsap.from(elem, {
+          scrollTrigger: {
+            trigger: elem,
+            start: "top 85%", 
+            toggleActions: "play none none none"
+          },
+          y: 40,
+          opacity: 0,
+          duration: 0.8,
           ease: "power3.out"
-        })
-        .to({}, { duration: 0.6 }); 
+        });
       });
-    }
 
-    // 4. ANIMAÇÃO 3D DOS PLANOS (Modalidades)
-    gsap.from(".plan-card", {
-      scrollTrigger: {
-        trigger: "#planos", 
-        start: "top 80%", 
-      },
-      y: isMobile ? 56 : 100,
-      opacity: 0,
-      rotationX: isMobile ? 0 : -15, 
-      transformOrigin: "top center",
-      stagger: 0.2, 
-      duration: isMobile ? 0.75 : 1,
-      ease: isMobile ? "power2.out" : "back.out(1.5)",
-      clearProps: "all"
+      // 3. ANIMAÇÃO ESTILO "LENIS BRINGS THE HEAT" (Cards Benefícios)
+      const cards = gsap.utils.toArray('.stack-card');
+      
+      if (cards.length > 0) {
+        gsap.set(cards, {
+          x: isMobile ? "20vw" : "100vw",
+          y: isMobile ? "8vh" : "50vh",
+          opacity: 0,
+          rotation: isMobile ? 0 : 15,
+        });
+
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: ".stacking-container",
+            start: "top top", 
+            end: `+=${cards.length * (isMobile ? 70 : 100)}%`,
+            pin: true, 
+            scrub: isMobile ? 0.35 : 1, 
+          }
+        });
+
+        cards.forEach((card, index) => {
+          tl.to(card, {
+            x: isMobile ? 0 : index * 40, 
+            y: isMobile ? index * 12 : index * 25, 
+            opacity: 1,
+            rotation: 0, 
+            duration: 0.4, 
+            ease: "power3.out"
+          })
+          .to({}, { duration: 0.6 }); 
+        });
+      }
+
+      // 4. ANIMAÇÃO 3D DOS PLANOS (Modalidades)
+      gsap.from(".plan-card", {
+        scrollTrigger: {
+          trigger: "#planos", 
+          start: "top 80%", 
+        },
+        y: isMobile ? 56 : 100,
+        opacity: 0,
+        rotationX: isMobile ? 0 : -15, 
+        transformOrigin: "top center",
+        stagger: 0.2, 
+        duration: isMobile ? 0.75 : 1,
+        ease: isMobile ? "power2.out" : "back.out(1.5)",
+        clearProps: "all" // Importante no mobile para evitar resquícios de 3D travando a tela
+      });
     });
+
+    // Cleanup crucial para evitar vazamento de memória e duplicação de animações
+    return () => mm.revert();
 
   }, { scope: container, dependencies: [isLoading] });
 
@@ -584,120 +582,6 @@ export default function Page() {
 
         </div>
       </section>
-
-      {/* PLANOS EMPRESARIAIS - CORPORATIVO FORMAL & 3D */}
-      {/* 
-
-      <section id="empresas" className="py-32 px-6 bg-white relative overflow-hidden border-t border-slate-200">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 fade-up">
-          
-          <div className="lg:w-1/2 relative z-10">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-sm bg-slate-100 text-slate-600 text-[10px] font-black tracking-[0.2em] uppercase mb-6 border-l-2 border-purple-600">
-              <Briefcase size={14} className="text-purple-600" /> Soluções Corporativas
-            </div>
-            
-            <h3 className="text-4xl md:text-5xl lg:text-5xl font-black tracking-tighter text-slate-950 mb-6 leading-[1.1]">
-              Solidez e proteção para a sua empresa.
-            </h3>
-            
-            <p className="select-copy text-lg text-slate-600 font-medium mb-10 leading-relaxed max-w-lg">
-              Garantimos o bem-estar dos seus colaboradores com uma gestão de saúde eficiente, rede credenciada de excelência e suporte dedicado para a sua organização.
-            </p>
-            
-            <div className="space-y-6 mb-12">
-              <div className="flex items-start gap-4">
-                <div className="mt-1">
-                  <Check className="text-purple-600" size={20} strokeWidth={2.5} />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-slate-900 mb-1">Cobertura Adaptável</h4>
-                  <p className="select-copy text-sm text-slate-500 font-medium">Planos desenhados para PMEs e Grandes Empresas, estendidos a dependentes.</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="mt-1">
-                  <Check className="text-purple-600" size={20} strokeWidth={2.5} />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-slate-900 mb-1">Gestão Simplificada para o RH</h4>
-                  <p className="select-copy text-sm text-slate-500 font-medium">Faturamento unificado e canal de atendimento prioritário para a sua equipe.</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="mt-1">
-                  <Check className="text-purple-600" size={20} strokeWidth={2.5} />
-                </div>
-                <div>
-                  <h4 className="text-sm font-bold text-slate-900 mb-1">Segurança Ocupacional</h4>
-                  <p className="select-copy text-sm text-slate-500 font-medium">Redução de absenteísmo através de prevenção e atendimento rápido.</p>
-                </div>
-              </div>
-            </div>
-            
-            <a href="https://wa.me/5121294040" target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 px-8 py-4 bg-slate-950 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-purple-700 transition-colors duration-300">
-              Solicitar Proposta <ChevronDown className="-rotate-90" size={16} />
-            </a>
-          </div>
-
-          <div className="lg:w-1/2 w-full flex justify-center relative z-10 py-12 lg:py-0">
-            <div 
-              className="relative w-full max-w-sm aspect-square mx-auto group" 
-              style={{ perspective: '1000px' }}
-            >
-              <div 
-                className="w-full h-full relative transition-all duration-1000 ease-out group-hover:-translate-y-6" 
-                style={{ transformStyle: 'preserve-3d', transform: 'rotateX(55deg) rotateZ(-45deg)' }}
-              >
-                
-                <div 
-                  className="absolute inset-0 bg-slate-100/80 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.1)] border border-white" 
-                  style={{ transform: 'translateZ(0px)' }}
-                ></div>
-                
-                <div 
-                  className="absolute inset-0 bg-white/40 md:backdrop-blur-md rounded-3xl border border-white/80 shadow-xl flex items-center justify-center transition-transform duration-1000 group-hover:bg-white/60"
-                  style={{ transform: 'translateZ(40px)' }}
-                >
-                  <div className="w-[80%] h-[80%] border border-slate-200/50 rounded-2xl grid grid-cols-2 grid-rows-2">
-                    <div className="border-r border-b border-slate-200/50"></div>
-                    <div className="border-b border-slate-200/50"></div>
-                    <div className="border-r border-slate-200/50"></div>
-                    <div></div>
-                  </div>
-                </div>
-
-                <div 
-                  className="absolute inset-0 bg-slate-950 rounded-3xl shadow-2xl border border-slate-800 flex flex-col items-center justify-center gap-4 text-white transition-transform duration-1000 group-hover:shadow-purple-900/40" 
-                  style={{ transform: 'translateZ(80px)' }}
-                >
-                  <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center border border-purple-500/20">
-                    <Shield size={32} className="text-purple-400" strokeWidth={1.5} />
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-black tracking-tighter italic">PlanoCosta</div>
-                    <div className="text-[9px] font-bold tracking-[0.3em] text-purple-400 mt-1 uppercase">Corporate</div>
-                  </div>
-                </div>
-
-                <div 
-                  className="absolute -top-4 -right-4 bg-white px-4 py-2 rounded-lg shadow-lg border border-slate-100 flex items-center gap-2"
-                  style={{ transform: 'translateZ(120px) rotateX(-55deg) rotateZ(45deg)' }}
-                >
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-800">Suporte Ativo</span>
-                </div>
-
-              </div>
-            </div>
-            
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-slate-200 blur-[80px] rounded-full z-0 pointer-events-none" />
-          </div>
-
-        </div>
-      </section>
-      */}
 
       {/* PLANOS FAMILIARES - REDESIGN PREMIUM */}
       <section id="planos" className="py-32 px-6 bg-slate-50 relative overflow-hidden">
