@@ -16,6 +16,7 @@ import Image from 'next/image';
 import { FaWhatsapp, FaInstagram, FaFacebook } from 'react-icons/fa';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { toast, ToastContainer } from 'react-toastify';
+import GroupSwitcher from '@/app/components/GroupSwitcher';
 
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
@@ -359,6 +360,7 @@ export default function Page() {
       >
         <div className="flex justify-between items-center max-w-7xl mx-auto">
           <div className="text-xl font-black tracking-tighter uppercase">Plano<span className="italic font-light">Costa</span></div>
+          <GroupSwitcher />
           <div className="hidden lg:flex gap-10 text-[11px] font-bold uppercase tracking-[0.2em]">
             <a href="#beneficios" className="hover:opacity-50 transition-opacity">Benefícios</a>
             <a href="#empresas" className="hover:opacity-50 transition-opacity">Empresas</a>
@@ -563,7 +565,7 @@ export default function Page() {
 
       {/* PLANOS EMPRESARIAIS - CORPORATIVO FORMAL & 3D */}
       {/* 
-      
+
       <section id="empresas" className="py-32 px-6 bg-white relative overflow-hidden border-t border-slate-200">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-16 fade-up">
           

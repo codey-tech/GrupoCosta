@@ -13,6 +13,7 @@ import {
 import { FaInstagram, FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import { toast, ToastContainer } from 'react-toastify';
 import Image from 'next/image';
+import GroupSwitcher from '@/app/components/GroupSwitcher';
 
 const WHATSAPP_URL = "https://wa.me/5121294040";
 
@@ -469,6 +470,7 @@ export default function CentroClinicoLight() {
                 style={{ filter: 'brightness(0) saturate(100%) invert(8%) sepia(5%) saturate(1088%) hue-rotate(20deg) brightness(96%) contrast(91%)' }}
             />   
           </div>
+          <GroupSwitcher />
           <div className="hidden lg:flex gap-12 text-xs font-semibold uppercase tracking-[0.2em]">
             {['Sobre', 'Estrutura', 'Corpo Clínico', 'Contato'].map(item => (
               <a key={item} href={`#${item.toLowerCase().replace(' ', '-').replace('í', 'i')}`} className="relative group overflow-hidden text-[#605E56] hover:text-[#1C1C15] transition-colors">
