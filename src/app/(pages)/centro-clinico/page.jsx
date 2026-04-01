@@ -44,6 +44,11 @@ export default function CentroClinicoLight() {
   const [isSendingContato, setIsSendingContato] = useState(false);
   const [contatoFeedback, setContatoFeedback] = useState({ type: "", message: "" });
 
+  // Fallback mobile: evita tela de loading infinita em alguns dispositivos.
+  useEffect(() => {
+    if (window.innerWidth < 768) setIsLoading(false);
+  }, []);
+
   // Breakpoint alinhado ao Tailwind md (768px): sync imediato + debounce só no resize
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -256,55 +261,57 @@ export default function CentroClinicoLight() {
       gsap.set(sobreBgParallaxRef.current, { yPercent: 0 });
     }
 
-    // 4. Seção Sobre (SVG) — mobile: escala inicial menor + menos scroll + scrub suavizado
-    const viewportRef = Math.max(window.innerWidth, window.innerHeight);
-    const initialSobreScale = isMobile
-      ? Math.min(52, Math.max(40, viewportRef / 24))
-      : Math.max(36, viewportRef / 52);
-    const sobreEnd = isMobile ? "+=195%" : "+=280%";
-    const scrubSobre = isMobile ? 0.42 : true;
-    const zoomDur = isMobile ? 2.85 : 3.5;
+    // 4. Seção Sobre (SVG)
+    // Mobile: sem animação do título (pedido), apenas texto destacado sobre a imagem.
+    if (isMobile) {
+      ScrollTrigger.getById("centro-sobre")?.kill();
+      gsap.set(".sobre-overlay", { opacity: 0 });
+      gsap.set(".color-text", { fill: "#1C1C15" });
+      gsap.set(".y-mover", { y: 0 });
+      gsap.set(".zoom-target", { scale: 1, x: 0, y: 0, svgOrigin: "960 600" });
+      if (sobreBgRef.current) gsap.set(sobreBgRef.current, { scale: 1 });
+      if (sobreContentRef.current) gsap.set(sobreContentRef.current, { opacity: 1, y: 0 });
+    } else {
+      const viewportRef = Math.max(window.innerWidth, window.innerHeight);
+      const initialSobreScale = Math.max(36, viewportRef / 52);
 
-    gsap.set(".zoom-target", { svgOrigin: "960 600", scale: initialSobreScale, x: 0, y: -240 });
-    gsap.set(".sobre-overlay", { opacity: 0 });
-    gsap.set(".color-text", { fill: "transparent" });
-    gsap.set(".y-mover", { y: 0 });
-    if (sobreBgRef.current) gsap.set(sobreBgRef.current, { scale: 1.15 });
-    if (sobreContentRef.current) gsap.set(sobreContentRef.current, { opacity: 0, y: 100 });
+      gsap.set(".zoom-target", { svgOrigin: "960 600", scale: initialSobreScale, x: 0, y: -240 });
+      gsap.set(".sobre-overlay", { opacity: 0 });
+      gsap.set(".color-text", { fill: "transparent" });
+      gsap.set(".y-mover", { y: 0 });
+      if (sobreBgRef.current) gsap.set(sobreBgRef.current, { scale: 1.15 });
+      if (sobreContentRef.current) gsap.set(sobreContentRef.current, { opacity: 0, y: 100 });
 
-    ScrollTrigger.getById("centro-sobre")?.kill();
-    const sobreScrollTl = gsap.timeline({
-      scrollTrigger: {
-        id: "centro-sobre",
-        trigger: sobrePinRef.current,
-        start: "top top",
-        end: sobreEnd,
-        pin: true,
-        pinSpacing: true,
-        scrub: scrubSobre,
-        invalidateOnRefresh: true,
-        fastScrollEnd: isMobile,
-        ...(isMobile ? { anticipatePin: 1 } : {}),
-      },
-    });
+      ScrollTrigger.getById("centro-sobre")?.kill();
+      const sobreScrollTl = gsap.timeline({
+        scrollTrigger: {
+          id: "centro-sobre",
+          trigger: sobrePinRef.current,
+          start: "top top",
+          end: "+=280%",
+          pin: true,
+          pinSpacing: true,
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
+      });
 
-    const delayZoom = 1.5;
-    sobreScrollTl.to({}, { duration: delayZoom });
+      const delayZoom = 1.5;
+      sobreScrollTl.to({}, { duration: delayZoom });
 
-    sobreScrollTl
-      .to(".zoom-target", { scale: 1, x: 0, y: 0, duration: zoomDur, ease: "none", force3D: true }, delayZoom)
-      .to(".sobre-overlay", { opacity: 1, duration: 0.9, ease: "none", force3D: true }, delayZoom);
+      sobreScrollTl
+        .to(".zoom-target", { scale: 1, x: 0, y: 0, duration: 3.5, ease: "none", force3D: true }, delayZoom)
+        .to(".sobre-overlay", { opacity: 1, duration: 0.9, ease: "none", force3D: true }, delayZoom);
 
-    if (sobreBgRef.current) {
-      sobreScrollTl.to(sobreBgRef.current, { scale: 1, duration: zoomDur, ease: "none", force3D: true }, delayZoom);
+      if (sobreBgRef.current) {
+        sobreScrollTl.to(sobreBgRef.current, { scale: 1, duration: 3.5, ease: "none", force3D: true }, delayZoom);
+      }
+
+      sobreScrollTl
+        .to(".color-text", { fill: "#1C1C15", duration: 0.3, ease: "none" }, delayZoom + 3.0)
+        .to(".y-mover", { y: -300, duration: 1.5, ease: "none", force3D: true }, delayZoom + 3.5)
+        .to(sobreContentRef.current, { opacity: 1, y: 0, duration: 1.5, ease: "none", force3D: true }, delayZoom + 3.8);
     }
-
-    const yMoverDistance = isMobile ? -450 : -300;
-
-    sobreScrollTl
-      .to(".color-text", { fill: "#1C1C15", duration: 0.3, ease: "none" }, delayZoom + 3.0)
-      .to(".y-mover", { y: yMoverDistance, duration: 1.5, ease: "none", force3D: true }, delayZoom + 3.5)
-      .to(sobreContentRef.current, { opacity: 1, y: 0, duration: 1.5, ease: "none", force3D: true }, delayZoom + 3.8);
 
     if (desktop) {
       gsap.utils.toArray(".img-parallax").forEach((img) => {
@@ -550,7 +557,7 @@ export default function CentroClinicoLight() {
       <section
         ref={sobrePinRef}
         id="sobre"
-        className="h-[100dvh] w-full relative bg-[#F5F0E5] overflow-clip border-t border-[#E6E2D7] [contain:layout_paint] isolate"
+        className={`${isMobile ? "min-h-[100dvh] py-8" : "h-[100dvh]"} w-full relative bg-[#F5F0E5] overflow-clip border-t border-[#E6E2D7] [contain:layout_paint] isolate`}
       >
         <div className="absolute inset-0 w-full h-full z-0 overflow-clip pointer-events-none">
           <div ref={sobreBgParallaxRef} className="w-full h-full will-change-transform">
@@ -561,13 +568,24 @@ export default function CentroClinicoLight() {
             />
           </div>
         </div>
+        <div className="absolute inset-0 z-[1] md:hidden pointer-events-none bg-gradient-to-b from-[#FDF9EE]/55 via-[#FDF9EE]/25 to-[#FDF9EE]/90" />
         
+        {/* Título simplificado no mobile (sem animação) */}
+        <div className="absolute inset-x-0 top-0 z-10 md:hidden pointer-events-none px-5 pt-10">
+          <div className="text-center bg-[#FDF9EE]/82 rounded-2xl px-5 py-4 border border-[#E6E2D7] shadow-md backdrop-blur-[2px]">
+            <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-[#605E56] mb-2">Sobre o</p>
+            <h3 className="text-3xl font-black italic tracking-tight text-[#1C1C15] leading-[1]">
+              Centro Clínico Costa
+            </h3>
+          </div>
+        </div>
+
         {/* SVG MASK */}
         <svg
-          className="absolute inset-0 w-full h-full z-10 pointer-events-none [&_text]:[shape-rendering:geometricPrecision]"
+          className="absolute inset-0 w-full h-full z-10 pointer-events-none [&_text]:[shape-rendering:geometricPrecision] hidden md:block"
+          style={{ transform: "translateZ(0)" }}
           viewBox="0 0 1920 1080"
           preserveAspectRatio="xMidYMid slice"
-          style={{ transform: "translateZ(0)" }}
         >
           <defs>
             <mask id="gta-true-mask">
@@ -611,7 +629,10 @@ export default function CentroClinicoLight() {
           </g>
         </svg>
 
-        <div ref={sobreContentRef} className="absolute inset-0 w-full h-full z-20 flex flex-col justify-end pb-[4vh] md:pb-[10vh] px-4 md:px-8 opacity-0 pointer-events-auto">
+        <div
+          ref={sobreContentRef}
+          className={`${isMobile ? "relative mt-48 pb-8" : "absolute inset-0 h-full pb-[10vh]"} w-full z-20 flex flex-col justify-end px-4 md:px-8 opacity-100 md:opacity-0 pointer-events-auto`}
+        >
           <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row gap-6 md:gap-12 items-center">
             <div className="select-copy w-full md:w-1/2 space-y-4 md:space-y-5 text-center md:text-left">
               <h2 className="text-[9px] md:text-[10px] font-bold tracking-[0.4em] uppercase text-[#79776E] mb-2">Nossa História</h2>

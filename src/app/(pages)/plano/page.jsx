@@ -30,6 +30,13 @@ export default function Page() {
   const [openFaq, setOpenFaq] = useState(0);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [selectedPlanForCheckout, setSelectedPlanForCheckout] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Em alguns aparelhos mobile o preload de mídia pode não concluir corretamente.
+  // Para evitar loader infinito, no mobile pulamos o preloader e liberamos a página.
+  useEffect(() => {
+    if (window.innerWidth < 768) setIsLoading(false);
+  }, []);
 
   // Fallback de segurança para o Loading: se o vídeo demorar mais de 3.5s, libera o site.
   useEffect(() => {
@@ -48,6 +55,22 @@ export default function Page() {
       }, 100);
     }
   }, [isLoading]);
+
+    // Breakpoint alinhado ao Tailwind md (768px): sync imediato + debounce só no resize
+    useEffect(() => {
+      const checkMobile = () => setIsMobile(window.innerWidth < 768);
+      checkMobile();
+      let timeoutId;
+      const onResize = () => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(checkMobile, 120);
+      };
+      window.addEventListener("resize", onResize, { passive: true });
+      return () => {
+        window.removeEventListener("resize", onResize);
+        clearTimeout(timeoutId);
+      };
+    }, []);
 
   // Controle do background do Header dinâmico no scroll
   useEffect(() => {
@@ -93,30 +116,29 @@ export default function Page() {
 
     // 3. ANIMAÇÃO ESTILO "LENIS BRINGS THE HEAT" (Cards Benefícios)
     const cards = gsap.utils.toArray('.stack-card');
-    const isMobile = window.innerWidth < 768;
     
     if (cards.length > 0) {
       gsap.set(cards, {
-        x: "100vw",
-        y: "50vh",
+        x: isMobile ? "20vw" : "100vw",
+        y: isMobile ? "8vh" : "50vh",
         opacity: 0,
-        rotation: 15,
+        rotation: isMobile ? 0 : 15,
       });
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: ".stacking-container",
           start: "top top", 
-          end: `+=${cards.length * 100}%`,
+          end: `+=${cards.length * (isMobile ? 70 : 100)}%`,
           pin: true, 
-          scrub: 1, 
+          scrub: isMobile ? 0.35 : 1, 
         }
       });
 
       cards.forEach((card, index) => {
         tl.to(card, {
           x: isMobile ? 0 : index * 40, 
-          y: isMobile ? index * 20 : index * 25, 
+          y: isMobile ? index * 12 : index * 25, 
           opacity: 1,
           rotation: 0, 
           duration: 0.4, 
@@ -132,17 +154,17 @@ export default function Page() {
         trigger: "#planos", 
         start: "top 80%", 
       },
-      y: 100,
+      y: isMobile ? 56 : 100,
       opacity: 0,
-      rotationX: -15, 
+      rotationX: isMobile ? 0 : -15, 
       transformOrigin: "top center",
       stagger: 0.2, 
-      duration: 1,
-      ease: "back.out(1.5)",
+      duration: isMobile ? 0.75 : 1,
+      ease: isMobile ? "power2.out" : "back.out(1.5)",
       clearProps: "all"
     });
 
-  }, { scope: container, dependencies: [isLoading] }); // <-- Adicionamos isLoading nas dependências do GSAP!
+  }, { scope: container, dependencies: [isLoading] });
 
   const faqs = [
     {
@@ -354,7 +376,7 @@ export default function Page() {
       <nav 
         className={`fixed top-0 w-full z-50 transition-all duration-500 ease-in-out ${
           isScrolled 
-            ? 'bg-slate-950/95 backdrop-blur-md py-4 px-6 shadow-xl text-white' 
+            ? 'bg-slate-950/95 md:backdrop-blur-md py-4 px-6 shadow-xl text-white' 
             : 'bg-transparent py-6 px-6 text-white'
         }`}
       >
@@ -433,7 +455,7 @@ export default function Page() {
           {beneficiosAgrupados.map((ben, index) => (
             <div 
               key={index} 
-              className="stack-card absolute top-4 md:top-16 mx-auto md:left-20 w-[300px] h-[380px] md:w-[420px] md:h-[400px] p-8 md:p-10 rounded-[2rem] shadow-2xl border border-slate-200 bg-white/80 backdrop-blur-lg flex flex-col justify-between"
+              className="stack-card absolute top-4 md:top-16 mx-auto md:left-20 w-[300px] h-[380px] md:w-[420px] md:h-[400px] p-8 md:p-10 rounded-[2rem] shadow-2xl border border-slate-200 bg-white md:bg-white/80 md:backdrop-blur-lg flex flex-col justify-between"
               style={{ zIndex: index }}
             >
               <div className="absolute top-4 right-6 text-6xl md:text-8xl font-black text-purple-100 tracking-tighter pointer-events-none select-none z-0">
@@ -474,7 +496,7 @@ export default function Page() {
         <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-start gap-16 relative z-10">
           
           <div className="lg:w-1/3 lg:sticky lg:top-32 space-y-8 fade-up z-10 pb-12 perspective-[1000px]">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 text-purple-400 text-[10px] font-black tracking-[0.3em] uppercase mb-2 border border-purple-500/20 backdrop-blur-md">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 text-purple-400 text-[10px] font-black tracking-[0.3em] uppercase mb-2 border border-purple-500/20 md:backdrop-blur-md">
               <MapPin size={12} /> Malha de Cobertura
             </div>
             
@@ -486,7 +508,7 @@ export default function Page() {
               Conexão direta com as principais instituições e profissionais de saúde da região.
             </p>
             
-            <div className="relative p-8 bg-white/5 backdrop-blur-xl rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden transform-style-3d hover:rotate-y-[5deg] hover:rotate-x-[2deg] transition-transform duration-700">
+            <div className="relative p-8 bg-white/5 md:backdrop-blur-xl rounded-[2rem] border border-white/10 shadow-2xl overflow-hidden transform-style-3d hover:rotate-y-[5deg] hover:rotate-x-[2deg] transition-transform duration-700">
               <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-transparent" />
               
               <h4 className="text-xs font-black uppercase tracking-widest mb-6 text-slate-300 flex items-center gap-2">
@@ -516,7 +538,7 @@ export default function Page() {
                   className="fade-up relative w-full group cursor-crosshair"
                   style={{ transformStyle: 'preserve-3d' }}
                 >
-                  <div className="relative p-8 md:p-10 bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-[2.5rem] transition-all duration-700 ease-out group-hover:bg-slate-800/60 group-hover:border-white/20 group-hover:shadow-[0_0_50px_rgba(0,0,0,0.5)] group-hover:-translate-y-2 group-hover:rotate-x-[-2deg]"
+                  <div className="relative p-8 md:p-10 bg-slate-900/40 md:backdrop-blur-md border border-white/10 rounded-[2.5rem] transition-all duration-700 ease-out group-hover:bg-slate-800/60 group-hover:border-white/20 group-hover:shadow-[0_0_50px_rgba(0,0,0,0.5)] group-hover:-translate-y-2 group-hover:rotate-x-[-2deg]"
                        style={{ transformStyle: 'preserve-3d' }}>
                     
                     <div className="flex flex-col md:flex-row md:items-center gap-6 mb-8 transform transition-transform duration-700 group-hover:translate-z-[30px]">
@@ -635,7 +657,7 @@ export default function Page() {
                 ></div>
                 
                 <div 
-                  className="absolute inset-0 bg-white/40 backdrop-blur-md rounded-3xl border border-white/80 shadow-xl flex items-center justify-center transition-transform duration-1000 group-hover:bg-white/60" 
+                  className="absolute inset-0 bg-white/40 md:backdrop-blur-md rounded-3xl border border-white/80 shadow-xl flex items-center justify-center transition-transform duration-1000 group-hover:bg-white/60"
                   style={{ transform: 'translateZ(40px)' }}
                 >
                   <div className="w-[80%] h-[80%] border border-slate-200/50 rounded-2xl grid grid-cols-2 grid-rows-2">
@@ -709,7 +731,7 @@ export default function Page() {
                   }`}
                 >
                   {isFeatured && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-6 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-purple-500/40 whitespace-nowrap">
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-4 md:px-6 py-1.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-[0.18em] md:tracking-widest shadow-lg shadow-purple-500/40 whitespace-normal md:whitespace-nowrap text-center">
                       Mais Escolhido
                     </div>
                   )}

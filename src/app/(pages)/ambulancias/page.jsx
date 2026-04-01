@@ -31,8 +31,8 @@ export default function page() {
       </Header>
 
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: "url('/assets/bg-ambulancias.jpeg')" }}>
-        <div className="absolute top-0 md:right-4/19 p-2 bg-orange-500 rounded-b-lg flex items-center text-center gap-2 z-50">
+      <section className="relative min-h-[100dvh] flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: "url('/assets/bg-ambulancias.jpeg')" }}>
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 md:left-auto md:right-8 md:translate-x-0 p-2 bg-orange-500 rounded-b-lg flex items-center text-center gap-2 z-50">
           <FaAmbulance className="text-white size-6"/>
           <p className="text-white font-light">0800 000 4356</p>
         </div>
@@ -48,9 +48,9 @@ export default function page() {
 
       {/* About Section */}
       <section id="sobrenos" className="flex flex-col md:flex-row bg-gray-200">
-        <div className="w-full md:w-6/13 bg-orange-500 rounded-tr-4xl relative">
+        <div className="w-full md:w-1/2 bg-orange-500 rounded-tr-4xl relative min-h-48 md:min-h-0">
         <div 
-          className="absolute -top-58 md:top-4 left-1/2 transform -translate-x-1/2 md:left-70 md:translate-x-0 h-64 w-64 md:h-96 md:w-96 rounded-full bg-cover bg-center shadow-2xl" 
+          className="absolute -top-24 md:top-4 left-1/2 transform -translate-x-1/2 md:left-1/2 md:-translate-x-1/2 h-52 w-52 md:h-96 md:w-96 rounded-full bg-cover bg-center shadow-2xl" 
           data-aos="fade-right" 
           style={{ backgroundImage: "url('/assets/amb-img.jpg')" }}
         >
@@ -61,26 +61,26 @@ export default function page() {
           <img src={vctUrl} alt="Vector" className="relative z-10" />
         </div>
         </div>
-        <div className="w-full md:w-1/2 py-12 px-6 md:px-20" data-aos="fade-left">
+        <div className="w-full md:w-1/2 py-12 px-6 md:px-16 mt-24 md:mt-0" data-aos="fade-left">
           <h3 className="font-bold text-xl md:text-2xl mb-4">Tradição e Inovação na Saúde</h3>
           <p className="font-light text-left">Há anos, a Costa Ambulâncias atua com excelência no transporte de pacientes e atendimento emergencial, oferecendo serviços que aliam rapidez, segurança e cuidado. Com uma frota moderna, profissionais capacitados e uma rede de atendimento abrangente, estamos sempre prontos para garantir o melhor suporte nos momentos em que mais importa. Nosso compromisso é com a sua saúde, sua segurança e sua confiança.</p>
         </div>
       </section>
 
       {/* Services Section */}
-      <section id="servicos" className="bg-slate-800 flex flex-col items-center py-16 md:pt-40 px-6 scroll-smooth">
+      <section id="servicos" className="bg-slate-800 flex flex-col items-center py-16 md:pt-32 px-6 scroll-smooth">
         <div className="text-center text-white max-w-2xl" data-aos="zoom-in">
           <h4 className="font-bold text-2xl md:text-3xl mb-4">O que fazemos por você:</h4>
           <p className="font-medium text-lg md:text-xl">Na Costa Ambulâncias, oferecemos uma gama completa de serviços para garantir o cuidado e o suporte que você precisa, a qualquer hora e em qualquer lugar.</p>
         </div>
-        <div className="flex flex-col md:flex-row gap-8 mt-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10 max-w-6xl w-full">
           {[
             { icon: <PiAmbulanceFill className="text-white size-16 md:size-14 mb-4" />, title: "Transporte de Pacientes", description: "Realizamos o transporte de pacientes em situações de urgência e emergência com segurança e conforto, utilizando ambulâncias equipadas e equipes qualificadas." },
             { icon: <TbUrgent className="text-white size-16 md:size-14 mb-4" />, title: "Atendimento Emergencial 24h", description: "Disponibilizamos atendimento de emergência a qualquer momento, com rapidez e eficiência para atender às situações mais críticas." },
             { icon: <MdHealthAndSafety className="text-white size-16 md:size-14 mb-4" />, title: "Cobertura de Eventos", description: "Oferecemos cobertura completa para eventos, com ambulâncias prontas para atender emergências durante eventos de pequeno ou grande porte, garantindo tranquilidade para organizadores e participantes." },
             { icon: <FaCalendarDays className="text-white size-16 md:size-14 mb-4" />, title: "Locação de Ambuâncias", description: "Oferecemos serviços de locação de ambulâncias equipadas e preparadas para atender diversas necessidades, desde transporte médico de rotina até situações de emergência." },
           ].map((service, index) => (
-            <div key={index} className="flex flex-col items-center w-full md:w-80"  data-aos="zoom-in-up">
+            <div key={index} className="flex flex-col items-center w-full"  data-aos="zoom-in-up">
               {service.icon}
               <div className="py-8 px-4 border border-orange-500 rounded-2xl text-center text-white"  data-aos="zoom-in-up">
                 <p className="font-light"><span className="font-bold">{service.title}:</span> {service.description}</p>
@@ -94,15 +94,15 @@ export default function page() {
       {/* Fleet Section */}
       <section id="frota" className="w-full relative overflow-hidden">
         <img src={vctUrl} alt="vector" className="hidden md:inline md:absolute -left-0 top-1/2 transform -translate-y-1/2 w-auto h-[80%] -translate-x-1/2 z-50" data-aos="fade-right"/>
-        <div className="bg-gray-200 py-16 flex flex-col md:flex-row px-6">
-          <div className="flex flex-col gap-4 w-full md:w-1/3 md:ml-96">
+        <div className="bg-gray-200 py-16 flex flex-col md:flex-row px-6 md:px-10 gap-10">
+          <div className="flex flex-col gap-4 w-full md:w-1/2 lg:w-2/5 md:pl-8 lg:pl-14">
             <p className="text-slate-800 text-left font-bold text-2xl md:text-3xl max-w-md md:w-3/4" data-aos="fade-right">Compromisso com a vida, tecnologia no atendimento.</p>
             <div className="w-full px-2 py-3 bg-orange-500 text-center text-white rounded-lg font-medium hover:bg-orange-600 hover:scale-105 transition" data-aos="fade-right" data-aos-delay="100">Frota de última geração</div>
             <div className="w-full px-2 py-3 bg-orange-500 text-center text-white rounded-lg font-medium hover:bg-orange-600 hover:scale-105 transition" data-aos="fade-right" data-aos-delay="200">Equipe qualificada e atendimento humanizado.</div>
             <div className="w-full px-2 py-3 bg-orange-500 text-center text-white rounded-lg font-medium hover:bg-orange-600 hover:scale-105 transition" data-aos="fade-right" data-aos-delay="300">Abrangência regional, garantindo saúde para todos.</div>
           </div>
-          <div className="flex items-center justify-center p-4" data-aos="fade-left">
-              <div className="grid grid-cols-2 grid-rows-2 gap-2 h-70 w-xl rounded-lg overflow-hidden md:ml-16">
+          <div className="flex items-center justify-center p-2 md:p-4 w-full md:w-1/2" data-aos="fade-left">
+              <div className="grid grid-cols-2 grid-rows-2 gap-2 h-[300px] sm:h-[360px] w-full max-w-[520px] rounded-lg overflow-hidden md:ml-0">
                 
                 <div className="col-span-1 row-span-1 bg-slate-800 rounded-lg">
                   <img
@@ -141,16 +141,16 @@ export default function page() {
               </div>
             </div>
         </div>
-        <div className="bg-gray-100 pt-16 pb-10 flex flex-col items-center md:flex-row px-6 md:px-0 md:pl-82" data-aos="zoom-out">
+        <div className="bg-gray-100 pt-16 pb-10 flex flex-col items-center md:flex-row px-6 md:px-10 lg:px-16 gap-10" data-aos="zoom-out">
           {/* Coluna da Esquerda */}
-          <div className="flex flex-col w-full md:w-2/7 gap-4 md:ml-20">
+          <div className="flex flex-col w-full md:w-1/2 lg:w-2/5 gap-4">
             <p className="text-slate-800 text-left font-bold text-2xl md:text-3xl">
               <span className="text-orange-500">Frota de ponta: </span>conforto e tecnologia em movimento.
             </p>
-            <p className="text-xl font-bold text-slate-800 w-full md:w-2/3 mb-4">
+            <p className="text-xl font-bold text-slate-800 w-full md:w-3/4 mb-4">
               Ambulâncias equipadas para salvar vidas.
             </p>
-            <div className="bg-slate-800 rounded-2xl h-48 md:w-80 md:h-34">
+            <div className="bg-slate-800 rounded-2xl h-48 md:w-80 md:h-40">
               <img
                 src={ambimg4}
                 alt="Imagem 1"
@@ -160,7 +160,7 @@ export default function page() {
           </div>
 
           {/* Coluna da Direita */}
-          <div className="w-full md:w-2/5 mt-8 md:mt-0 md:ml-20 leading-5">
+          <div className="w-full md:w-1/2 lg:w-3/5 mt-2 md:mt-0 leading-6">
             <p className="text-slate-800">
               Com uma frota ambulâncias em operação, incluindo as 4 novas unidades recém-adquiridas, garantimos um atendimento rápido e eficiente para qualquer emergência. <br />
               <br />
@@ -198,7 +198,7 @@ export default function page() {
             <a href="https://www.facebook.com/planocosta/"><FaFacebookSquare className="text-white size-8" /></a>
           </div>
         </div>
-        <nav className="border-l border-white flex flex-col gap-2 pl-6 py-2">
+        <nav className="md:border-l border-white flex flex-col gap-2 md:pl-6 py-2 text-center md:text-left">
           <a href="#sobrenos" className="font-light text-white text-sm">Sobre nós</a>
           <a href="#servicos" className="font-light text-white text-sm">Nossos serviços</a>
           <a href="#frota" className="font-light text-white text-sm">Frota</a>
@@ -206,7 +206,7 @@ export default function page() {
           <a href="#contato" className="font-light text-white text-sm">Contato</a>
           <a href="#trabalheconosco" className="font-light text-white text-sm">Trabalhe conosco</a>
         </nav>
-        <div className="border-2 border-orange-500 rounded-2xl p-6 w-full md:w-1/3 md:ml-40">
+        <div className="border-2 border-orange-500 rounded-2xl p-6 w-full md:w-1/3 md:ml-0">
           <h6 className="text-center font-bold text-white text-2xl mb-2">Precisa de ajuda agora?</h6>
           <p className="text-center font-light text-white text-lg">Ligue para 0800 000 4356 ou fale com nosso suporte em (51) 2129-4040.</p>
         </div>
