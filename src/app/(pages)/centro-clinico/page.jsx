@@ -642,7 +642,7 @@ export default function CentroClinicoLight() {
           <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row gap-6 md:gap-12 items-center">
             <div className="select-copy w-full md:w-1/2 space-y-4 md:space-y-5 text-center md:text-left">
               <h2 className="text-[9px] md:text-[10px] font-bold tracking-[0.4em] uppercase text-[#79776E] mb-2">Nossa História</h2>
-              <p className="text-base md:text-xl text-[#605E56] font-light leading-relaxed">
+              <p className="text-base md:text-xl text-[#1C1C15] md:text-[#605E56] text-shadow-md md:text-shadow-none font-light leading-relaxed">
                 O Centro Clínico Costa nasceu com a missão de oferecer atendimento de saúde humanizado e de qualidade para toda a família. Com uma equipe qualificada e diversas especialidades, estamos sempre próximos de você, cuidando do que mais importa: a sua saúde.
               </p>
               <p className="hidden sm:block text-base md:text-xl text-[#605E56] font-light leading-relaxed">
