@@ -723,7 +723,7 @@ export default function CentroClinicoLight() {
       <section
         ref={horizontalContainerRef}
         id="estrutura"
-        className="min-h-0 md:h-[100dvh] w-full overflow-x-hidden md:overflow-clip bg-[#1C1C15] text-[#FDF9EE] relative z-30 [content-visibility:auto]"
+        className="min-h-0 md:h-[100dvh] w-full overflow-x-hidden md:overflow-clip bg-[#1C1C15] text-[#FDF9EE] relative z-30"
       >
         <div
           ref={horizontalWrapperRef}

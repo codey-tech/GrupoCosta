@@ -21,6 +21,18 @@ const BASE_LENIS = {
   touchInertiaMultiplier: 32,
 };
 
+/** Altura rolável do documento (evita limite Lenis curto em mobile com layout dinâmico). */
+function getDocumentScrollHeight() {
+  const docEl = document.documentElement;
+  const body = document.body;
+  return Math.max(
+    docEl.scrollHeight,
+    body.scrollHeight,
+    docEl.offsetHeight,
+    body.offsetHeight
+  );
+}
+
 /**
  * Integração Lenis ↔ ScrollTrigger (recomendado pela GSAP + darkroom).
  * `scrollHeight` é obrigatório: sem ele, `_maxScroll` fica errado e o pin+scrub “morre” no meio.
@@ -42,8 +54,7 @@ function attachLenisScrollerProxy(lenis) {
         height: window.innerHeight,
       };
     },
-    scrollHeight: () =>
-      Math.max(docEl.scrollHeight, document.body.scrollHeight),
+    scrollHeight: getDocumentScrollHeight,
   });
   ScrollTrigger.refresh();
 }
@@ -71,6 +82,8 @@ export default function LenisProvider({
     let onTick = null;
     let stRefreshRaf = null;
     let lastViewportWidth = window.innerWidth;
+    let layoutObserver = null;
+    let layoutObserverDebounce = null;
 
     const isNarrow = () =>
       typeof disableBelowWidth === "number" && window.innerWidth < disableBelowWidth;
@@ -90,6 +103,12 @@ export default function LenisProvider({
       ScrollTrigger.removeEventListener("refresh", onScrollTriggerRefresh);
       cancelAnimationFrame(stRefreshRaf);
       stRefreshRaf = null;
+      clearTimeout(layoutObserverDebounce);
+      layoutObserverDebounce = null;
+      if (layoutObserver) {
+        layoutObserver.disconnect();
+        layoutObserver = null;
+      }
 
       if (instance) {
         if (onTick) {
@@ -127,6 +146,16 @@ export default function LenisProvider({
       }
 
       ScrollTrigger.addEventListener("refresh", onScrollTriggerRefresh);
+
+      layoutObserver = new ResizeObserver(() => {
+        clearTimeout(layoutObserverDebounce);
+        layoutObserverDebounce = setTimeout(() => {
+          layoutObserverDebounce = null;
+          onScrollTriggerRefresh();
+        }, 100);
+      });
+      layoutObserver.observe(document.documentElement);
+      layoutObserver.observe(document.body);
 
       onTick = (time) => {
         instance.raf(time * 1000);
