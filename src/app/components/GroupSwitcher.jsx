@@ -1,17 +1,26 @@
 "use client";
-import React, { useState, useRef, useEffect, useSyncExternalStore } from 'react';
-import { createPortal } from 'react-dom';
-import Link from 'next/link';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
-import { X, LayoutGrid, HeartPulse, ArrowRight, Activity, Bird, Ambulance, Heart } from 'lucide-react';
+import React, { useState, useRef, useEffect, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
+import Link from "next/link";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import {
+  X,
+  LayoutGrid,
+  HeartPulse,
+  ArrowRight,
+  Activity,
+  Bird,
+  Ambulance,
+  Heart,
+} from "lucide-react";
 
 const emptySubscribe = () => () => {};
 
 const GroupSwitcher = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeSide, setActiveSide] = useState("saude");
-  const overlayRef = useRef();
+  const overlayRef = useRef(null);
   const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
   useEffect(() => {
@@ -32,41 +41,41 @@ const GroupSwitcher = () => {
   }, [isOpen]);
 
   useGSAP(() => {
-    if (!overlayRef.current) return;
+    const el = overlayRef.current;
+    if (!el) return;
 
     if (isOpen) {
-      // Revela o fundo principal
-      gsap.to(overlayRef.current, {
-        display: 'flex',
+      gsap.to(el, {
+        display: "flex",
         opacity: 1,
         duration: 0.4,
-        ease: "power2.out"
+        ease: "power2.out",
       });
-      // Anima os itens internos subindo
-      gsap.fromTo(".menu-anim", 
-        { y: 40, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.7, stagger: 0.1, ease: "power3.out", delay: 0.2 }
+      gsap.fromTo(
+        ".menu-anim",
+        { y: 28, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.65, stagger: 0.08, ease: "power3.out", delay: 0.15 }
       );
     } else {
-      gsap.to(overlayRef.current, {
+      gsap.to(el, {
         opacity: 0,
-        duration: 0.3,
+        duration: 0.28,
         ease: "power2.in",
-        onComplete: () => gsap.set(overlayRef.current, { display: 'none' })
+        onComplete: () => gsap.set(el, { display: "none" }),
       });
     }
-  }, [isOpen]);
+  }, { scope: overlayRef, dependencies: [isOpen] });
 
   const groupData = {
     saude: [
-      { name: "Plano Costa", icon: <HeartPulse size={18} />, url: "/plano" },
-      { name: "Centro Clínico", icon: <Activity size={18} />, url: "/centro-clinico" },
-      { name: "Ambulâncias", icon: <Ambulance size={18} />, url: "/ambulancias" },
+      { name: "Plano Costa", icon: <HeartPulse size={18} className="shrink-0" />, url: "/plano" },
+      { name: "Centro Clínico", icon: <Activity size={18} className="shrink-0" />, url: "/centro-clinico" },
+      { name: "Ambulâncias", icon: <Ambulance size={18} className="shrink-0" />, url: "/ambulancias" },
     ],
     luto: [
-      { name: "Funerária Costa", icon: <Heart size={18} />, url: "/funeraria" },
-      { name: "Memorial da Paz", icon: <Bird size={18} />, url: "/memorial" },
-    ]
+      { name: "Funerária Costa", icon: <Heart size={18} className="shrink-0" />, url: "/funeraria" },
+      { name: "Memorial da Paz", icon: <Bird size={18} className="shrink-0" />, url: "/memorial" },
+    ],
   };
 
   const saudeExpanded = activeSide === "saude";
@@ -76,127 +85,173 @@ const GroupSwitcher = () => {
     setIsOpen(true);
   };
 
+  const linkCardClass =
+    "menu-anim group flex min-h-[3.25rem] w-full max-w-full items-center justify-between gap-3 rounded-2xl border transition-all duration-300 active:scale-[0.99] md:gap-4";
+
   return (
     <>
-      {/* TRIGGER DESKTOP (inline no header) */}
-      <button 
+      {/* TRIGGER DESKTOP */}
+      <button
+        type="button"
         onClick={openMenu}
-        className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full border border-[#CAC6BC] hover:bg-[#1C1C15] hover:text-[#FDF9EE] transition-all duration-300 group"
+        className="group hidden items-center gap-2 rounded-full border border-[#CAC6BC] px-4 py-2 transition-all duration-300 hover:bg-[#1C1C15] hover:text-[#FDF9EE] md:flex"
       >
-        <LayoutGrid size={16} className="group-hover:rotate-90 transition-transform duration-500" />
+        <LayoutGrid size={16} className="transition-transform duration-500 group-hover:rotate-90" />
         <span className="text-[10px] font-bold uppercase tracking-widest">Grupo Costa</span>
       </button>
 
-      {/* TRIGGER MOBILE (flutuante, otimiza espaço no header) */}
+      {/* TRIGGER MOBILE — respeita safe area e evita colisão com home indicator */}
       <button
+        type="button"
         onClick={openMenu}
-        aria-label="Abrir Group Switcher"
-        className="md:hidden fixed bottom-5 right-5 z-[9998] h-12 w-12 rounded-full bg-[#1C1C15] text-[#FDF9EE] shadow-xl border border-white/15 flex items-center justify-center active:scale-95 transition-transform"
+        aria-label="Abrir menu Grupo Costa"
+        className="fixed z-[9998] flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-[#1C1C15] text-[#FDF9EE] shadow-xl transition-transform active:scale-95 md:hidden"
+        style={{
+          right: "max(1rem, env(safe-area-inset-right, 0px))",
+          bottom: "max(1rem, env(safe-area-inset-bottom, 0px))",
+        }}
       >
-        <LayoutGrid size={18} />
+        <LayoutGrid size={18} aria-hidden />
       </button>
 
-      {/* OVERLAY SPLIT-SCREEN */}
-      {mounted && createPortal(
-      <div
-        ref={overlayRef}
-        className="fixed inset-0 z-[99999] hidden h-[100dvh] w-screen flex-col md:flex-row bg-[#000] overflow-y-auto md:overflow-hidden"
-      >
-        {/* BOTÃO FECHAR GLOBAL */}
-        <button 
-          onClick={() => setIsOpen(false)}
-          className="absolute top-6 right-6 md:top-8 md:right-8 z-50 p-3 bg-black/20 md:bg-white/10 backdrop-blur-md text-white rounded-full hover:rotate-90 transition-transform duration-300"
-        >
-          <X size={24} strokeWidth={1.5} />
-        </button>
-
-        {/* =========================================
-            COLUNA SAÚDE (Lado Esquerdo - Claro)
-        ========================================== */}
-        <div
-          onMouseEnter={() => setActiveSide("saude")}
-          className={`w-full bg-[#F8FAFC] p-8 md:p-16 lg:p-24 flex flex-col justify-center relative min-h-[50vh] md:min-h-screen transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${
-            activeSide === "luto" ? "md:w-[15%]" : "md:w-[85%]"
-          }`}
-        >
-          <div className="max-w-md w-full md:mx-auto">
-            
-            <div className="menu-anim mb-10">
-              <span className="block text-xs tracking-[0.3em] text-blue-900/50 mb-3 uppercase font-light">Vitalidade & Cuidado</span>
-              <h3 className="text-5xl md:text-7xl font-serif text-blue-950 tracking-tighter">Saúde.</h3>
-            </div>
-
-            <div
-              className={`flex flex-col gap-4 transition-all duration-300 ${
-                saudeExpanded ? "opacity-100 md:translate-x-0" : "opacity-100 md:opacity-0 md:pointer-events-none md:translate-x-4"
-              }`}
+      {mounted &&
+        createPortal(
+          <div
+            ref={overlayRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navegação Grupo Costa"
+            className="fixed inset-0 z-[99999] hidden max-w-[100dvw] flex-col overflow-x-hidden overflow-y-auto overscroll-contain bg-[#000] md:h-[100dvh] md:w-full md:flex-row md:overflow-hidden"
+            style={{
+              paddingTop: "env(safe-area-inset-top, 0px)",
+              paddingBottom: "env(safe-area-inset-bottom, 0px)",
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              aria-label="Fechar menu"
+              className="absolute right-[max(1rem,env(safe-area-inset-right,0px))] top-[max(0.75rem,env(safe-area-inset-top,0px))] z-[60] rounded-full bg-black/35 p-2.5 text-white backdrop-blur-md transition-transform hover:rotate-90 md:right-8 md:top-8 md:bg-white/10 md:p-3"
             >
-              {groupData.saude.map((item, i) => (
-                <Link key={i} href={item.url} className="menu-anim group flex items-center justify-between p-5 md:p-6 rounded-2xl bg-white border border-blue-900/10 hover:border-blue-900/30 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-500">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-blue-950/5 text-blue-950 flex items-center justify-center group-hover:bg-blue-950 group-hover:text-white transition-colors duration-500">
-                      {item.icon}
-                    </div>
-                    <span className="text-lg md:text-xl font-medium text-blue-950 tracking-tight">{item.name}</span>
-                  </div>
-                  <ArrowRight className="text-blue-950 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500" />
-                </Link>
-              ))}
-            </div>
+              <X size={22} strokeWidth={1.5} aria-hidden />
+            </button>
 
-          </div>
-        </div>
-
-        {/* =========================================
-            COLUNA LUTO (Lado Direito - Escuro)
-        ========================================== */}
-        <div
-          onMouseEnter={() => setActiveSide("luto")}
-          className={`w-full bg-[#121212] p-8 md:p-16 lg:p-24 flex flex-col justify-center relative border-t md:border-t-0 md:border-l border-white/5 min-h-[50vh] md:min-h-screen transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${
-            activeSide === "luto" ? "md:w-[85%]" : "md:w-[15%]"
-          }`}
-        >
-          <div className="max-w-md w-full md:mx-auto">
-            
-            <div className="menu-anim mb-10">
-              <span className="block text-xs tracking-[0.3em] text-white/30 mb-3 uppercase font-light">Respeito & Memória</span>
-              <h3 className="text-5xl md:text-7xl font-serif text-white tracking-tighter">Luto.</h3>
-            </div>
-
+            {/* SAÚDE */}
             <div
-              className={`flex flex-col gap-4 transition-all duration-300 ${
-                lutoExpanded ? "opacity-100 md:translate-x-0" : "opacity-100 md:opacity-0 md:pointer-events-none md:translate-x-4"
-              }`}
+              onMouseEnter={() => setActiveSide("saude")}
+              className={`relative flex w-full min-w-0 flex-col justify-center px-4 pb-8 pt-[3.25rem] sm:px-6 md:min-h-screen md:px-16 lg:p-24 ${
+                activeSide === "luto" ? "md:w-[15%]" : "md:w-[85%]"
+              } bg-[#F8FAFC] transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]`}
             >
-              {groupData.luto.map((item, i) => (
-                <Link key={i} href={item.url} className="menu-anim group flex items-center justify-between p-5 md:p-6 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/20 transition-all duration-500">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-white/5 text-white flex items-center justify-center group-hover:bg-white group-hover:text-[#121212] transition-colors duration-500">
-                      {item.icon}
-                    </div>
-                    <span className="text-lg md:text-xl font-medium text-white tracking-tight">{item.name}</span>
-                  </div>
-                  <ArrowRight className="text-white opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500" />
-                </Link>
-              ))}
+              <div className="mx-auto w-full max-w-md min-w-0">
+                <div className="menu-anim mb-6 md:mb-10">
+                  <span className="mb-2 block text-[10px] font-light uppercase tracking-[0.28em] text-blue-900/50 sm:text-xs sm:tracking-[0.3em]">
+                    Vitalidade & Cuidado
+                  </span>
+                  <h3 className="font-serif text-3xl font-normal tracking-tighter text-blue-950 sm:text-4xl md:text-7xl">
+                    Saúde.
+                  </h3>
+                </div>
+
+                <div
+                  className={`flex flex-col gap-3 sm:gap-4 md:gap-4 ${
+                    saudeExpanded
+                      ? "opacity-100 md:translate-x-0"
+                      : "opacity-100 md:pointer-events-none md:translate-x-4 md:opacity-0"
+                  } transition-all duration-300`}
+                >
+                  {groupData.saude.map((item, i) => (
+                    <Link
+                      key={i}
+                      href={item.url}
+                      onClick={() => setIsOpen(false)}
+                      className={`${linkCardClass} border-blue-900/10 bg-white p-4 hover:border-blue-900/30 hover:shadow-xl hover:shadow-blue-900/5 md:p-6`}
+                    >
+                      <div className="flex min-w-0 flex-1 items-center gap-3 md:gap-4">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-950/5 text-blue-950 transition-colors duration-500 group-hover:bg-blue-950 group-hover:text-white">
+                          {item.icon}
+                        </div>
+                        <span className="min-w-0 truncate text-left text-base font-medium tracking-tight text-blue-950 md:text-xl">
+                          {item.name}
+                        </span>
+                      </div>
+                      <ArrowRight
+                        className="shrink-0 text-blue-950 opacity-60 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 md:-translate-x-2 md:opacity-0 md:group-hover:translate-x-0"
+                        size={20}
+                        aria-hidden
+                      />
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </div>
 
-          </div>
-        </div>
+            {/* LUTO */}
+            <div
+              onMouseEnter={() => setActiveSide("luto")}
+              className={`relative flex w-full min-w-0 flex-col justify-center border-t border-white/5 px-4 pb-10 pt-8 sm:px-6 md:min-h-screen md:border-l md:border-t-0 md:px-16 lg:p-24 ${
+                activeSide === "luto" ? "md:w-[85%]" : "md:w-[15%]"
+              } bg-[#121212] transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]`}
+            >
+              <div className="mx-auto w-full max-w-md min-w-0">
+                <div className="menu-anim mb-6 md:mb-10">
+                  <span className="mb-2 block text-[10px] font-light uppercase tracking-[0.28em] text-white/35 sm:text-xs sm:tracking-[0.3em]">
+                    Respeito & Memória
+                  </span>
+                  <h3 className="font-serif text-3xl font-normal tracking-tighter text-white sm:text-4xl md:text-7xl">
+                    Luto.
+                  </h3>
+                </div>
 
-        {/* MARCA CENTRAL & LINK PORTAL */}
-        <div className="menu-anim absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 z-50 mix-blend-difference pointer-events-auto">
-          <Link href="/" className="flex flex-col items-center gap-2 group">
-            <span className="text-white text-[10px] tracking-[0.5em] font-light uppercase opacity-50 group-hover:opacity-100 transition-opacity">
-              Grupo Costa
-            </span>
-            <div className="h-[1px] w-0 bg-white group-hover:w-full transition-all duration-500"></div>
-          </Link>
-        </div>
+                <div
+                  className={`flex flex-col gap-3 sm:gap-4 md:gap-4 ${
+                    lutoExpanded
+                      ? "opacity-100 md:translate-x-0"
+                      : "opacity-100 md:pointer-events-none md:translate-x-4 md:opacity-0"
+                  } transition-all duration-300`}
+                >
+                  {groupData.luto.map((item, i) => (
+                    <Link
+                      key={i}
+                      href={item.url}
+                      onClick={() => setIsOpen(false)}
+                      className={`${linkCardClass} border-white/10 bg-white/5 p-4 hover:border-white/20 hover:bg-white/10 md:p-6`}
+                    >
+                      <div className="flex min-w-0 flex-1 items-center gap-3 md:gap-4">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/5 text-white transition-colors duration-500 group-hover:bg-white group-hover:text-[#121212]">
+                          {item.icon}
+                        </div>
+                        <span className="min-w-0 truncate text-left text-base font-medium tracking-tight text-white md:text-xl">
+                          {item.name}
+                        </span>
+                      </div>
+                      <ArrowRight
+                        className="shrink-0 text-white/90 opacity-70 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 md:-translate-x-2 md:opacity-0 md:group-hover:translate-x-0"
+                        size={20}
+                        aria-hidden
+                      />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
 
-      </div>,
-      document.body
-      )}
+            {/* Rodapé: no fluxo no mobile (não sobrepõe); absoluto só no desktop */}
+            <div className="menu-anim pointer-events-auto shrink-0 border-t border-white/10 bg-[#0c0c0c] py-5 md:absolute md:bottom-10 md:left-1/2 md:right-auto md:w-auto md:-translate-x-1/2 md:border-t-0 md:bg-transparent md:py-0 md:mix-blend-difference w-full">
+              <Link
+                href="/"
+                onClick={() => setIsOpen(false)}
+                className="group mx-auto flex max-w-full flex-col items-center gap-2 px-4"
+              >
+                <span className="text-center text-[9px] font-light uppercase tracking-[0.35em] text-white/70 transition-opacity group-hover:opacity-100 sm:text-[10px] sm:tracking-[0.45em] md:tracking-[0.5em]">
+                  Grupo Costa
+                </span>
+                <div className="h-px w-12 bg-white/40 transition-all duration-500 group-hover:w-24 group-hover:bg-white md:w-0 md:group-hover:w-full" />
+              </Link>
+            </div>
+          </div>,
+          document.body
+        )}
     </>
   );
 };
