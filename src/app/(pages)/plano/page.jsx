@@ -23,6 +23,7 @@ ScrollTrigger.config({ ignoreMobileResize: true });
 
 export default function Page() {
   const container = useRef();
+  const reduceMotionRef = useRef(false);
   
   // ESTADOS
   const [isLoading, setIsLoading] = useState(true); // Controla a tela de loading
@@ -36,7 +37,25 @@ export default function Page() {
   // Em alguns aparelhos mobile o preload de mídia pode não concluir corretamente.
   // Para evitar loader infinito, no mobile pulamos o preloader e liberamos a página.
   useEffect(() => {
-    if (window.innerWidth < 768) setIsLoading(false);
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let mobileLoadingRaf = null;
+    const syncReduceMotion = () => {
+      reduceMotionRef.current = media.matches;
+    };
+
+    syncReduceMotion();
+    media.addEventListener?.("change", syncReduceMotion);
+
+    if (window.innerWidth < 768) {
+      mobileLoadingRaf = window.requestAnimationFrame(() => {
+        setIsLoading(false);
+      });
+    }
+
+    return () => {
+      if (mobileLoadingRaf) window.cancelAnimationFrame(mobileLoadingRaf);
+      media.removeEventListener?.("change", syncReduceMotion);
+    };
   }, []);
 
   // Fallback de segurança para o Loading: se o vídeo demorar mais de 3.5s, libera o site.
@@ -59,8 +78,16 @@ export default function Page() {
 
   // Controle do background do Header dinâmico no scroll
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 80);
+      if (ticking) return;
+
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        setIsScrolled(window.scrollY > 80);
+        ticking = false;
+      });
     };
     
     window.addEventListener('scroll', handleScroll, { passive: true }); // passive: true melhora a performance de scroll
@@ -79,9 +106,36 @@ export default function Page() {
 
     mm.add({
       isMobile: "(max-width: 767px)",
-      isDesktop: "(min-width: 768px)"
+      isDesktop: "(min-width: 768px)",
+      reduceMotion: "(prefers-reduced-motion: reduce)",
     }, (context) => {
-      let { isMobile } = context.conditions;
+      let { isMobile, reduceMotion } = context.conditions;
+
+      if (reduceMotion ?? reduceMotionRef.current) {
+        gsap.fromTo(
+          ".hero-text",
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.45,
+            stagger: 0.08,
+            ease: "power2.out",
+            force3D: true,
+          }
+        );
+
+        gsap.set(".stack-card, .plan-card, .fade-up", {
+          clearProps: "all",
+          opacity: 1,
+          x: 0,
+          y: 0,
+          rotation: 0,
+          rotationX: 0,
+          scale: 1,
+        });
+        return;
+      }
 
       // 1. Animação de entrada do Hero
       gsap.from(".hero-text", {
@@ -90,22 +144,29 @@ export default function Page() {
         duration: 1,
         stagger: 0.15,
         ease: "power3.out",
-        delay: 0.5 
+        delay: 0.5,
+        force3D: true,
       });
 
       // 2. Animação de entrada suave dos blocos gerais
-      gsap.utils.toArray('.fade-up').forEach((elem) => {
-        gsap.from(elem, {
-          scrollTrigger: {
-            trigger: elem,
-            start: "top 85%", 
-            toggleActions: "play none none none"
-          },
-          y: 40,
-          opacity: 0,
-          duration: 0.8,
-          ease: "power3.out"
-        });
+      ScrollTrigger.batch(".fade-up", {
+        once: true,
+        start: "top 85%",
+        onEnter: (elements) => {
+          gsap.fromTo(
+            elements,
+            { y: 40, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.8,
+              stagger: 0.08,
+              ease: "power3.out",
+              force3D: true,
+              overwrite: "auto",
+            }
+          );
+        },
       });
 
       // 3. ANIMAÇÃO ESTILO "LENIS BRINGS THE HEAT" (Cards Benefícios)
@@ -121,10 +182,12 @@ export default function Page() {
             duration: 0.55,
             stagger: 0.08,
             ease: "power2.out",
+            force3D: true,
             scrollTrigger: {
               trigger: "#beneficios",
               start: "top 78%",
-              toggleActions: "play none none none"
+              toggleActions: "play none none none",
+              once: true,
             }
           });
         } else {
@@ -152,7 +215,8 @@ export default function Page() {
               opacity: 1,
               rotation: 0, 
               duration: 0.4, 
-              ease: "power3.out"
+              ease: "power3.out",
+              force3D: true,
             })
             .to({}, { duration: 0.6 }); 
           });
@@ -172,7 +236,8 @@ export default function Page() {
         stagger: 0.2, 
         duration: isMobile ? 0.75 : 1,
         ease: isMobile ? "power2.out" : "back.out(1.5)",
-        clearProps: "all" // Importante no mobile para evitar resquícios de 3D travando a tela
+        clearProps: "all", // Importante no mobile para evitar resquícios de 3D travando a tela
+        force3D: true,
       });
     });
 
@@ -356,7 +421,7 @@ export default function Page() {
   };
 
   return (
-    <LenisProvider disableBelowWidth={768}>
+    <LenisProvider>
     
     {/* =========================================
         PRELOADER PREMIUM (TELA DE CARREGAMENTO)
@@ -373,7 +438,15 @@ export default function Page() {
         <div className="relative w-24 h-24 flex items-center justify-center">
           <div className="absolute inset-0 bg-purple-600 rounded-full animate-ping opacity-20" />
           <div className="absolute inset-2 bg-purple-500/20 rounded-full animate-pulse" />
-          <Image src="/logogrupo.png" alt="Logo" width={60} height={60} className="relative z-10" />
+          <Image
+            src="/logogrupo.png"
+            alt="Logo"
+            width={60}
+            height={60}
+            priority
+            className="relative z-10 w-[60px]"
+            style={{ height: "auto" }}
+          />
         </div>
 
         {/* Logo */}

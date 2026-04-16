@@ -1,25 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/next";
 import { Cookie } from "lucide-react";
 
 const STORAGE_KEY = "grupocosta-cookie-consent";
+const emptySubscribe = () => () => {};
 
 export default function CookieConsent() {
-  const [hydrated, setHydrated] = useState(false);
-  const [consent, setConsent] = useState(null);
+  const hydrated = useSyncExternalStore(emptySubscribe, () => true, () => false);
+  const [consent, setConsent] = useState(() => {
+    if (typeof window === "undefined") return "pending";
 
-  useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === "accepted" || stored === "rejected") {
-      setConsent(stored);
-    } else {
-      setConsent("pending");
-    }
-    setHydrated(true);
-  }, []);
+    return stored === "accepted" || stored === "rejected" ? stored : "pending";
+  });
 
   const accept = () => {
     localStorage.setItem(STORAGE_KEY, "accepted");

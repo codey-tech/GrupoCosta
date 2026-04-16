@@ -98,300 +98,320 @@ export default function CentroClinicoLight() {
   useGSAP(() => {
     if (isLoading) return;
 
-    const reduceMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const mm = gsap.matchMedia();
+    const setWillChange = (targets, value) => {
+      gsap.utils.toArray(targets).forEach((target) => {
+        if (target) target.style.willChange = value;
+      });
+    };
 
-    const desktop = !isMobile;
+    mm.add(
+      {
+        isMobile: "(max-width: 767px)",
+        isDesktop: "(min-width: 768px)",
+        reduceMotion: "(prefers-reduced-motion: reduce)",
+      },
+      (context) => {
+        const { isMobile: mobileViewport, isDesktop: desktop, reduceMotion } = context.conditions;
 
-    /** Acessível: pouca animação, estados finais legíveis */
-    if (reduceMotion) {
-      const tlRm = gsap.timeline();
-      tlRm
-        .fromTo(
+        if (reduceMotion) {
+          const tlRm = gsap.timeline();
+          tlRm
+            .fromTo(
+              ".hero-badge",
+              { opacity: 0, y: 12 },
+              { opacity: 1, y: 0, duration: 0.35, ease: "power2.out", force3D: true }
+            )
+            .fromTo(
+              ".hero-line span",
+              { opacity: 0, y: 20 },
+              { opacity: 1, y: 0, duration: 0.4, stagger: 0.05, ease: "power2.out", force3D: true },
+              "-=0.15"
+            )
+            .fromTo(
+              ".hero-desc",
+              { opacity: 0 },
+              { opacity: 1, duration: 0.35, ease: "power2.out", force3D: true },
+              "-=0.2"
+            );
+
+          gsap.set(".floating-card", { opacity: 1, y: 0, scale: 1 });
+          if (manifestoRef.current) {
+            const words = manifestoRef.current.querySelectorAll(".scrub-word");
+            gsap.set(words, { opacity: 1 });
+          }
+
+          gsap.set(".zoom-target", { scale: 1, x: 0, y: 0, svgOrigin: "960 600" });
+          gsap.set(".sobre-overlay", { opacity: 1 });
+          gsap.set(".color-text", { fill: "#1C1C15" });
+          gsap.set(".y-mover", { y: mobileViewport ? -450 : -300 });
+          if (sobreBgRef.current) gsap.set(sobreBgRef.current, { scale: 1 });
+          if (sobreBgParallaxRef.current) gsap.set(sobreBgParallaxRef.current, { yPercent: 0 });
+          if (sobreContentRef.current) gsap.set(sobreContentRef.current, { opacity: 1, y: 0 });
+
+          const teamCardsRm = teamGridRef.current?.querySelectorAll(".team-card") ?? [];
+          if (teamCardsRm.length) gsap.set(teamCardsRm, { opacity: 1, y: 0, scale: 1 });
+
+          gsap.utils.toArray(".fade-up").forEach((elem) => {
+            gsap.set(elem, { opacity: 1, y: 0 });
+          });
+
+          return;
+        }
+
+        const tl = gsap.timeline();
+        tl.fromTo(
           ".hero-badge",
-          { opacity: 0, y: 12 },
-          { opacity: 1, y: 0, duration: 0.35, ease: "power2.out", force3D: true }
+          { opacity: 0, scale: 0.8, y: 20 },
+          { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: "back.out(1.5)", delay: 0.2, force3D: true }
         )
-        .fromTo(
-          ".hero-line span",
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.4, stagger: 0.05, ease: "power2.out", force3D: true },
-          "-=0.15"
-        )
-        .fromTo(
-          ".hero-desc",
-          { opacity: 0 },
-          { opacity: 1, duration: 0.35, ease: "power2.out", force3D: true },
-          "-=0.2"
-        );
+          .fromTo(
+            ".hero-line span",
+            { y: 100, opacity: 0, skewY: 3 },
+            { y: 0, opacity: 1, skewY: 0, duration: 1.2, stagger: 0.1, ease: "power4.out", force3D: true },
+            "-=0.4"
+          )
+          .fromTo(
+            ".hero-desc",
+            { opacity: 0, y: 20 },
+            { opacity: 1, y: 0, duration: 1, ease: "power2.out", force3D: true },
+            "-=0.8"
+          )
+          .fromTo(
+            ".floating-card",
+            { opacity: 0, y: 40, scale: 0.9 },
+            { opacity: 1, y: 0, scale: 1, duration: 1.2, stagger: 0.2, ease: "power3.out", force3D: true },
+            "-=0.6"
+          );
 
-      gsap.set(".floating-card", { opacity: 1, y: 0, scale: 1 });
+        if (desktop) {
+          gsap.utils.toArray(".floating-card").forEach((card, index) => {
+            gsap.to(card, {
+              y: index % 2 === 0 ? "-=15" : "+=15",
+              duration: 3 + index,
+              repeat: -1,
+              yoyo: true,
+              ease: "sine.inOut",
+              force3D: true,
+            });
+          });
+        }
 
-      if (manifestoRef.current) {
-        const words = manifestoRef.current.querySelectorAll(".scrub-word");
-        gsap.set(words, { opacity: 1 });
-      }
+        if (desktop && heroTextRef.current && heroSectionRef.current) {
+          gsap.to(heroTextRef.current, {
+            y: 150,
+            opacity: 0,
+            ease: "none",
+            force3D: true,
+            scrollTrigger: {
+              trigger: heroSectionRef.current,
+              start: "top top",
+              end: "bottom top",
+              scrub: true,
+            },
+          });
+        }
 
-      gsap.set(".zoom-target", { scale: 1, x: 0, y: 0, svgOrigin: "960 600" });
-      gsap.set(".sobre-overlay", { opacity: 1 });
-      gsap.set(".color-text", { fill: "#1C1C15" });
-      gsap.set(".y-mover", { y: isMobile ? -450 : -300 });
-      if (sobreBgRef.current) gsap.set(sobreBgRef.current, { scale: 1 });
-      if (sobreBgParallaxRef.current) gsap.set(sobreBgParallaxRef.current, { yPercent: 0 });
-      if (sobreContentRef.current) gsap.set(sobreContentRef.current, { opacity: 1, y: 0 });
+        if (manifestoRef.current) {
+          if (mobileViewport) {
+            gsap.fromTo(
+              manifestoRef.current,
+              { opacity: 0.36, y: 10 },
+              {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                ease: "power2.out",
+                force3D: true,
+                scrollTrigger: {
+                  trigger: manifestoRef.current,
+                  start: "top 84%",
+                  end: "top 56%",
+                  scrub: 0.45,
+                },
+              }
+            );
+          } else {
+            const words = manifestoRef.current.querySelectorAll(".scrub-word");
+            gsap.set(words, { opacity: 0.12 });
+            gsap.to(words, {
+              opacity: 1,
+              ease: "none",
+              stagger: { each: 0.06, from: "start" },
+              scrollTrigger: {
+                trigger: manifestoRef.current,
+                start: "top 72%",
+                end: "bottom 58%",
+                scrub: 0.6,
+              },
+            });
+          }
+        }
 
-      const teamCardsRm = teamGridRef.current?.querySelectorAll(".team-card") ?? [];
-      if (teamCardsRm.length) gsap.set(teamCardsRm, { opacity: 1, y: 0, scale: 1 });
+        if (desktop && sobreBgParallaxRef.current && sobrePinRef.current) {
+          gsap.set(sobreBgParallaxRef.current, { yPercent: -30 });
+          gsap.to(sobreBgParallaxRef.current, {
+            yPercent: 0,
+            ease: "none",
+            force3D: true,
+            scrollTrigger: {
+              trigger: sobrePinRef.current,
+              start: "top bottom",
+              end: "top top",
+              scrub: true,
+            },
+          });
+        } else if (!desktop && sobreBgParallaxRef.current) {
+          gsap.set(sobreBgParallaxRef.current, { yPercent: 0 });
+        }
 
-      gsap.utils.toArray(".fade-up").forEach((elem) => {
-        gsap.set(elem, { opacity: 1, y: 0 });
-      });
+        if (mobileViewport) {
+          gsap.set(".sobre-overlay", { opacity: 0 });
+          gsap.set(".color-text", { fill: "#1C1C15" });
+          gsap.set(".y-mover", { y: 0 });
+          gsap.set(".zoom-target", { scale: 1, x: 0, y: 0, svgOrigin: "960 600" });
+          if (sobreBgRef.current) gsap.set(sobreBgRef.current, { scale: 1 });
+          if (sobreContentRef.current) gsap.set(sobreContentRef.current, { opacity: 1, y: 0 });
+          setWillChange(
+            [sobreBgParallaxRef.current, sobreBgRef.current, ...gsap.utils.toArray(".zoom-target")],
+            ""
+          );
+        } else {
+          const viewportRef = Math.max(window.innerWidth, window.innerHeight);
+          const initialSobreScale = Math.max(36, viewportRef / 52);
+          const zoomTargets = gsap.utils.toArray(".zoom-target");
+          const trackedTargets = [sobreBgParallaxRef.current, sobreBgRef.current, ...zoomTargets];
 
-      return;
-    }
+          gsap.set(".zoom-target", { svgOrigin: "960 600", scale: initialSobreScale, x: 0, y: -240 });
+          gsap.set(".sobre-overlay", { opacity: 0 });
+          gsap.set(".color-text", { fill: "transparent" });
+          gsap.set(".y-mover", { y: 0 });
+          if (sobreBgRef.current) gsap.set(sobreBgRef.current, { scale: 1.15 });
+          if (sobreContentRef.current) gsap.set(sobreContentRef.current, { opacity: 0, y: 100 });
 
-    // 1. Hero Reveal
-    const tl = gsap.timeline();
+          const sobreScrollTl = gsap.timeline({
+            scrollTrigger: {
+              id: "centro-sobre",
+              trigger: sobrePinRef.current,
+              start: "top top",
+              end: "+=280%",
+              pin: true,
+              pinSpacing: true,
+              scrub: true,
+              invalidateOnRefresh: true,
+              onEnter: () => setWillChange(trackedTargets, "transform"),
+              onEnterBack: () => setWillChange(trackedTargets, "transform"),
+              onLeave: () => setWillChange(trackedTargets, ""),
+              onLeaveBack: () => setWillChange(trackedTargets, ""),
+            },
+          });
 
-    tl.fromTo(
-      ".hero-badge",
-      { opacity: 0, scale: 0.8, y: 20 },
-      { opacity: 1, scale: 1, y: 0, duration: 0.8, ease: "back.out(1.5)", delay: 0.2, force3D: true }
-    )
-      .fromTo(
-        ".hero-line span",
-        { y: 100, opacity: 0, skewY: 3 },
-        { y: 0, opacity: 1, skewY: 0, duration: 1.2, stagger: 0.1, ease: "power4.out", force3D: true },
-        "-=0.4"
-      )
-      .fromTo(
-        ".hero-desc",
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 1, ease: "power2.out", force3D: true },
-        "-=0.8"
-      )
-      .fromTo(
-        ".floating-card",
-        { opacity: 0, y: 40, scale: 0.9 },
-        { opacity: 1, y: 0, scale: 1, duration: 1.2, stagger: 0.2, ease: "power3.out", force3D: true },
-        "-=0.6"
-      );
+          const delayZoom = 1.5;
+          sobreScrollTl.to({}, { duration: delayZoom });
+          sobreScrollTl
+            .to(".zoom-target", { scale: 1, x: 0, y: 0, duration: 3.5, ease: "none", force3D: true }, delayZoom)
+            .to(".sobre-overlay", { opacity: 1, duration: 0.9, ease: "none", force3D: true }, delayZoom);
 
-    if (desktop) {
-      gsap.utils.toArray(".floating-card").forEach((card, index) => {
-        gsap.to(card, {
-          y: index % 2 === 0 ? "-=15" : "+=15",
-          duration: 3 + index,
-          repeat: -1,
-          yoyo: true,
-          ease: "sine.inOut",
-          force3D: true,
-        });
-      });
-    }
+          if (sobreBgRef.current) {
+            sobreScrollTl.to(sobreBgRef.current, { scale: 1, duration: 3.5, ease: "none", force3D: true }, delayZoom);
+          }
 
-    if (desktop && heroTextRef.current && heroSectionRef.current) {
-      gsap.to(heroTextRef.current, {
-        y: 150,
-        opacity: 0,
-        ease: "none",
-        force3D: true,
-        scrollTrigger: {
-          trigger: heroSectionRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
-    }
+          sobreScrollTl
+            .to(".color-text", { fill: "#1C1C15", duration: 0.3, ease: "none" }, delayZoom + 3.0)
+            .to(".y-mover", { y: -300, duration: 1.5, ease: "none", force3D: true }, delayZoom + 3.5)
+            .to(sobreContentRef.current, { opacity: 1, y: 0, duration: 1.5, ease: "none", force3D: true }, delayZoom + 3.8);
+        }
 
-    // 2. Manifesto — scrub mais estável e previsível
-    ScrollTrigger.getById("centro-manifesto-mobile")?.kill();
-    ScrollTrigger.getById("centro-manifesto-desktop")?.kill();
+        if (desktop) {
+          gsap.utils.toArray(".img-parallax").forEach((img) => {
+            if (horizontalContainerRef.current && horizontalContainerRef.current.contains(img)) return;
+            gsap.to(img, {
+              yPercent: 15,
+              ease: "none",
+              force3D: true,
+              scrollTrigger: {
+                trigger: img.parentElement,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true,
+              },
+            });
+          });
+        }
 
-    if (manifestoRef.current) {
-      if (isMobile) {
-        gsap.fromTo(
-          manifestoRef.current,
-          { opacity: 0.36, y: 10 },
-          {
+        const teamCards = teamGridRef.current ? teamGridRef.current.querySelectorAll(".team-card") : [];
+        if (teamCards.length) {
+          gsap.set(teamCards, { opacity: 0, y: 56, scale: 0.98 });
+          gsap.to(teamCards, {
             opacity: 1,
             y: 0,
-            duration: 0.6,
-            ease: "power2.out",
+            scale: 1,
+            duration: mobileViewport ? 0.55 : 0.75,
+            ease: "power3.out",
+            stagger: { each: mobileViewport ? 0.06 : 0.1, from: "start" },
+            force3D: true,
             scrollTrigger: {
-              id: "centro-manifesto-mobile",
-              trigger: manifestoRef.current,
-              start: "top 84%",
-              end: "top 56%",
-              scrub: 0.45,
+              trigger: teamGridRef.current,
+              start: "top 82%",
+              toggleActions: "play none none none",
+              once: true,
+              invalidateOnRefresh: true,
             },
-          }
-        );
-      } else {
-        const words = manifestoRef.current.querySelectorAll(".scrub-word");
-        gsap.set(words, { opacity: 0.12 });
-        gsap.to(words, {
-          opacity: 1,
-          ease: "none",
-          stagger: { each: 0.06, from: "start" },
-          scrollTrigger: {
-            id: "centro-manifesto-desktop",
-            trigger: manifestoRef.current,
-            start: "top 72%",
-            end: "bottom 58%",
-            scrub: 0.6,
-          },
-        });
-      }
-    }
+          });
+        }
 
-    // 3. Cortina do fundo Sobre — só desktop (evita 2 scrubs pesados no pin no mobile)
-    if (desktop && sobreBgParallaxRef.current && sobrePinRef.current) {
-      gsap.set(sobreBgParallaxRef.current, { yPercent: -30 });
-      gsap.to(sobreBgParallaxRef.current, {
-        yPercent: 0,
-        ease: "none",
-        force3D: true,
-        scrollTrigger: {
-          trigger: sobrePinRef.current,
-          start: "top bottom",
-          end: "top top",
-          scrub: true,
-        },
-      });
-    } else if (!desktop && sobreBgParallaxRef.current) {
-      gsap.set(sobreBgParallaxRef.current, { yPercent: 0 });
-    }
+        if (desktop && horizontalWrapperRef.current && horizontalContainerRef.current) {
+          const wrapper = horizontalWrapperRef.current;
+          const scrollContainer = horizontalContainerRef.current;
 
-    // 4. Seção Sobre (SVG)
-    // Mobile: sem animação do título (pedido), apenas texto destacado sobre a imagem.
-    if (isMobile) {
-      ScrollTrigger.getById("centro-sobre")?.kill();
-      gsap.set(".sobre-overlay", { opacity: 0 });
-      gsap.set(".color-text", { fill: "#1C1C15" });
-      gsap.set(".y-mover", { y: 0 });
-      gsap.set(".zoom-target", { scale: 1, x: 0, y: 0, svgOrigin: "960 600" });
-      if (sobreBgRef.current) gsap.set(sobreBgRef.current, { scale: 1 });
-      if (sobreContentRef.current) gsap.set(sobreContentRef.current, { opacity: 1, y: 0 });
-    } else {
-      const viewportRef = Math.max(window.innerWidth, window.innerHeight);
-      const initialSobreScale = Math.max(36, viewportRef / 52);
+          gsap.to(wrapper, {
+            x: "-200vw",
+            ease: "none",
+            force3D: true,
+            scrollTrigger: {
+              trigger: scrollContainer,
+              start: "top top",
+              end: () => `+=${Math.max(window.innerWidth, 320) * 2}`,
+              pin: true,
+              pinSpacing: true,
+              pinType: "transform",
+              anticipatePin: 1,
+              scrub: 0.65,
+              invalidateOnRefresh: true,
+              onEnter: () => setWillChange([wrapper], "transform"),
+              onEnterBack: () => setWillChange([wrapper], "transform"),
+              onLeave: () => setWillChange([wrapper], ""),
+              onLeaveBack: () => setWillChange([wrapper], ""),
+            },
+          });
+        } else if (horizontalWrapperRef.current) {
+          setWillChange([horizontalWrapperRef.current], "");
+        }
 
-      gsap.set(".zoom-target", { svgOrigin: "960 600", scale: initialSobreScale, x: 0, y: -240 });
-      gsap.set(".sobre-overlay", { opacity: 0 });
-      gsap.set(".color-text", { fill: "transparent" });
-      gsap.set(".y-mover", { y: 0 });
-      if (sobreBgRef.current) gsap.set(sobreBgRef.current, { scale: 1.15 });
-      if (sobreContentRef.current) gsap.set(sobreContentRef.current, { opacity: 0, y: 100 });
-
-      ScrollTrigger.getById("centro-sobre")?.kill();
-      const sobreScrollTl = gsap.timeline({
-        scrollTrigger: {
-          id: "centro-sobre",
-          trigger: sobrePinRef.current,
-          start: "top top",
-          end: "+=280%",
-          pin: true,
-          pinSpacing: true,
-          scrub: true,
-          invalidateOnRefresh: true,
-        },
-      });
-
-      const delayZoom = 1.5;
-      sobreScrollTl.to({}, { duration: delayZoom });
-
-      sobreScrollTl
-        .to(".zoom-target", { scale: 1, x: 0, y: 0, duration: 3.5, ease: "none", force3D: true }, delayZoom)
-        .to(".sobre-overlay", { opacity: 1, duration: 0.9, ease: "none", force3D: true }, delayZoom);
-
-      if (sobreBgRef.current) {
-        sobreScrollTl.to(sobreBgRef.current, { scale: 1, duration: 3.5, ease: "none", force3D: true }, delayZoom);
-      }
-
-      sobreScrollTl
-        .to(".color-text", { fill: "#1C1C15", duration: 0.3, ease: "none" }, delayZoom + 3.0)
-        .to(".y-mover", { y: -300, duration: 1.5, ease: "none", force3D: true }, delayZoom + 3.5)
-        .to(sobreContentRef.current, { opacity: 1, y: 0, duration: 1.5, ease: "none", force3D: true }, delayZoom + 3.8);
-    }
-
-    if (desktop) {
-      gsap.utils.toArray(".img-parallax").forEach((img) => {
-        if (horizontalContainerRef.current && horizontalContainerRef.current.contains(img)) return;
-        gsap.to(img, {
-          yPercent: 15,
-          ease: "none",
-          force3D: true,
-          scrollTrigger: {
-            trigger: img.parentElement,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true,
-          },
-        });
-      });
-    }
-
-    ScrollTrigger.getById("team-grid-cascade")?.kill();
-    const teamCards = teamGridRef.current ? teamGridRef.current.querySelectorAll(".team-card") : [];
-    if (teamCards.length) {
-      gsap.set(teamCards, { opacity: 0, y: 56, scale: 0.98 });
-      gsap.to(teamCards, {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: isMobile ? 0.55 : 0.75,
-        ease: "power3.out",
-        stagger: { each: isMobile ? 0.06 : 0.1, from: "start" },
-        force3D: true,
-        scrollTrigger: {
-          id: "team-grid-cascade",
-          trigger: teamGridRef.current,
-          start: "top 82%",
-          toggleActions: "play none none none",
+        ScrollTrigger.batch(".fade-up", {
           once: true,
-          invalidateOnRefresh: true,
-        },
-      });
-    }
+          start: "top 85%",
+          onEnter: (elements) => {
+            gsap.fromTo(
+              elements,
+              { y: 50, opacity: 0 },
+              {
+                y: 0,
+                opacity: 1,
+                duration: mobileViewport ? 0.72 : 1,
+                stagger: 0.08,
+                ease: "power3.out",
+                force3D: true,
+                overwrite: "auto",
+              }
+            );
+          },
+        });
+      }
+    );
 
-    if (desktop && horizontalWrapperRef.current && horizontalContainerRef.current) {
-      ScrollTrigger.getById("centro-horizontal")?.kill();
-      const wrapper = horizontalWrapperRef.current;
-      const scrollContainer = horizontalContainerRef.current;
-
-      gsap.to(wrapper, {
-        x: "-200vw",
-        ease: "none",
-        force3D: true,
-        scrollTrigger: {
-          id: "centro-horizontal",
-          trigger: scrollContainer,
-          start: "top top",
-          end: () => `+=${Math.max(window.innerWidth, 320) * 2}`,
-          pin: true,
-          pinSpacing: true,
-          pinType: "transform",
-          anticipatePin: 1,
-          scrub: 0.65,
-          invalidateOnRefresh: true,
-        },
-      });
-    }
-
-    gsap.utils.toArray(".fade-up").forEach((elem) => {
-      gsap.from(elem, {
-        scrollTrigger: { trigger: elem, start: "top 85%" },
-        y: 50,
-        opacity: 0,
-        duration: isMobile ? 0.72 : 1,
-        ease: "power3.out",
-        force3D: true,
-      });
-    });
-  }, { scope: container, dependencies: [isLoading, isMobile] });
+    return () => mm.revert();
+  }, { scope: container, dependencies: [isLoading] });
 
   const profissionais = [
     { name: "Dr. Anderson Silveira", spec: "Clínica Geral", img: "/profissionais/anderson.webp" },
@@ -448,21 +468,26 @@ export default function CentroClinicoLight() {
   };
 
   return (
-    <LenisProvider disableBelowWidth={768}>
+    <LenisProvider>
     <div ref={container} className="select-none bg-[#FDF9EE] text-[#1C1C15] font-sans selection:bg-[#CAC6BC] selection:text-[#1C1C15] overflow-x-hidden">
       
       {/* PRELOADER */}
       <div className={`fixed inset-0 z-[99999] bg-[#FDF9EE] flex flex-col items-center justify-center transition-all duration-1000 ease-[cubic-bezier(0.76,0,0.24,1)] ${isLoading ? 'translate-y-0' : '-translate-y-full'}`}>
         <div className="overflow-hidden px-4 text-center">
           <div className={`text-3xl md:text-5xl font-light tracking-tighter text-[#1C1C15] flex flex-wrap justify-center items-center gap-2 transition-transform duration-1000 delay-300 ${isLoading ? 'translate-y-0' : 'translate-y-full'}`}>
-            <Image 
-                src="/logos/centroclinico.svg" 
-                alt="Logo" 
-                width={160} 
-                height={160} 
-                className="w-full h-full"
-                style={{ filter: 'brightness(0) saturate(100%) invert(8%) sepia(5%) saturate(1088%) hue-rotate(20deg) brightness(96%) contrast(91%)' }}
-            />          
+            <Image
+                src="/logos/centroclinico.svg"
+                alt="Logo"
+                width={175}
+                height={54}
+                priority
+                style={{
+                  width: 160,
+                  height: "auto",
+                  filter:
+                    "brightness(0) saturate(100%) invert(8%) sepia(5%) saturate(1088%) hue-rotate(20deg) brightness(96%) contrast(91%)",
+                }}
+            />
           </div>
         </div>
         <div className="w-32 md:w-48 h-[1px] bg-[#E6E2D7] mt-8 relative overflow-hidden">
@@ -473,13 +498,18 @@ export default function CentroClinicoLight() {
       <nav className={`fixed top-0 w-full z-50 transition-all duration-700 ease-out ${isScrolled ? 'bg-[#FDF9EE]/98 md:bg-[#FDF9EE]/95 md:backdrop-blur-xl py-4 px-4 md:px-8 border-b border-[#E6E2D7]' : 'bg-transparent py-6 md:py-8 px-4 md:px-8'}`}>
         <div className="flex justify-between items-center max-w-7xl mx-auto w-full">
           <div className="text-lg md:text-xl tracking-tighter text-[#1C1C15] leading-none">
-          <Image 
-                src="/logos/centroclinico.svg" 
-                alt="Logo" 
-                width={120} 
-                height={120} 
-                style={{ filter: 'brightness(0) saturate(100%) invert(8%) sepia(5%) saturate(1088%) hue-rotate(20deg) brightness(96%) contrast(91%)' }}
-            />   
+          <Image
+                src="/logos/centroclinico.svg"
+                alt="Logo"
+                width={175}
+                height={54}
+                style={{
+                  width: 120,
+                  height: "auto",
+                  filter:
+                    "brightness(0) saturate(100%) invert(8%) sepia(5%) saturate(1088%) hue-rotate(20deg) brightness(96%) contrast(91%)",
+                }}
+            />
           </div>
           <GroupSwitcher />
           <div className="hidden lg:flex gap-12 text-xs font-semibold uppercase tracking-[0.2em]">
@@ -531,7 +561,14 @@ export default function CentroClinicoLight() {
         {/* Floating Images (Assimetria Premium) */}
         <div className="hidden lg:block floating-card absolute left-[5%] top-[35%] w-64 aspect-[4/5] rounded-3xl overflow-hidden border-4 border-[#FDF9EE] shadow-2xl rotate-[-4deg]">
           <div className="absolute inset-0 bg-[#1C1C15]/10 z-10" />
-          <img src="/clinica/hero1.webp" alt="Consultório" className="w-full h-full object-cover" />
+          <Image
+            src="/clinica/hero1.webp"
+            alt="Consultório"
+            fill
+            priority
+            sizes="256px"
+            className="object-cover"
+          />
           <div className="absolute bottom-4 left-4 right-4 bg-[#FDF9EE]/90 backdrop-blur px-4 py-3 rounded-xl z-20 flex items-center gap-3">
             <Stethoscope size={18} className="text-[#323129]" />
             <span className="text-xs font-bold text-[#1C1C15]">+10 Especialidades</span>
@@ -540,7 +577,14 @@ export default function CentroClinicoLight() {
 
         <div className="hidden lg:block floating-card absolute right-[5%] top-[25%] w-56 aspect-square rounded-full overflow-hidden border-4 border-[#FDF9EE] shadow-xl rotate-[6deg]">
           <div className="absolute inset-0 bg-[#1C1C15]/10 z-10" />
-          <img src="/clinica/hero2.webp" alt="Fachada da Clínica" className="w-full h-full object-cover" />
+          <Image
+            src="/clinica/hero2.webp"
+            alt="Fachada da Clínica"
+            fill
+            priority
+            sizes="224px"
+            className="object-cover"
+          />
         </div>
       </section>
 
@@ -566,15 +610,15 @@ export default function CentroClinicoLight() {
         className={`${isMobile ? "min-h-[100dvh] py-8" : "h-[100dvh]"} w-full relative bg-[#F5F0E5] overflow-clip border-t border-[#E6E2D7] [contain:layout_paint] isolate`}
       >
         <div className="absolute inset-0 w-full h-full z-0 overflow-clip pointer-events-none">
-          <div ref={sobreBgParallaxRef} className="w-full h-full will-change-transform">
+          <div ref={sobreBgParallaxRef} className="w-full h-full">
             <div
               ref={sobreBgRef}
-              className="w-full h-full bg-cover bg-center will-change-transform [transform:translateZ(0)]"
+              className="w-full h-full bg-cover bg-center [transform:translateZ(0)]"
               style={{ backgroundImage: `url('${SOBRE_BG_IMAGE}')` }}
             />
           </div>
         </div>
-        <div className="absolute inset-0 z-[1] md:hidden pointer-events-none bg-gradient-to-b from-[#FDF9EE]/55 via-[#FDF9EE]/25 to-[#FDF9EE]/90" />
+        <div className="absolute inset-0 z-[1] md:hidden pointer-events-none bg-gradient-to-b from-[#FDF9EE]/70 via-[#FDF9EE]/35 to-[#FDF9EE]/96" />
         
         {/* Título simplificado no mobile (sem animação) */}
         <div className="absolute inset-x-0 top-0 z-10 md:hidden pointer-events-none px-5 pt-10">
@@ -597,7 +641,7 @@ export default function CentroClinicoLight() {
             <mask id="gta-true-mask">
               <rect x="0" y="0" width="1920" height="1080" fill="white" />
               <g className="y-mover">
-                <g className="zoom-target will-change-transform">
+                <g className="zoom-target">
                   {isMobile ? (
                     <>
                       <text x="960" y="320" textAnchor="middle" dominantBaseline="middle" fill="black" className="font-light" fontSize="70" style={{ fontFamily: 'inherit' }}>Sobre o</text>
@@ -617,7 +661,7 @@ export default function CentroClinicoLight() {
           </defs>
           <rect className="sobre-overlay" x="0" y="0" width="1920" height="1080" fill="#F5F0E5" mask="url(#gta-true-mask)" />
           <g className="y-mover">
-            <g className="zoom-target color-text will-change-transform">
+            <g className="zoom-target color-text">
               {isMobile ? (
                  <>
                    <text x="960" y="320" textAnchor="middle" dominantBaseline="middle" className="font-light" fontSize="70" style={{ fontFamily: 'inherit' }}>Sobre o</text>
@@ -637,15 +681,23 @@ export default function CentroClinicoLight() {
 
         <div
           ref={sobreContentRef}
-          className={`${isMobile ? "relative mt-48 pb-8" : "absolute inset-0 h-full pb-[10vh]"} w-full z-20 flex flex-col justify-end px-4 md:px-8 opacity-100 md:opacity-0 pointer-events-auto`}
+          className={`${isMobile ? "relative mt-44 pb-10 pt-2" : "absolute inset-0 h-full pb-[10vh]"} w-full z-20 flex flex-col justify-end px-4 md:px-8 opacity-100 md:opacity-0 pointer-events-auto`}
         >
           <div className="max-w-7xl mx-auto w-full flex flex-col md:flex-row gap-6 md:gap-12 items-center">
-            <div className="select-copy w-full md:w-1/2 space-y-4 md:space-y-5 text-center md:text-left">
-              <h2 className="text-[9px] md:text-[10px] font-bold tracking-[0.4em] uppercase text-[#79776E] mb-2">Nossa História</h2>
-              <p className="text-base md:text-xl text-[#1C1C15] md:text-[#605E56] text-shadow-md md:text-shadow-none font-light leading-relaxed">
+            <div
+              className={`select-copy w-full md:w-1/2 space-y-4 md:space-y-5 text-center md:text-left ${
+                isMobile
+                  ? "rounded-[1.75rem] border border-[#E6E2D7] bg-[#FDF9EE]/[0.97] px-5 py-6 shadow-[0_12px_40px_-12px_rgba(28,28,21,0.18)] backdrop-blur-md md:border-transparent md:bg-transparent md:px-0 md:py-0 md:shadow-none md:backdrop-blur-none"
+                  : ""
+              }`}
+            >
+              <h2 className="text-xs font-bold tracking-[0.28em] uppercase text-[#605E56] md:mb-2 md:text-[10px] md:tracking-[0.4em] md:text-[#79776E]">
+                Nossa História
+              </h2>
+              <p className="text-[15px] font-normal leading-[1.65] text-[#1C1C15] md:text-xl md:font-light md:leading-relaxed md:text-[#605E56]">
                 O Centro Clínico Costa nasceu com a missão de oferecer atendimento de saúde humanizado e de qualidade para toda a família. Com uma equipe qualificada e diversas especialidades, estamos sempre próximos de você, cuidando do que mais importa: a sua saúde.
               </p>
-              <p className="hidden sm:block text-base md:text-xl text-[#605E56] font-light leading-relaxed">
+              <p className="text-[14px] font-normal leading-[1.65] text-[#323129] md:text-xl md:font-light md:leading-relaxed md:text-[#605E56]">
                 Além disso, somos um espaço moderno que oferece salas para médicos autônomos trabalharem com autonomia e conforto, promovendo um ambiente colaborativo e profissional.
               </p>
             </div>
@@ -675,7 +727,7 @@ export default function CentroClinicoLight() {
       >
         <div
           ref={horizontalWrapperRef}
-          className="flex flex-col md:flex-row md:flex-nowrap w-full md:h-full md:w-[300vw] md:will-change-transform"
+          className="flex flex-col md:flex-row md:flex-nowrap w-full md:h-full md:w-[300vw]"
         >
           
           <div className="w-full md:w-[100vw] min-h-[72vh] md:min-h-0 md:h-full shrink-0 flex items-center justify-center py-16 md:py-0 px-4 md:px-20 relative md:border-r border-[#323129] border-b md:border-b-0">
@@ -770,12 +822,12 @@ export default function CentroClinicoLight() {
               }`}
             >
               <div className="aspect-[4/5] overflow-hidden relative">
-                <img
+                <Image
                   src={prof.img}
                   alt={prof.name}
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700 ease-out"
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover object-top group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#1C1C15]/90 via-[#1C1C15]/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
               </div>
@@ -897,14 +949,18 @@ export default function CentroClinicoLight() {
           
           <div className="flex flex-col gap-4 md:gap-6 lg:pr-8 items-center sm:items-start">
              <div className="text-xl md:text-2xl tracking-tighter text-[#FDF9EE]">
-             <Image 
-                src="/logos/centroclinico.svg" 
-                alt="Logo" 
-                width={120} 
-                height={120} 
-                style={{ 
-                    filter: 'invert(50%) sepia(6%) saturate(301%) hue-rotate(11deg) brightness(89%) contrast(87%)' 
-                  }}            />                </div>
+             <Image
+                src="/logos/centroclinico.svg"
+                alt="Logo"
+                width={175}
+                height={54}
+                style={{
+                  width: 120,
+                  height: "auto",
+                  filter:
+                    "invert(50%) sepia(6%) saturate(301%) hue-rotate(11deg) brightness(89%) contrast(87%)",
+                }}
+            /></div>
              <p className="select-copy text-[#AEABA1] font-light text-xs md:text-sm leading-relaxed max-w-[250px] sm:max-w-none">
                Nascemos com a missão de oferecer atendimento de saúde humanizado e de qualidade, focado no bem-estar de toda a sua família.
              </p>

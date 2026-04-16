@@ -16,6 +16,9 @@ export function useLenis() {
 const BASE_LENIS = {
   lerp: 0.07,
   wheelMultiplier: 1.08,
+  touchMultiplier: 1,
+  syncTouchLerp: 0.075,
+  touchInertiaMultiplier: 32,
 };
 
 /**
@@ -67,9 +70,12 @@ export default function LenisProvider({
     let instance = null;
     let onTick = null;
     let stRefreshRaf = null;
+    let lastViewportWidth = window.innerWidth;
 
     const isNarrow = () =>
       typeof disableBelowWidth === "number" && window.innerWidth < disableBelowWidth;
+
+    const isTouchViewport = () => window.matchMedia("(max-width: 767px)").matches;
 
     const onScrollTriggerRefresh = () => {
       if (!instance) return;
@@ -108,6 +114,7 @@ export default function LenisProvider({
         ...BASE_LENIS,
         smoothWheel,
         wheelMultiplier: smoothWheel ? BASE_LENIS.wheelMultiplier : 1,
+        syncTouch: isTouchViewport(),
       });
       lenisRef.current = instance;
 
@@ -133,6 +140,16 @@ export default function LenisProvider({
 
     let resizeT;
     const onResize = () => {
+      const viewportWidth = window.innerWidth;
+      const widthChanged = Math.abs(viewportWidth - lastViewportWidth) > 40;
+      lastViewportWidth = viewportWidth;
+
+      if (!widthChanged) {
+        instance?.resize();
+        ScrollTrigger.refresh();
+        return;
+      }
+
       clearTimeout(resizeT);
       resizeT = setTimeout(setup, 160);
     };
@@ -145,7 +162,7 @@ export default function LenisProvider({
       const el = document.getElementById("contato");
       const lenis = lenisRef.current;
       if (el && lenis) lenis.scrollTo(el, { offset: 0, duration: 1.2 });
-      else if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      else if (el) el.scrollIntoView({ behavior: "auto", block: "start" });
     };
     document.addEventListener("click", onDocClick, true);
 
