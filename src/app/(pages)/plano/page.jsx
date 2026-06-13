@@ -404,7 +404,7 @@ export default function Page() {
       name: "Diamante",
       tagline: "Cuidado VIP para quem não abre mão do melhor",
       price: "59,99",
-      users: "1 + 7 Pessoas",
+      users: "1 + 6 Pessoas",
       usersDetail: "Família completa com máxima abrangência",
       network: "Premium Regional",
       networkDetail: "Prioridade absoluta em especialistas",
