@@ -120,7 +120,7 @@ const CheckoutModal = ({ isOpen, onClose, plan }) => {
 
   if (!isOpen || !plan) return null;
 
-  const maxDependents = plan.name === 'Topázio' ? 1 : plan.name === 'Esmeralda' ? 4 : 7;
+  const maxDependents = plan.maxDependents ?? 1;
   
   const handleAddDependente = () => {
     if (dependentes.length < maxDependents) {
