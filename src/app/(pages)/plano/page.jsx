@@ -476,7 +476,7 @@ export default function Page() {
           <GroupSwitcher />
           <div className="hidden lg:flex gap-10 text-[11px] font-bold uppercase tracking-[0.2em]">
             <a href="#beneficios" className="hover:opacity-50 transition-opacity">Benefícios</a>
-            <a href="#empresas" className="hover:opacity-50 transition-opacity">Empresas</a>
+            {/*<a href="#empresas" className="hover:opacity-50 transition-opacity">Empresas</a>*/}
             <a href="#planos" className="hover:opacity-50 transition-opacity">Família</a>
             <a href="#faq" className="hover:opacity-50 transition-opacity">Dúvidas</a>
             <a href="#contato" className="hover:opacity-50 transition-opacity">Contato</a>
