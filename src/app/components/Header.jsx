@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 
 const bgClassByKey = {
   "slate-800": "bg-slate-800",
@@ -27,7 +28,7 @@ export default function Header({ logoUrl, bgColor, textColor, className, childre
     >
       {/* Logo e Botão do Menu (Mobile) */}
       <div className="flex justify-between items-center w-full md:w-auto">
-        <img src={logoUrl} alt="Logo" className="h-16" />
+        <Image src={logoUrl} alt="Logo" width={128} height={64} className="h-16 w-auto" />
         <button
           className="text-white md:hidden focus:outline-none"
           onClick={toggleMenu}

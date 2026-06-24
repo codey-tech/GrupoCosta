@@ -12,6 +12,7 @@ import { MdHealthAndSafety } from "react-icons/md";
 import { FaInstagram, FaFacebookSquare } from "react-icons/fa";
 import { FaCalendarDays } from "react-icons/fa6";
 import Header from "../../components/Header";
+import Image from "next/image";
 
 export default function page() {
 
@@ -50,15 +51,12 @@ export default function page() {
       <section id="sobrenos" className="flex flex-col md:flex-row bg-gray-200">
         <div className="w-full md:w-1/2 bg-orange-500 rounded-tr-4xl relative min-h-48 md:min-h-0">
         <div 
-          className="absolute -top-24 md:top-4 left-1/2 transform -translate-x-1/2 md:left-1/2 md:-translate-x-1/2 h-52 w-52 md:h-96 md:w-96 rounded-full bg-cover bg-center shadow-2xl" 
+          className="absolute -top-24 md:top-4 left-1/2 transform -translate-x-1/2 md:left-1/2 md:-translate-x-1/2 h-52 w-52 md:h-96 md:w-96 rounded-full bg-cover bg-center shadow-2xl overflow-hidden" 
           data-aos="fade-right" 
           style={{ backgroundImage: "url('/assets/amb-img.jpg')" }}
         >
-          {/* Segunda imagem no fundo */}
-          <img src={ambimg1} alt="" className="absolute inset-0 w-full h-full object-cover z-0 rounded-full" />
-
-          {/* Primeira imagem sobreposta */}
-          <img src={vctUrl} alt="Vector" className="relative z-10" />
+          <Image src={ambimg1} alt="" fill sizes="(max-width: 768px) 208px, 384px" className="object-cover z-0 rounded-full" />
+          <Image src={vctUrl} alt="Vector" fill sizes="(max-width: 768px) 208px, 384px" className="z-10 object-contain" />
         </div>
         </div>
         <div className="w-full md:w-1/2 py-12 px-6 md:px-16 mt-24 md:mt-0" data-aos="fade-left">
@@ -93,7 +91,7 @@ export default function page() {
 
       {/* Fleet Section */}
       <section id="frota" className="w-full relative overflow-hidden">
-        <img src={vctUrl} alt="vector" className="hidden md:inline md:absolute -left-0 top-1/2 transform -translate-y-1/2 w-auto h-[80%] -translate-x-1/2 z-50" data-aos="fade-right"/>
+        <Image src={vctUrl} alt="vector" width={300} height={500} className="hidden md:inline md:absolute -left-0 top-1/2 transform -translate-y-1/2 w-auto h-[80%] -translate-x-1/2 z-50" data-aos="fade-right"/>
         <div className="bg-gray-200 py-16 flex flex-col md:flex-row px-6 md:px-10 gap-10">
           <div className="flex flex-col gap-4 w-full md:w-1/2 lg:w-2/5 md:pl-8 lg:pl-14">
             <p className="text-slate-800 text-left font-bold text-2xl md:text-3xl max-w-md md:w-3/4" data-aos="fade-right">Compromisso com a vida, tecnologia no atendimento.</p>
@@ -104,37 +102,45 @@ export default function page() {
           <div className="flex items-center justify-center p-2 md:p-4 w-full md:w-1/2" data-aos="fade-left">
               <div className="grid grid-cols-2 grid-rows-2 gap-2 h-[300px] sm:h-[360px] w-full max-w-[520px] rounded-lg overflow-hidden md:ml-0">
                 
-                <div className="col-span-1 row-span-1 bg-slate-800 rounded-lg">
-                  <img
+                <div className="col-span-1 row-span-1 bg-slate-800 rounded-lg relative overflow-hidden">
+                  <Image
                     src={ambimg}
                     alt="Imagem 1"
-                    className="w-full h-full object-cover rounded-lg opacity-25 hover:opacity-100 hover:brightness-90 hover:scale-105 transition duration:500"
+                    fill
+                    sizes="(max-width: 768px) 50vw, 260px"
+                    className="object-cover rounded-lg opacity-25 hover:opacity-100 hover:brightness-90 hover:scale-105 transition duration:500"
                   />
                 </div>
 
                
-                <div className="col-span-1 row-span-2 bg-slate-800 rounded-lg">
-                  <img
+                <div className="col-span-1 row-span-2 bg-slate-800 rounded-lg relative overflow-hidden">
+                  <Image
                     src={ambimg1}
                     alt="Imagem 2"
-                    className="w-full h-full object-cover rounded-lg opacity-25 hover:opacity-100 hover:brightness-90 hover:scale-105 transition duration:500"
+                    fill
+                    sizes="(max-width: 768px) 50vw, 260px"
+                    className="object-cover rounded-lg opacity-25 hover:opacity-100 hover:brightness-90 hover:scale-105 transition duration:500"
                   />
                 </div>
 
                
                 <div className="col-span-1 row-span-1 flex gap-2">
-                  <div className="col-span-1 row-span-2 bg-slate-800 rounded-lg">
-                    <img
+                  <div className="col-span-1 row-span-2 bg-slate-800 rounded-lg relative overflow-hidden flex-1">
+                    <Image
                       src={ambimg2}
                       alt="Imagem 3"
-                      className="w-full h-full object-cover rounded-lg opacity-25 hover:opacity-100 hover:brightness-90 hover:scale-105 transition duration:500"
+                      fill
+                      sizes="(max-width: 768px) 25vw, 130px"
+                      className="object-cover rounded-lg opacity-25 hover:opacity-100 hover:brightness-90 hover:scale-105 transition duration:500"
                     />
                   </div>
-                  <div className="col-span-1 row-span-2 bg-slate-800 rounded-lg">
-                    <img
+                  <div className="col-span-1 row-span-2 bg-slate-800 rounded-lg relative overflow-hidden flex-1">
+                    <Image
                       src={ambimg3}
                       alt="Imagem 4"
-                      className="w-full h-full object-cover rounded-lg opacity-25 hover:opacity-100 hover:brightness-90 hover:scale-105 transition duration:500"
+                      fill
+                      sizes="(max-width: 768px) 25vw, 130px"
+                      className="object-cover rounded-lg opacity-25 hover:opacity-100 hover:brightness-90 hover:scale-105 transition duration:500"
                     />
                   </div>
                 </div>
@@ -150,11 +156,13 @@ export default function page() {
             <p className="text-xl font-bold text-slate-800 w-full md:w-3/4 mb-4">
               Ambulâncias equipadas para salvar vidas.
             </p>
-            <div className="bg-slate-800 rounded-2xl h-48 md:w-80 md:h-40">
-              <img
+            <div className="bg-slate-800 rounded-2xl h-48 md:w-80 md:h-40 relative overflow-hidden">
+              <Image
                 src={ambimg4}
                 alt="Imagem 1"
-                className="w-full h-full object-cover rounded-2xl opacity-25 hover:opacity-100 hover:brightness-90 hover:scale-105 transition duration:500"
+                fill
+                sizes="(max-width: 768px) 100vw, 320px"
+                className="object-cover rounded-2xl opacity-25 hover:opacity-100 hover:brightness-90 hover:scale-105 transition duration:500"
               />
             </div>
           </div>
@@ -192,7 +200,7 @@ export default function page() {
       {/* Footer */}
       <footer id="contato" className="bg-slate-800 flex flex-col md:flex-row gap-8 py-12 px-6 md:justify-evenly">
         <div className="flex flex-col items-center">
-          <img src={logoUrl} alt="Logo" className="h-20" />
+          <Image src={logoUrl} alt="Logo" width={160} height={80} className="h-20 w-auto" />
           <div className="flex gap-4 mt-4">
             <a href="https://www.instagram.com/costa.ambulancias/"><FaInstagram className="text-white size-8" /></a>
             <a href="https://www.facebook.com/planocosta/"><FaFacebookSquare className="text-white size-8" /></a>

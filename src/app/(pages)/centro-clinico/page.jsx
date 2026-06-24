@@ -419,7 +419,7 @@ export default function CentroClinicoLight() {
     { name: "Dr. Giuliano Chagas", spec: "Traumatologia e Ortopedia", img: "/profissionais/giuliano.webp" },
     { name: "Dra. Mariana Bellonci", spec: "Endocrinologia", img: "/profissionais/mariana.webp" },
     { name: "Dr. Guilherme Vogt", spec: "Cardiologia", img: "/profissionais/guilherme.webp" },
-    { name: "Dra. Ianka Thamylla", spec: "Ginecologia", img: "/profissionais/ianka.webp" },
+    { name: "Dra. Jessica Litran", spec: "Ginecologia", img: "/profissionais/jessica.webp" },
     { name: "Dr. Cristiano Sbruzzi", spec: "Dermatologia", img: "/profissionais/cristiano.webp" },
     { name: "Dra. Caroline Luchese", spec: "Neurologia", img: "/profissionais/caroline.webp" },
     { name: "Dr. Luiz Augusto", spec: "Psiquiatria", img: "/profissionais/luiz.webp" }
