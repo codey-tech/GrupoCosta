@@ -261,7 +261,7 @@ export default function Page() {
     },
     {
       q: "Onde o plano oferece cobertura?",
-      a: "Nossa rede de parceiros abrange diversas cidades, incluindo Taquari, Lajeado, Estrela, Montenegro, Canoas, Porto Alegre, Tabaí, Teutônia."
+      a: "Nossa rede de parceiros abrange diversas cidades, incluindo Taquari, Lajeado, Estrela, Montenegro, Venâncio Aires, Porto Alegre, Tabaí, Teutônia."
     }
   ];
 
@@ -606,7 +606,7 @@ export default function Page() {
                 Área de Abrangência:
               </h4>
               <ul className="select-copy grid grid-cols-2 gap-y-5 gap-x-2 font-bold text-sm text-slate-400">
-                {["Taquari", "Porto Alegre", "Lajeado", "Tabaí", "Estrela", "Montenegro", "Teutônia", "Canoas"].map((cidade, i) => (
+                {["Taquari", "Porto Alegre", "Lajeado", "Tabaí", "Estrela", "Montenegro", "Teutônia", "Venâncio Aires"].map((cidade, i) => (
                   <li key={i} className="flex items-center gap-3 group cursor-default">
                     <div className="relative w-2 h-2 flex items-center justify-center">
                       <div className="absolute w-full h-full bg-purple-500 rounded-full group-hover:scale-150 transition-transform" />
