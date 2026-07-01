@@ -16,6 +16,7 @@ export const metadata = {
   description: "Grupo Costa",
   icons: {
     icon: "/logogrupo.png",
+    apple: "/logogrupo.png",
   },
 };
 
