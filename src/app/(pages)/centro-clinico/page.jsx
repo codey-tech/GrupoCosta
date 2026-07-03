@@ -477,7 +477,7 @@ export default function CentroClinicoLight() {
           <div className={`text-3xl md:text-5xl font-light tracking-tighter text-[#1C1C15] flex flex-wrap justify-center items-center gap-2 transition-transform duration-1000 delay-300 ${isLoading ? 'translate-y-0' : 'translate-y-full'}`}>
             <Image
                 src="/logos/centroclinico.svg"
-                alt="Logo"
+                alt="Logo Centro Clínico Costa"
                 width={175}
                 height={54}
                 priority
@@ -500,7 +500,7 @@ export default function CentroClinicoLight() {
           <div className="text-lg md:text-xl tracking-tighter text-[#1C1C15] leading-none">
           <Image
                 src="/logos/centroclinico.svg"
-                alt="Logo"
+                alt="Logo Centro Clínico Costa"
                 width={175}
                 height={54}
                 style={{
@@ -542,6 +542,7 @@ export default function CentroClinicoLight() {
           </div>
 
           <h1 className="text-5xl sm:text-6xl md:text-[6.5vw] leading-[0.9] tracking-tighter text-[#1C1C15] flex flex-col items-center z-20 relative">
+            <span className="sr-only">Centro Clínico Costa — Consultas e Especialidades em Taquari/RS. </span>
             <div className="overflow-hidden hero-line pb-1 md:pb-2"><span className="inline-block font-light">Cuidar de você é a</span></div>
             <div className="overflow-hidden hero-line pb-1 md:pb-2"><span className="inline-block font-black italic text-[#323129]">Nossa prioridade.</span></div>
           </h1>
@@ -951,7 +952,7 @@ export default function CentroClinicoLight() {
              <div className="text-xl md:text-2xl tracking-tighter text-[#FDF9EE]">
              <Image
                 src="/logos/centroclinico.svg"
-                alt="Logo"
+                alt="Logo Centro Clínico Costa"
                 width={175}
                 height={54}
                 style={{

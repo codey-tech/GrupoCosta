@@ -1,4 +1,7 @@
 import { FaAmbulance } from "react-icons/fa";
+import JsonLd from "@/components/JsonLd";
+import { PAGE_METADATA } from "@/lib/seo/config";
+import { ambulanciasLocalBusinessJsonLd } from "@/lib/seo/jsonld";
 const logoUrl = "/assets/logopng.png";
 const vctUrl = "/assets/Vector.svg";
 const ambimg = "/assets/equipe.webp";
@@ -14,12 +17,15 @@ import { FaCalendarDays } from "react-icons/fa6";
 import Header from "../../components/Header";
 import Image from "next/image";
 
+export const metadata = PAGE_METADATA.ambulancias;
+
 export default function page() {
 
   return (
     <>
+      <JsonLd data={ambulanciasLocalBusinessJsonLd()} />
       {/* Header */}
-      <Header logoUrl={logoUrl} bgColor="slate-800" textColor="white" className="scroll-smooth">
+      <Header logoUrl={logoUrl} logoAlt="Logo Costa Ambulâncias" bgColor="slate-800" textColor="white" className="scroll-smooth">
         <a href="#servicos" className="font-light text-white text-sm md:text-lg hover:underline transition duration-300">
           Nossos Serviços
         </a>
@@ -39,7 +45,10 @@ export default function page() {
         </div>
         <div className="bg-slate-800 opacity-80 absolute h-full w-full"></div>
         <div className="relative text-center text-white flex flex-col items-center gap-8 px-4">
-          <h1 className="text-3xl md:text-5xl font-bold max-w-3xl" data-aos="fade-down">Onde cada segundo importa, estamos prontos para você.</h1>
+          <h1 className="text-3xl md:text-5xl font-bold max-w-3xl" data-aos="fade-down">
+            <span className="sr-only">Costa Ambulâncias — Remoções e Transporte de Pacientes em Taquari/RS. </span>
+            Onde cada segundo importa, estamos prontos para você.
+          </h1>
           <div className="border-2 border-orange-500 rounded-2xl p-4 max-w-xs" data-aos="fade-up">
             <p className="font-bold text-xl md:text-2xl mb-1">Precisa de ajuda agora?</p>
             <p className="font-light leading-tight">Ligue para 0800 000 4356 ou fale com nosso suporte em (51) 2129-4040.</p>
@@ -55,8 +64,8 @@ export default function page() {
           data-aos="fade-right" 
           style={{ backgroundImage: "url('/assets/amb-img.jpg')" }}
         >
-          <Image src={ambimg1} alt="" fill sizes="(max-width: 768px) 208px, 384px" className="object-cover z-0 rounded-full" />
-          <Image src={vctUrl} alt="Vector" fill sizes="(max-width: 768px) 208px, 384px" className="z-10 object-contain" />
+          <Image src={ambimg1} alt="Equipe da Costa Ambulâncias em Taquari/RS" fill sizes="(max-width: 768px) 208px, 384px" className="object-cover z-0 rounded-full" />
+          <Image src={vctUrl} alt="Detalhe gráfico da marca Costa Ambulâncias" fill sizes="(max-width: 768px) 208px, 384px" className="z-10 object-contain" />
         </div>
         </div>
         <div className="w-full md:w-1/2 py-12 px-6 md:px-16 mt-24 md:mt-0" data-aos="fade-left">
@@ -91,7 +100,7 @@ export default function page() {
 
       {/* Fleet Section */}
       <section id="frota" className="w-full relative overflow-hidden">
-        <Image src={vctUrl} alt="vector" width={300} height={500} className="hidden md:inline md:absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-[55%] w-[38vw] h-auto z-0 pointer-events-none" data-aos="fade-right"/>
+        <Image src={vctUrl} alt="Elemento decorativo Costa Ambulâncias" width={300} height={500} className="hidden md:inline md:absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-[55%] w-[38vw] h-auto z-0 pointer-events-none" data-aos="fade-right"/>
         <div className="bg-gray-200 py-16 flex flex-col md:flex-row px-6 md:px-[19vw] gap-10">
           <div className="relative z-10 flex flex-col gap-4 w-full md:w-1/2 lg:w-2/5">
             <p className="text-slate-800 text-left font-bold text-2xl md:text-3xl max-w-md md:w-3/4" data-aos="fade-right">Compromisso com a vida, tecnologia no atendimento.</p>
@@ -105,7 +114,7 @@ export default function page() {
                 <div className="col-span-1 row-span-1 bg-slate-800 rounded-lg relative overflow-hidden">
                   <Image
                     src={ambimg}
-                    alt="Imagem 1"
+                    alt="Equipe da Costa Ambulâncias em atendimento"
                     fill
                     sizes="(max-width: 768px) 50vw, 260px"
                     className="object-cover rounded-lg opacity-25 hover:opacity-100 hover:brightness-90 hover:scale-105 transition duration:500"
@@ -116,7 +125,7 @@ export default function page() {
                 <div className="col-span-1 row-span-2 bg-slate-800 rounded-lg relative overflow-hidden">
                   <Image
                     src={ambimg1}
-                    alt="Imagem 2"
+                    alt="Ambulância da frota Costa Ambulâncias"
                     fill
                     sizes="(max-width: 768px) 50vw, 260px"
                     className="object-cover rounded-lg opacity-25 hover:opacity-100 hover:brightness-90 hover:scale-105 transition duration:500"
@@ -128,7 +137,7 @@ export default function page() {
                   <div className="col-span-1 row-span-2 bg-slate-800 rounded-lg relative overflow-hidden flex-1">
                     <Image
                       src={ambimg2}
-                      alt="Imagem 3"
+                      alt="Interior equipado de ambulância Costa Ambulâncias"
                       fill
                       sizes="(max-width: 768px) 25vw, 130px"
                       className="object-cover rounded-lg opacity-25 hover:opacity-100 hover:brightness-90 hover:scale-105 transition duration:500"
@@ -137,7 +146,7 @@ export default function page() {
                   <div className="col-span-1 row-span-2 bg-slate-800 rounded-lg relative overflow-hidden flex-1">
                     <Image
                       src={ambimg3}
-                      alt="Imagem 4"
+                      alt="Ambulância Costa em operação na região de Taquari"
                       fill
                       sizes="(max-width: 768px) 25vw, 130px"
                       className="object-cover rounded-lg opacity-25 hover:opacity-100 hover:brightness-90 hover:scale-105 transition duration:500"
@@ -159,7 +168,7 @@ export default function page() {
             <div className="bg-slate-800 rounded-2xl h-48 w-full md:w-3/4 md:h-40 relative overflow-hidden">
               <Image
                 src={ambimg4}
-                alt="Imagem 1"
+                alt="Ambulância Costa Ambulâncias com equipamentos de última geração"
                 fill
                 sizes="(max-width: 768px) 100vw, 320px"
                 className="object-cover rounded-2xl opacity-25 hover:opacity-100 hover:brightness-90 hover:scale-105 transition duration:500"
@@ -200,7 +209,7 @@ export default function page() {
       {/* Footer */}
       <footer id="contato" className="bg-slate-800 flex flex-col md:flex-row gap-8 py-12 px-6 md:justify-evenly">
         <div className="flex flex-col items-center">
-          <Image src={logoUrl} alt="Logo" width={160} height={80} className="h-20 w-auto" />
+          <Image src={logoUrl} alt="Logo Costa Ambulâncias" width={160} height={80} className="h-20 w-auto" />
           <div className="flex gap-4 mt-4">
             <a href="https://www.instagram.com/costa.ambulancias/"><FaInstagram className="text-white size-8" /></a>
             <a href="https://www.facebook.com/planocosta/"><FaFacebookSquare className="text-white size-8" /></a>

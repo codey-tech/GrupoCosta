@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import JsonLd from "@/components/JsonLd";
+import { organizationJsonLd } from "@/lib/seo/jsonld";
 
 export default function Home() {
   // Define "saude" como o estado inicial e padrão
@@ -11,6 +13,10 @@ export default function Home() {
       onMouseLeave={() => setHovered("saude")}
       className="relative flex flex-col md:flex-row min-h-[100dvh] md:h-[100dvh] w-full overflow-hidden bg-[#000]"
     >
+      <JsonLd data={organizationJsonLd()} />
+      <h1 className="sr-only">
+        Grupo Costa — Saúde e Serviços Funerários em Taquari/RS
+      </h1>
       
       {/* SEÇÃO SAÚDE (LADO ESQUERDO) */}
       <section

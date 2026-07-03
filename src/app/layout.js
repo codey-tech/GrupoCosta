@@ -1,10 +1,13 @@
 import { Geist, Geist_Mono } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
+import CookieConsent from "./components/CookieConsent";
+import { PAGE_METADATA, SITE_URL } from "@/lib/seo/config";
 import "./globals.css";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
-import { GoogleAnalytics } from "@next/third-parties/google";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -12,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Grupo Costa",
-  description: "Grupo Costa",
+  metadataBase: new URL(SITE_URL),
+  ...PAGE_METADATA.home,
   icons: {
     icon: "/logogrupo.png",
     apple: "/logogrupo.png",
@@ -27,7 +30,10 @@ export default function RootLayout({ children }) {
       charSet="utf-8"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <CookieConsent />
+      </body>
       <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
     </html>
   );

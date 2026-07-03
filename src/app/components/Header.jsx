@@ -12,7 +12,7 @@ const textClassByKey = {
   "slate-100": "text-slate-100",
 };
 
-export default function Header({ logoUrl, bgColor, textColor, className, children }) {
+export default function Header({ logoUrl, logoAlt = "Logo", bgColor, textColor, className, children }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const resolvedBgClass = bgClassByKey[bgColor] ?? "bg-slate-800";
@@ -28,7 +28,7 @@ export default function Header({ logoUrl, bgColor, textColor, className, childre
     >
       {/* Logo e Botão do Menu (Mobile) */}
       <div className="flex justify-between items-center w-full md:w-auto">
-        <Image src={logoUrl} alt="Logo" width={128} height={64} className="h-16 w-auto" />
+        <Image src={logoUrl} alt={logoAlt} width={128} height={64} className="h-16 w-auto" />
         <button
           className="text-white md:hidden focus:outline-none"
           onClick={toggleMenu}

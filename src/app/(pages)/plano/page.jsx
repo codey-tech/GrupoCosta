@@ -443,7 +443,7 @@ export default function Page() {
           <div className="absolute inset-2 bg-purple-500/20 rounded-full animate-pulse" />
           <Image
             src="/logogrupo.png"
-            alt="Logo"
+            alt="Logo Plano Costa"
             width={60}
             height={60}
             priority
@@ -513,6 +513,7 @@ export default function Page() {
         <div className="relative z-10 max-w-7xl mx-auto w-full pt-20">
           <div className="overflow-hidden mb-6">
             <h1 className="hero-text text-5xl md:text-7xl lg:text-[6.5vw] leading-[1] font-black tracking-tighter text-white">
+              <span className="sr-only">Plano Costa — Assistência Familiar em Taquari/RS. </span>
               Conectando você a <br/> cuidados de saúde de <br/> <span className="text-purple-400 italic">excelência.</span>
             </h1>
           </div>
