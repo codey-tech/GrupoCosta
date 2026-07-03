@@ -1,11 +1,11 @@
 import { FaAmbulance } from "react-icons/fa";
 const logoUrl = "/assets/logopng.png";
 const vctUrl = "/assets/Vector.svg";
-const ambimg = "/assets/equipe.jpeg";
-const ambimg1 = "/assets/amb1.jpeg";
-const ambimg2 = "/assets/amb2.jpeg";
-const ambimg3 = "/assets/amb3.jpeg";
-const ambimg4 = "/assets/amb4.jpeg";
+const ambimg = "/assets/equipe.webp";
+const ambimg1 = "/assets/amb1.webp";
+const ambimg2 = "/assets/amb2.webp";
+const ambimg3 = "/assets/amb3.webp";
+const ambimg4 = "/assets/amb4.webp";
 import { PiAmbulanceFill } from "react-icons/pi";
 import { TbUrgent } from "react-icons/tb";
 import { MdHealthAndSafety } from "react-icons/md";
@@ -32,7 +32,7 @@ export default function page() {
       </Header>
 
       {/* Hero Section */}
-      <section className="relative min-h-[100dvh] flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: "url('/assets/bg-ambulancias.jpeg')" }}>
+      <section className="relative min-h-[100dvh] flex items-center justify-center bg-cover bg-center" style={{ backgroundImage: "url('/assets/bg-ambulancias.webp')" }}>
         <div className="absolute top-0 left-1/2 -translate-x-1/2 md:left-auto md:right-8 md:translate-x-0 p-2 bg-orange-500 rounded-b-lg flex items-center text-center gap-2 z-50">
           <FaAmbulance className="text-white size-6"/>
           <p className="text-white font-light">0800 000 4356</p>
@@ -91,16 +91,16 @@ export default function page() {
 
       {/* Fleet Section */}
       <section id="frota" className="w-full relative overflow-hidden">
-        <Image src={vctUrl} alt="vector" width={300} height={500} className="hidden md:inline md:absolute -left-0 top-1/2 transform -translate-y-1/2 w-auto h-[80%] -translate-x-1/2 z-50" data-aos="fade-right"/>
-        <div className="bg-gray-200 py-16 flex flex-col md:flex-row px-6 md:px-10 gap-10">
-          <div className="flex flex-col gap-4 w-full md:w-1/2 lg:w-2/5 md:pl-8 lg:pl-14">
+        <Image src={vctUrl} alt="vector" width={300} height={500} className="hidden md:inline md:absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-[55%] w-[38vw] h-auto z-0 pointer-events-none" data-aos="fade-right"/>
+        <div className="bg-gray-200 py-16 flex flex-col md:flex-row px-6 md:px-[19vw] gap-10">
+          <div className="relative z-10 flex flex-col gap-4 w-full md:w-1/2 lg:w-2/5">
             <p className="text-slate-800 text-left font-bold text-2xl md:text-3xl max-w-md md:w-3/4" data-aos="fade-right">Compromisso com a vida, tecnologia no atendimento.</p>
             <div className="w-full px-2 py-3 bg-orange-500 text-center text-white rounded-lg font-medium hover:bg-orange-600 hover:scale-105 transition" data-aos="fade-right" data-aos-delay="100">Frota de última geração</div>
             <div className="w-full px-2 py-3 bg-orange-500 text-center text-white rounded-lg font-medium hover:bg-orange-600 hover:scale-105 transition" data-aos="fade-right" data-aos-delay="200">Equipe qualificada e atendimento humanizado.</div>
             <div className="w-full px-2 py-3 bg-orange-500 text-center text-white rounded-lg font-medium hover:bg-orange-600 hover:scale-105 transition" data-aos="fade-right" data-aos-delay="300">Abrangência regional, garantindo saúde para todos.</div>
           </div>
-          <div className="flex items-center justify-center p-2 md:p-4 w-full md:w-1/2" data-aos="fade-left">
-              <div className="grid grid-cols-2 grid-rows-2 gap-2 h-[300px] sm:h-[360px] w-full max-w-[520px] rounded-lg overflow-hidden md:ml-0">
+          <div className="flex items-center justify-center p-2 md:p-4 w-full md:flex-1 md:mr-[calc(-19vw+1rem)]" data-aos="fade-left">
+              <div className="grid grid-cols-2 grid-rows-2 gap-2 h-[300px] sm:h-[360px] w-full rounded-lg overflow-hidden md:ml-0">
                 
                 <div className="col-span-1 row-span-1 bg-slate-800 rounded-lg relative overflow-hidden">
                   <Image
@@ -147,16 +147,16 @@ export default function page() {
               </div>
             </div>
         </div>
-        <div className="bg-gray-100 pt-16 pb-10 flex flex-col items-center md:flex-row px-6 md:px-10 lg:px-16 gap-10" data-aos="zoom-out">
+        <div className="bg-gray-100 pt-16 pb-10 flex flex-col items-center md:flex-row px-6 md:px-[19vw] gap-10" data-aos="zoom-out">
           {/* Coluna da Esquerda */}
-          <div className="flex flex-col w-full md:w-1/2 lg:w-2/5 gap-4">
+          <div className="relative z-10 flex flex-col w-full md:w-1/2 lg:w-2/5 gap-4">
             <p className="text-slate-800 text-left font-bold text-2xl md:text-3xl">
               <span className="text-orange-500">Frota de ponta: </span>conforto e tecnologia em movimento.
             </p>
             <p className="text-xl font-bold text-slate-800 w-full md:w-3/4 mb-4">
               Ambulâncias equipadas para salvar vidas.
             </p>
-            <div className="bg-slate-800 rounded-2xl h-48 md:w-80 md:h-40 relative overflow-hidden">
+            <div className="bg-slate-800 rounded-2xl h-48 w-full md:w-3/4 md:h-40 relative overflow-hidden">
               <Image
                 src={ambimg4}
                 alt="Imagem 1"
