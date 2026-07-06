@@ -11,7 +11,7 @@ export default function Home() {
     <main 
       // Garante que retorne ao padrão quando o cursor sair da área principal
       onMouseLeave={() => setHovered("saude")}
-      className="relative flex flex-col md:flex-row min-h-[100dvh] md:h-[100dvh] w-full overflow-hidden bg-[#000]"
+      className="relative flex flex-col md:flex-row h-[100dvh] min-h-[100dvh] w-full overflow-hidden bg-[#000]"
     >
       <JsonLd data={organizationJsonLd()} />
       <h1 className="sr-only">
@@ -22,9 +22,9 @@ export default function Home() {
       <section
         onMouseEnter={() => setHovered("saude")}
         onClick={() => setHovered("saude")}
-        className={`relative flex flex-col justify-center overflow-hidden cursor-pointer group
-          min-h-[50dvh] md:min-h-0 transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)] md:will-change-[width]
-          ${hovered === "luto" ? "w-full md:w-[15%]" : "w-full md:w-[85%]"} 
+        className={`relative flex flex-col justify-center overflow-hidden cursor-pointer group min-h-0
+          transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)] md:will-change-[width]
+          ${hovered === "luto" ? "flex-[15] md:flex-none w-full md:w-[15%]" : "flex-[85] md:flex-none w-full md:w-[85%]"} 
           bg-[#F8FAFC] p-6 sm:p-8 md:p-12 lg:p-24`}
       >
         <div className={`w-full max-w-2xl mx-auto transition-all duration-700 transform-gpu ease-out
@@ -40,7 +40,7 @@ export default function Home() {
           <nav className={`flex flex-col gap-4 md:gap-6 transition-all duration-700 ease-out transform-gpu
             ${hovered === "saude"
               ? "translate-x-0 opacity-100 delay-200"
-              : "translate-x-0 opacity-100 md:-translate-x-12 md:opacity-0 md:pointer-events-none"
+              : "translate-x-0 opacity-0 pointer-events-none md:-translate-x-12 md:opacity-0"
             }`}
           >
             <a href="/plano" onClick={(e) => e.stopPropagation()} className="group/link text-base sm:text-lg md:text-xl text-blue-950/70 hover:text-blue-950 flex items-center gap-3 md:gap-4 w-fit">
@@ -63,9 +63,9 @@ export default function Home() {
       <section
         onMouseEnter={() => setHovered("luto")}
         onClick={() => setHovered("luto")}
-        className={`relative flex flex-col justify-center overflow-hidden cursor-pointer group
-          min-h-[50dvh] md:min-h-0 transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)] md:will-change-[width]
-          ${hovered === "saude" ? "w-full md:w-[15%]" : "w-full md:w-[85%]"} 
+        className={`relative flex flex-col justify-center overflow-hidden cursor-pointer group min-h-0
+          transition-all duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)] md:will-change-[width]
+          ${hovered === "saude" ? "flex-[15] md:flex-none w-full md:w-[15%]" : "flex-[85] md:flex-none w-full md:w-[85%]"} 
           bg-[#121212] p-6 sm:p-8 md:p-12 lg:p-24 border-l border-white/5`}
       >
         <div className={`w-full max-w-2xl mx-auto transition-all duration-700 transform-gpu ease-out
@@ -81,7 +81,7 @@ export default function Home() {
           <nav className={`flex flex-col gap-4 md:gap-6 transition-all duration-700 ease-out transform-gpu
             ${hovered === "luto"
               ? "translate-x-0 opacity-100 delay-200"
-              : "translate-x-0 opacity-100 md:translate-x-12 md:opacity-0 md:pointer-events-none"
+              : "translate-x-0 opacity-0 pointer-events-none md:translate-x-12 md:opacity-0"
             }`}
           >
             <a href="/funeraria" onClick={(e) => e.stopPropagation()} className="group/link text-base sm:text-lg md:text-xl text-white/50 hover:text-white flex items-center gap-3 md:gap-4 w-fit">
