@@ -98,6 +98,64 @@ html {
         background-size: 100% 1px;
     }
 
+    /* ======================================================================
+       COSTA AMBULÂNCIAS
+       Irmã da funerária, tom oposto: base carvão, laranja da marca e
+       grotesca no lugar da serifada. Serifada leve carrega luto; aqui o
+       assunto é urgência, e uma grotesca fechada diz isso sem esforço.
+       ====================================================================== */
+
+    .amb {
+        --carvao: #0e1114;
+        --carvao-claro: #171b20;
+        --gelo: #eceef1;
+        --brasa: #f97316;
+        --brasa-suave: #fdba74;
+    }
+
+    .amb-display {
+        font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+        font-weight: 600;
+        letter-spacing: -0.035em;
+        line-height: 0.94;
+        text-transform: uppercase;
+        font-variation-settings: "wdth" 94;
+    }
+
+    /* Piscada do indicador de emergência. Devagar: um alarme em looping
+       rápido numa página inteira cansa e vira ruído. */
+    @keyframes amb-pulso {
+
+        0%,
+        100% {
+            opacity: 0.35;
+        }
+
+        50% {
+            opacity: 1;
+        }
+    }
+
+    .amb-pisca {
+        animation: amb-pulso 2s ease-in-out infinite;
+    }
+
+    /* Traçado do monitor cardíaco, correndo da direita para a esquerda.
+       A duração é trocada por JS conforme o capítulo. */
+    @keyframes amb-traco {
+        from {
+            transform: translate3d(0, 0, 0);
+        }
+
+        to {
+            transform: translate3d(-50%, 0, 0);
+        }
+    }
+
+    .amb-traco {
+        animation: amb-traco 9s linear infinite;
+    }
+
     /* Grão fino sobre toda a página — dá peso de impresso ao fundo chapado. */
     .fc-grain::after {
         content: "";
@@ -155,7 +213,9 @@ html {
 @media (prefers-reduced-motion: reduce) {
 
     .fc-marquee-track,
-    .fc-bar {
+    .fc-bar,
+    .amb-pisca,
+    .amb-traco {
         animation: none !important;
     }
 }
