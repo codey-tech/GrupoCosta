@@ -1,13 +1,14 @@
 import JsonLd from "@/components/JsonLd";
 import { PAGE_METADATA } from "@/lib/seo/config";
-import { planoLocalBusinessJsonLd } from "@/lib/seo/jsonld";
+import { planoFaqSchema, planoSchema } from "@/lib/schema";
 
 export const metadata = PAGE_METADATA.plano;
 
 export default function PlanoLayout({ children }) {
   return (
     <>
-      <JsonLd data={planoLocalBusinessJsonLd()} />
+      <JsonLd data={planoSchema} />
+      <JsonLd data={planoFaqSchema} />
       {children}
     </>
   );

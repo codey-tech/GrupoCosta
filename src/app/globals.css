@@ -15,3 +15,147 @@ html {
         -webkit-user-select: text;
     }
 }
+
+/* ==========================================================================
+   FUNERÁRIA COSTA
+   Identidade tirada do catálogo "Memórias e Homenagens": preto e branco,
+   logotipo FUNERÁRIACOSTA em grotesca e a pomba em traço.
+   A serifada leve carrega os títulos — dá gravidade e calor onde uma
+   grotesca pesada soaria dura demais para o assunto.
+
+   TUDO dentro de `@layer components`. Fora de camada, estas regras entram
+   depois dos utilitários do Tailwind e, com a mesma especificidade de uma
+   classe, ganham por ordem de origem: `.fc-mask { display: block }` anulava
+   `md:hidden` no mesmo elemento e as duas versões do logotipo apareciam
+   juntas no hero. Em `components`, qualquer utilitário passa por cima.
+   ========================================================================== */
+
+@layer components {
+    .fc {
+    --paper: #f1f0ec;
+    --paper-deep: #e6e4de;
+    --ink: #0c0c0b;
+    --muted: #6b6862;
+    --stone: #a5a096;
+    /* Dourado do material do Memórias de 4 Patas. Entra só em marcações
+       pequenas — filete, numeral, palavra sublinhada. Em bloco vira brega. */
+        --gold: #a98850;
+        --gold-soft: #c4a978;
+    }
+
+    /* Títulos: Fraunces leve, caixa baixa, tracking levemente fechado. */
+    .fc-display {
+        font-family: var(--font-fraunces), ui-serif, Georgia, serif;
+        font-weight: 300;
+        letter-spacing: -0.02em;
+        line-height: 1.02;
+        font-variation-settings: "SOFT" 30, "opsz" 100;
+    }
+
+    /* Logotipo: grotesca, caixa-alta, sem espaço entre as palavras. */
+    .fc-wordmark {
+        font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+        letter-spacing: -0.01em;
+        line-height: 1;
+        text-transform: uppercase;
+        font-variation-settings: "wdth" 96;
+    }
+
+    /* Rótulo monoespaçado entre parênteses. */
+    .fc-mono {
+        font-family: var(--font-geist-mono), ui-monospace, monospace;
+        font-size: 0.6875rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+    }
+
+    /* Máscara de linha: o texto sobe de dentro de um recorte. */
+    .fc-mask {
+        display: block;
+        overflow: hidden;
+    }
+
+    /* Rótulo vertical de margem: uma letra por linha, descendo pela lateral.
+       É o recurso do noth.in — funciona como numeração de lombada de livro. */
+    .fc-vertical {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        line-height: 1.55;
+    }
+
+    /* Sublinhado que cresce da esquerda no hover das listas. */
+    .fc-underline {
+        background-image: linear-gradient(currentColor, currentColor);
+        background-repeat: no-repeat;
+        background-position: 0 100%;
+        background-size: 0% 1px;
+        transition: background-size 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .group:hover .fc-underline,
+    .fc-underline:hover {
+        background-size: 100% 1px;
+    }
+
+    /* Grão fino sobre toda a página — dá peso de impresso ao fundo chapado. */
+    .fc-grain::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        pointer-events: none;
+        opacity: 0.38;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.30'/%3E%3C/svg%3E");
+    }
+
+    /* Sem pausa no hover: o ponteiro parado sobre a faixa (o que acontece o
+       tempo todo, já que ela ocupa o meio da tela) congelava o carrossel, e
+       ele só voltava a andar quando a rolagem tirava a faixa de baixo do
+       cursor. */
+    .fc-marquee-track {
+        display: flex;
+        width: max-content;
+        animation: fc-marquee 60s linear infinite;
+    }
+
+    .fc-bar {
+        animation: fc-breathe 1.6s ease-in-out infinite;
+        transform-origin: center;
+    }
+}
+
+/* Faixa horizontal infinita (coroas). Duas cópias lado a lado. */
+@keyframes fc-marquee {
+    from {
+        transform: translate3d(0, 0, 0);
+    }
+
+    to {
+        transform: translate3d(-50%, 0, 0);
+    }
+}
+
+/* Pulso do indicador 24h. */
+@keyframes fc-breathe {
+
+    0%,
+    100% {
+        opacity: 0.25;
+        transform: scaleY(0.4);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .fc-marquee-track,
+    .fc-bar {
+        animation: none !important;
+    }
+}

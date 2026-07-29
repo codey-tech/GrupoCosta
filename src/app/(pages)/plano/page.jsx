@@ -17,6 +17,10 @@ import { FaWhatsapp, FaInstagram, FaFacebook } from 'react-icons/fa';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { toast, ToastContainer } from 'react-toastify';
 import GroupSwitcher from '@/app/components/GroupSwitcher';
+import GrupoCostaFooter from '@/components/GrupoCostaFooter';
+import { whatsappLink, WHATSAPP_MESSAGES } from '@/lib/whatsapp';
+
+const WHATSAPP_URL = whatsappLink(WHATSAPP_MESSAGES.plano);
 
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
@@ -806,7 +810,7 @@ export default function Page() {
               <div className="relative z-10">
                 <h4 className="text-sm font-bold text-slate-900 mb-1">Precisa de ajuda humana?</h4>
                 <p className="select-copy text-xs text-slate-500 font-medium mb-6 leading-relaxed">Nossa equipe de especialistas está pronta para te atender e orientar agora mesmo.</p>
-                <a href="https://wa.me/5121294040" target="_blank" rel="noreferrer" className="select-copy inline-flex w-full justify-center items-center gap-3 px-6 py-4 bg-white border border-slate-200 text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-purple-600 hover:text-white hover:border-purple-600 transition-all duration-300">
+                <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="select-copy inline-flex w-full justify-center items-center gap-3 px-6 py-4 bg-white border border-slate-200 text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-purple-600 hover:text-white hover:border-purple-600 transition-all duration-300">
                   <FaWhatsapp size={16} /> Chamar no WhatsApp
                 </a>
               </div>
@@ -881,7 +885,7 @@ export default function Page() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-auto">
-              <a href="https://wa.me/5121294040" target="_blank" rel="noreferrer" className="select-copy p-8 bg-white border border-slate-200 rounded-[2rem] hover:border-purple-300 hover:shadow-xl transition-all group cursor-pointer flex flex-col justify-center">
+              <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="select-copy p-8 bg-white border border-slate-200 rounded-[2rem] hover:border-purple-300 hover:shadow-xl transition-all group cursor-pointer flex flex-col justify-center">
                 <div className="w-14 h-14 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform">
                   <FaWhatsapp size={28} strokeWidth={1.5} />
                 </div>
@@ -894,7 +898,8 @@ export default function Page() {
                   <Phone size={28} strokeWidth={1.5} />
                 </div>
                 <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Emergências 24h</h4>
-                <div className="text-xl font-black text-white flex items-center gap-2">0800-000-4356
+                <div className="text-xl font-black text-white flex items-center gap-2">
+                <a href="tel:08000004356" className="hover:text-purple-300 transition-colors">0800-000-4356</a>
                 <CopyToClipboard text="0800-000-4356" onCopy={() => toast('Número copiado para área de transferência')}>
                   <Clipboard className="text-white text-xs font-bold uppercase tracking-widest"></Clipboard>
                 </CopyToClipboard>
@@ -944,7 +949,7 @@ export default function Page() {
               Planos acessíveis e completos para cuidar de quem importa, com cobertura regional e suporte dedicado.
             </p>
             <div className="flex gap-4 mt-2 justify-center sm:justify-start">
-              <a href="https://wa.me/5121294040" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-[#25D366] hover:text-white hover:border-[#25D366] transition-colors">
+              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-[#25D366] hover:text-white hover:border-[#25D366] transition-colors">
                 <FaWhatsapp size={18} />
               </a>
               <a href="https://www.instagram.com/planocosta/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-10 h-10 rounded-full border border-slate-700 flex items-center justify-center text-slate-300 hover:bg-white hover:text-slate-950 transition-colors">
@@ -971,11 +976,11 @@ export default function Page() {
             <ul className="select-copy flex flex-col gap-3 md:gap-4 text-slate-300 font-light text-xs md:text-sm w-full max-w-[240px] mx-auto sm:mx-0">
               <li className="flex justify-between border-b border-slate-800 pb-2 md:pb-3">
                 <span>Suporte</span>
-                <span className="font-bold text-white">(51) 2129-4040</span>
+                <a href="tel:+555121294040" className="font-bold text-white hover:text-purple-400 transition-colors">(51) 2129-4040</a>
               </li>
               <li className="flex justify-between border-b border-slate-800 pb-2 md:pb-3">
                 <span>Emergência</span>
-                <span className="font-bold text-white">0800-000-4356</span>
+                <a href="tel:08000004356" className="font-bold text-white hover:text-purple-400 transition-colors">0800-000-4356</a>
               </li>
               <li className="flex justify-between pt-1 gap-4">
                 <span>Sede</span>
@@ -983,6 +988,10 @@ export default function Page() {
               </li>
             </ul>
           </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto mb-10 md:mb-12 text-slate-400">
+          <GrupoCostaFooter atual="/plano" />
         </div>
 
         <div className="max-w-7xl mx-auto pt-6 md:pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center md:items-end gap-8">

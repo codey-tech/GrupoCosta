@@ -1,7 +1,9 @@
 import { FaAmbulance } from "react-icons/fa";
 import JsonLd from "@/components/JsonLd";
+import GrupoCostaFooter from "@/components/GrupoCostaFooter";
 import { PAGE_METADATA } from "@/lib/seo/config";
-import { ambulanciasLocalBusinessJsonLd } from "@/lib/seo/jsonld";
+import { ambulanciasSchema } from "@/lib/schema";
+import { whatsappLink, WHATSAPP_MESSAGES } from "@/lib/whatsapp";
 const logoUrl = "/assets/logopng.png";
 const vctUrl = "/assets/Vector.svg";
 const ambimg = "/assets/equipe.webp";
@@ -19,11 +21,13 @@ import Image from "next/image";
 
 export const metadata = PAGE_METADATA.ambulancias;
 
+const WHATSAPP_URL = whatsappLink(WHATSAPP_MESSAGES.ambulancias);
+
 export default function page() {
 
   return (
     <>
-      <JsonLd data={ambulanciasLocalBusinessJsonLd()} />
+      <JsonLd data={ambulanciasSchema} />
       {/* Header */}
       <Header logoUrl={logoUrl} logoAlt="Logo Costa Ambulâncias" bgColor="slate-800" textColor="white" className="scroll-smooth">
         <a href="#servicos" className="font-light text-white text-sm md:text-lg hover:underline transition duration-300">
@@ -225,11 +229,23 @@ export default function page() {
         </nav>
         <div className="border-2 border-orange-500 rounded-2xl p-6 w-full md:w-1/3 md:ml-0">
           <h6 className="text-center font-bold text-white text-2xl mb-2">Precisa de ajuda agora?</h6>
-          <p className="text-center font-light text-white text-lg">Ligue para 0800 000 4356 ou fale com nosso suporte em (51) 2129-4040.</p>
+          <p className="text-center font-light text-white text-lg">
+            Ligue para{" "}
+            <a href="tel:08000004356" className="underline-offset-2 hover:underline">0800 000 4356</a>
+            {" "}ou fale com nosso suporte em{" "}
+            <a href="tel:+555121294040" className="underline-offset-2 hover:underline">(51) 2129-4040</a>
+            .{" "}
+            <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="underline-offset-2 hover:underline">
+              WhatsApp
+            </a>
+          </p>
         </div>
       </footer>
-      <div className="bg-gray-100 text-center py-4">
-        <p className="text-slate-800 font-normal text-lg">© 2024 Costa Ambulâncias. Todos os direitos reservados.</p>
+      <div className="bg-gray-100 px-6 py-6">
+        <div className="max-w-7xl mx-auto mb-6 text-slate-700">
+          <GrupoCostaFooter atual="/ambulancias" />
+        </div>
+        <p className="text-center text-slate-800 font-normal text-lg">© 2024 Costa Ambulâncias. Todos os direitos reservados.</p>
       </div>
     </>
   );

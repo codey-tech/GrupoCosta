@@ -1,14 +1,15 @@
 import EmConstrucao from "../../components/EmConstrucao";
 import JsonLd from "@/components/JsonLd";
 import { PAGE_METADATA } from "@/lib/seo/config";
-import { memorialJsonLd } from "@/lib/seo/jsonld";
+import { memorialSchema } from "@/lib/schema";
+import { whatsappLink, WHATSAPP_MESSAGES } from "@/lib/whatsapp";
 
 export const metadata = PAGE_METADATA.memorial;
 
 export default function MemorialPage() {
   return (
     <>
-      <JsonLd data={memorialJsonLd()} />
+      <JsonLd data={memorialSchema} />
       <div className="sr-only">
         <p>
           O Memorial da Paz, do Grupo Costa, é um espaço de respeito e memória em
@@ -24,12 +25,13 @@ export default function MemorialPage() {
           Para informações sobre o memorial e serviços relacionados, entre em
           contato com a Funerária Costa pelo{" "}
           <a href="tel:+555136533045">(51) 3653-3045</a> ou pelo{" "}
-          <a href="https://wa.me/555136533045">WhatsApp</a>.
+          <a href={whatsappLink(WHATSAPP_MESSAGES.memorial)}>WhatsApp</a>.
         </p>
       </div>
       <EmConstrucao
         titulo="Memorial da Paz"
         subtitulo="Em breve você poderá conhecer nosso memorial e serviços. Aguarde."
+        atual="/memorial"
       />
     </>
   );

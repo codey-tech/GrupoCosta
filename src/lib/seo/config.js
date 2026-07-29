@@ -71,7 +71,7 @@ export const PAGE_METADATA = {
   funeraria: buildPageMetadata({
     title: "Funerária Costa | Atendimento 24 horas em Taquari e Região",
     description:
-      "Serviços funerários completos em Taquari/RS: atendimento 24h, translado, coroas de flores naturais e assistência à família. Ligue (51) 3653-3045.",
+      "Serviços funerários completos em Taquari/RS: atendimento 24h, translado, coroas de flores naturais e assistência à família. Acionamento 24h: 0800 000 4356.",
     path: "/funeraria",
   }),
   centroClinico: buildPageMetadata({

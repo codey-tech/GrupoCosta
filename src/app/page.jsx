@@ -1,19 +1,21 @@
 "use client";
 import { useState } from "react";
 import JsonLd from "@/components/JsonLd";
-import { organizationJsonLd } from "@/lib/seo/jsonld";
+import GrupoCostaFooter from "@/components/GrupoCostaFooter";
+import { organizationSchema } from "@/lib/schema";
 
 export default function Home() {
   // Define "saude" como o estado inicial e padrão
   const [hovered, setHovered] = useState("saude");
 
   return (
+    <>
     <main 
       // Garante que retorne ao padrão quando o cursor sair da área principal
       onMouseLeave={() => setHovered("saude")}
       className="relative flex flex-col md:flex-row h-[100dvh] min-h-[100dvh] w-full overflow-hidden bg-[#000]"
     >
-      <JsonLd data={organizationJsonLd()} />
+      <JsonLd data={organizationSchema} />
       <h1 className="sr-only">
         Grupo Costa — Saúde e Serviços Funerários em Taquari/RS
       </h1>
@@ -97,5 +99,11 @@ export default function Home() {
       </section>
 
     </main>
+    <div className="bg-[#0a0a0a] text-white/70 px-6 py-10 border-t border-white/5">
+      <div className="max-w-7xl mx-auto">
+        <GrupoCostaFooter atual="/" />
+      </div>
+    </div>
+    </>
   );
 }

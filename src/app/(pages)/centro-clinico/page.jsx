@@ -14,8 +14,10 @@ import { FaInstagram, FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import { toast, ToastContainer } from 'react-toastify';
 import Image from 'next/image';
 import GroupSwitcher from '@/app/components/GroupSwitcher';
+import GrupoCostaFooter from '@/components/GrupoCostaFooter';
+import { whatsappLink, WHATSAPP_MESSAGES } from '@/lib/whatsapp';
 
-const WHATSAPP_URL = "https://wa.me/5121294040";
+const WHATSAPP_URL = whatsappLink(WHATSAPP_MESSAGES.centroClinico);
 
 gsap.registerPlugin(ScrollTrigger);
 ScrollTrigger.config({ ignoreMobileResize: true });
@@ -1008,6 +1010,10 @@ export default function CentroClinicoLight() {
           
         </div>
         
+        <div className="max-w-7xl mx-auto mb-10 md:mb-12 text-[#AEABA1]">
+          <GrupoCostaFooter atual="/centro-clinico" />
+        </div>
+
         <div className="max-w-7xl mx-auto pt-6 md:pt-8 border-t border-[#323129] flex flex-col md:flex-row justify-between items-center md:items-end gap-8">
           <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center justify-center md:justify-start gap-4 sm:gap-6 text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-[#79776E] text-center md:text-left">
             <div className="select-copy">© {new Date().getFullYear()} Centro Clínico Costa. Taquari/RS.</div>

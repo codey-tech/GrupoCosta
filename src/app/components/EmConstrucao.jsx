@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { HardHat } from "lucide-react";
+import GrupoCostaFooter from "@/components/GrupoCostaFooter";
 
 /**
  * Página temporária "em construção" — alinhada à seção Luto da home (#121212) e ao rodapé Codey do Plano Costa.
+ * @param {{ titulo: string, subtitulo: string, atual?: string }} props
  */
-export default function EmConstrucao({ titulo, subtitulo }) {
+export default function EmConstrucao({ titulo, subtitulo, atual }) {
   return (
     <main className="min-h-screen flex flex-col bg-[#121212] text-white">
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-16 text-center">
@@ -34,18 +36,25 @@ export default function EmConstrucao({ titulo, subtitulo }) {
         </Link>
       </div>
 
-      <footer className="py-8 px-6 text-center border-t border-white/[0.06]">
-        <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.35em] text-white/25 mb-2">
-          Desenvolvido por
-        </p>
-        <a
-          href="https://codeytech.com.br"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-base md:text-lg font-black text-white/45 hover:text-purple-400 transition-colors italic inline-block"
-        >
-          Codey Tech.
-        </a>
+      <footer className="py-8 px-6 border-t border-white/[0.06]">
+        {atual ? (
+          <div className="max-w-7xl mx-auto mb-10 text-center sm:text-left text-white/55">
+            <GrupoCostaFooter atual={atual} />
+          </div>
+        ) : null}
+        <div className="text-center">
+          <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.35em] text-white/25 mb-2">
+            Desenvolvido por
+          </p>
+          <a
+            href="https://codeytech.com.br"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-base md:text-lg font-black text-white/45 hover:text-purple-400 transition-colors italic inline-block"
+          >
+            Codey Tech.
+          </a>
+        </div>
       </footer>
     </main>
   );
