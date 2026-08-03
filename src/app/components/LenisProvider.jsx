@@ -185,13 +185,33 @@ export default function LenisProvider({
     window.addEventListener("resize", onResize, { passive: true });
 
     const onDocClick = (e) => {
-      const link = e.target?.closest?.('a[href="#contato"]');
+      // Âncoras internas: o Lenis engole o salto nativo do hash, então o
+      // scroll precisa passar por ele. Sem Lenis (mobile estreito), usamos
+      // scrollIntoView suave. Já havia um caso só para `#contato` — isto
+      // cobre o trilho/sumário da Funerária e qualquer outro `href="#…"`.
+      const link = e.target?.closest?.('a[href^="#"]');
       if (!link) return;
+      const href = link.getAttribute("href");
+      if (!href || href === "#") return;
+      const el = document.getElementById(decodeURIComponent(href.slice(1)));
+      if (!el) return;
+
       e.preventDefault();
-      const el = document.getElementById("contato");
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)")
+        .matches;
       const lenis = lenisRef.current;
-      if (el && lenis) lenis.scrollTo(el, { offset: 0, duration: 1.2 });
-      else if (el) el.scrollIntoView({ behavior: "auto", block: "start" });
+      if (lenis) {
+        lenis.scrollTo(el, {
+          offset: 0,
+          ...(reduced ? { immediate: true } : { duration: 1.2 }),
+        });
+      } else {
+        el.scrollIntoView({
+          behavior: reduced ? "auto" : "smooth",
+          block: "start",
+        });
+      }
+      history.pushState(null, "", href);
     };
     document.addEventListener("click", onDocClick, true);
 

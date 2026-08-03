@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono, Fraunces, Archivo } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import CookieConsent from "./components/CookieConsent";
+import ReloadOnHistoryNav from "./components/ReloadOnHistoryNav";
 import { PAGE_METADATA, SITE_URL } from "@/lib/seo/config";
 import "./globals.css";
 
@@ -48,6 +49,7 @@ export default function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${archivo.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <ReloadOnHistoryNav />
         {children}
         <CookieConsent />
       </body>

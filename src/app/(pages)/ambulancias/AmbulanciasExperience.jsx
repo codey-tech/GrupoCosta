@@ -77,11 +77,16 @@ function Banda({ foto, altura = "h-[70svh] md:h-[86svh]", children, prioridade }
 
 export default function AmbulanciasExperience() {
   const root = useRef(null);
-  const [reduceMotion, setReduceMotion] = useState(false);
+  // Inicializador preguiçoso, não efeito: a preferência é síncrona, e o React
+  // 19 acusa `setState` dentro de efeito como render em cascata.
+  const [reduceMotion, setReduceMotion] = useState(() =>
+    typeof window === "undefined"
+      ? false
+      : window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduceMotion(mq.matches);
     const onChange = (e) => setReduceMotion(e.matches);
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
@@ -215,7 +220,11 @@ export default function AmbulanciasExperience() {
         {/* ================== CAPA ================== */}
         <section data-capa id="capa" className="relative">
           <Banda foto={FOTOS.capa} altura="h-[100svh]" prioridade>
-            <PulseLine className="opacity-[0.18]" />
+            {/* Subiu de 0.18 para 0.5: com o traço decaindo atrás do feixe, a
+                média de tinta na tela é MUITO menor que a da onda anterior, que
+                ficava toda acesa o tempo todo. Em 0.18 o estalo do pico do R
+                simplesmente não aparecia. */}
+            <PulseLine className="opacity-[0.5]" />
 
             <div className="relative flex h-full flex-col justify-end px-5 pb-14 md:px-10 md:pb-20">
               <div className="mx-auto w-full max-w-[1600px]">

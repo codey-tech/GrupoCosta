@@ -6,13 +6,57 @@
 
 html {
     scroll-behavior: auto;
+    cursor: default;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
 }
 
-/* Conteúdo que pode ser copiado (textos úteis) — use dentro de páginas com select-none no root */
+/* Campos editáveis: precisam de seleção para digitar e corrigir. */
+input:not([type="button"]):not([type="submit"]):not([type="reset"]):not(
+        [type="checkbox"]
+    ):not([type="radio"]):not([type="file"]):not([type="range"]):not(
+        [type="color"]
+    ),
+textarea,
+[contenteditable="true"] {
+    -webkit-user-select: text;
+    user-select: text;
+    cursor: text;
+}
+
+a,
+button,
+summary,
+label[for],
+[role="button"],
+[role="link"],
+[role="tab"],
+[role="menuitem"],
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="checkbox"],
+input[type="radio"],
+input[type="file"],
+input[type="range"],
+input[type="color"],
+select {
+    cursor: pointer;
+}
+
+:disabled,
+[aria-disabled="true"],
+.disabled {
+    cursor: not-allowed;
+}
+
+/* Legado: páginas antigas marcavam trechos copiáveis. O site inteiro
+   bloqueia seleção — esta classe não reabre mais a exceção. */
 @layer utilities {
     .select-copy {
-        user-select: text;
-        -webkit-user-select: text;
+        -webkit-user-select: none;
+        user-select: none;
     }
 }
 
@@ -140,21 +184,9 @@ html {
         animation: amb-pulso 2s ease-in-out infinite;
     }
 
-    /* Traçado do monitor cardíaco, correndo da direita para a esquerda.
-       A duração é trocada por JS conforme o capítulo. */
-    @keyframes amb-traco {
-        from {
-            transform: translate3d(0, 0, 0);
-        }
-
-        to {
-            transform: translate3d(-50%, 0, 0);
-        }
-    }
-
-    .amb-traco {
-        animation: amb-traco 9s linear infinite;
-    }
+    /* O `amb-traco` (onda de SVG deslizando de lado) foi removido: o monitor
+       agora é um canvas com feixe e decaimento, em `PulseLine.jsx`. A translação
+       constante era justamente o que deixava o efeito sem vida. */
 
     /* Grão fino sobre toda a página — dá peso de impresso ao fundo chapado. */
     .fc-grain::after {
@@ -195,6 +227,36 @@ html {
     }
 }
 
+/* ==========================================================================
+   HOME — precisa ser global.
+   Dentro de `<style jsx>` o styled-jsx renomeia o keyframe ao escopá-lo, e a
+   classe utilitária `animate-[inundar_...]` deixa de encontrá-lo.
+   ========================================================================== */
+
+/** Saída: a cor da unidade escolhida sobe e toma a tela. */
+@keyframes inundar {
+    from {
+        transform: scaleY(0);
+    }
+
+    to {
+        transform: scaleY(1);
+    }
+}
+
+/** Entrada da legenda a cada troca de unidade. */
+@keyframes surgir {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Pulso do indicador 24h. */
 @keyframes fc-breathe {
 
@@ -214,8 +276,7 @@ html {
 
     .fc-marquee-track,
     .fc-bar,
-    .amb-pisca,
-    .amb-traco {
+    .amb-pisca {
         animation: none !important;
     }
 }

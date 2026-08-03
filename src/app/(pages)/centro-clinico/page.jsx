@@ -13,7 +13,7 @@ import {
 import { FaInstagram, FaFacebook, FaWhatsapp } from 'react-icons/fa';
 import { toast, ToastContainer } from 'react-toastify';
 import Image from 'next/image';
-import GroupSwitcher from '@/app/components/GroupSwitcher';
+import Link from 'next/link';
 import GrupoCostaFooter from '@/components/GrupoCostaFooter';
 import { whatsappLink, WHATSAPP_MESSAGES } from '@/lib/whatsapp';
 
@@ -513,7 +513,6 @@ export default function CentroClinicoLight() {
                 }}
             />
           </div>
-          <GroupSwitcher />
           <div className="hidden lg:flex gap-12 text-xs font-semibold uppercase tracking-[0.2em]">
             {['Sobre', 'Estrutura', 'Corpo Clínico', 'Contato'].map(item => (
               <a key={item} href={`#${item.toLowerCase().replace(' ', '-').replace('í', 'i')}`} className="relative group overflow-hidden text-[#605E56] hover:text-[#1C1C15] transition-colors">
@@ -1010,8 +1009,14 @@ export default function CentroClinicoLight() {
           
         </div>
         
-        <div className="max-w-7xl mx-auto mb-10 md:mb-12 text-[#AEABA1]">
+        <div className="max-w-7xl mx-auto mb-10 md:mb-12 text-[#AEABA1] flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
           <GrupoCostaFooter atual="/centro-clinico" />
+          <Link
+            href="/"
+            className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-[#AEABA1] hover:text-[#FDF9EE] transition-colors shrink-0"
+          >
+            ← Voltar ao Grupo Costa
+          </Link>
         </div>
 
         <div className="max-w-7xl mx-auto pt-6 md:pt-8 border-t border-[#323129] flex flex-col md:flex-row justify-between items-center md:items-end gap-8">
