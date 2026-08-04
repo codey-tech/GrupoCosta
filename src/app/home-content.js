@@ -100,8 +100,10 @@ export const UNIDADES = [
     momento: "Memória",
     frase:
       "Cemitério Ecumênico Luterano — um ambiente sereno para homenagens e despedidas.",
-    acento: "#8fae9b",
-    entrada: "#121212",
+    // Dourado e verde amostrados do logotipo oficial do Memorial da Paz. O
+    // verde-sálvia que estava aqui não existia em lugar nenhum da marca.
+    acento: "#b89860",
+    entrada: "#15251b",
     fonte: "var(--font-fraunces)",
     peso: "300",
     italico: true,
