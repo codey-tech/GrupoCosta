@@ -201,12 +201,14 @@ export default function PlanoExperience() {
         {/* ================== HERO ================== */}
         <section className="relative flex h-[100dvh] flex-col justify-center bg-slate-950 px-6 md:px-12">
           <div className="absolute inset-0 z-0">
+            {/* Poster = quadro do próprio hero. Nunca usar foto de outra
+                unidade (já houve `/assets/equipe.webp` da Ambulâncias aqui). */}
             <video
               autoPlay
               muted
               loop
               playsInline
-              poster="/assets/equipe.webp"
+              poster="/home/plano.webp"
               className="h-full w-full object-cover opacity-40"
             >
               <source src="/hero.mp4" type="video/mp4" />
