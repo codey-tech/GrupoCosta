@@ -3,7 +3,7 @@ import { HardHat } from "lucide-react";
 import GrupoCostaFooter from "@/components/GrupoCostaFooter";
 
 /**
- * Página temporária "em construção" — alinhada à seção Luto da home (#121212) e ao rodapé Codey do Plano Costa.
+ * Página temporária "em construção" — alinhada à seção Luto da home (#121212) e ao rodapé do Plano Costa.
  * @param {{ titulo: string, subtitulo: string, atual?: string }} props
  */
 export default function EmConstrucao({ titulo, subtitulo, atual }) {
@@ -47,12 +47,12 @@ export default function EmConstrucao({ titulo, subtitulo, atual }) {
             Desenvolvido por
           </p>
           <a
-            href="https://codeytech.com.br"
+            href="https://codly.space"
             target="_blank"
             rel="noopener noreferrer"
             className="text-base md:text-lg font-black text-white/45 hover:text-purple-400 transition-colors italic inline-block"
           >
-            Codey Tech.
+            codly.space
           </a>
         </div>
       </footer>

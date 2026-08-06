@@ -945,12 +945,12 @@ export default function FunerariaExperience() {
             <div className="mt-14 pt-8 border-t border-[#f1f0ec]/[0.06] flex items-center justify-between">
               <span className="fc-mono text-[#f1f0ec]/25">Desenvolvido por</span>
               <a
-                href="https://codeytech.com.br"
+                href="https://codly.space"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="fc-wordmark font-extrabold text-base text-[#f1f0ec]/45 hover:text-[#c4a978] transition-colors"
               >
-                Codey Tech
+                codly.space
               </a>
             </div>
           </div>

@@ -1026,12 +1026,12 @@ export default function CentroClinicoLight() {
           <div className="text-center md:text-right shrink-0">
             <div className="text-[8px] font-black uppercase tracking-[0.4em] text-[#79776E] mb-2">Desenvolvido por</div>
             <a
-              href="https://codeytech.com.br"
+              href="https://codly.space"
               target="_blank"
               rel="noopener noreferrer"
               className="text-lg md:text-xl font-black text-[#FDF9EE] hover:text-[#CAC6BC] transition-colors italic inline-block"
             >
-              Codey Tech.
+              codly.space
             </a>
           </div>
         </div>

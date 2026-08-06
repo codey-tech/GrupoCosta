@@ -638,12 +638,12 @@ export default function AmbulanciasExperience() {
                 © {new Date().getFullYear()} Costa Ambulâncias
               </span>
               <a
-                href="https://codeytech.com.br"
+                href="https://codly.space"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="fc-wordmark text-base font-extrabold text-[#eceef1]/40 transition-colors hover:text-[#f97316]"
               >
-                Codey Tech
+                codly.space
               </a>
             </div>
           </div>

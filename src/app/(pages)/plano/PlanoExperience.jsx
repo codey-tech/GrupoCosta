@@ -600,12 +600,12 @@ export default function PlanoExperience() {
                 © {new Date().getFullYear()} Plano Costa
               </span>
               <a
-                href="https://codeytech.com.br"
+                href="https://codly.space"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm font-black italic text-slate-400 transition-colors hover:text-purple-600"
               >
-                Codey Tech.
+                codly.space
               </a>
             </div>
           </div>
