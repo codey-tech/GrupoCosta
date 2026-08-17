@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { X, ChevronRight, ChevronLeft, UserPlus, CheckCircle, Trash2, ShieldCheck, Info, Send, ChevronDown, AlertCircle } from 'lucide-react';
 import { useLenis } from './LenisProvider';
 
@@ -257,7 +258,7 @@ const CheckoutModal = ({ isOpen, onClose, plan }) => {
                 <ShieldCheck className="text-purple-400 shrink-0" size={24} />
                 <div>
                   <h4 className="text-sm font-bold text-white mb-1">Dados Protegidos</h4>
-                  <p className="text-[11px] text-slate-400 leading-relaxed font-medium">As informações desta ficha são sigilosas e serão usadas apenas para confecção de contrato interno.</p>
+                  <p className="text-[11px] text-slate-400 leading-relaxed font-medium">As informações desta ficha são sigilosas e serão usadas apenas para confecção de contrato interno. Leia a <Link href="/politica-de-privacidade" className="underline underline-offset-2 hover:text-white">Política de privacidade</Link>.</p>
                 </div>
               </div>
             </div>
@@ -361,7 +362,14 @@ const CheckoutModal = ({ isOpen, onClose, plan }) => {
 
           {/* RODAPÉ DO MODAL (Agora sempre ancorado e visível) */}
           {!isSuccess && (
-            <div className="mt-3 md:mt-4 pt-4 md:pt-6 border-t border-slate-100 flex justify-between items-center shrink-0 bg-white">
+            <div className="mt-3 md:mt-4 pt-4 md:pt-6 border-t border-slate-100 shrink-0 bg-white">
+              <p className="mb-3 text-[10px] font-medium text-slate-400">
+                Ao enviar, seus dados são usados para o contrato interno.{" "}
+                <Link href="/politica-de-privacidade" className="underline underline-offset-2 hover:text-slate-900">
+                  Política de privacidade
+                </Link>
+              </p>
+              <div className="flex justify-between items-center gap-3">
               {step > 1 ? (
                 <button onClick={() => { setStep(step - 1); setErrorMsg(''); }} className="text-[10px] md:text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-900 flex items-center gap-1 transition-colors px-2 py-2">
                   <ChevronLeft size={16} /> <span className="hidden sm:inline">Voltar</span>
@@ -377,6 +385,7 @@ const CheckoutModal = ({ isOpen, onClose, plan }) => {
                   {isProcessing ? 'Enviando...' : 'Finalizar'} <Send size={16} />
                 </button>
               )}
+              </div>
             </div>
           )}
         </div>

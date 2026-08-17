@@ -1,5 +1,4 @@
 import { Geist, Geist_Mono, Fraunces, Archivo } from "next/font/google";
-import { GoogleAnalytics } from "@next/third-parties/google";
 import CookieConsent from "./components/CookieConsent";
 import ReloadOnHistoryNav from "./components/ReloadOnHistoryNav";
 import { PAGE_METADATA, SITE_URL } from "@/lib/seo/config";
@@ -53,7 +52,6 @@ export default function RootLayout({ children }) {
         {children}
         <CookieConsent />
       </body>
-      <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
     </html>
   );
 }

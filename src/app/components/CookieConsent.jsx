@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
+import Link from "next/link";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/next";
 import { Cookie } from "lucide-react";
@@ -71,6 +72,14 @@ export default function CookieConsent() {
                   Utilizamos cookies e ferramentas de medição de audiência para
                   melhorar sua experiência e entender como o site é usado. Você
                   pode aceitar ou recusar o uso desses cookies não essenciais.
+                  Saiba mais na{" "}
+                  <Link
+                    href="/politica-de-privacidade"
+                    className="text-white/80 underline underline-offset-2 hover:text-white"
+                  >
+                    Política de privacidade
+                  </Link>
+                  .
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <button

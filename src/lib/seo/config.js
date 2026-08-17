@@ -94,4 +94,10 @@ export const PAGE_METADATA = {
       "Memorial da Paz em Taquari/RS: espaço de respeito, memória e acolhimento às famílias. Parte do Grupo Costa, ao lado da Funerária Costa.",
     path: "/memorial",
   }),
+  privacidade: buildPageMetadata({
+    title: "Política de Privacidade | Grupo Costa",
+    description:
+      "Como o site do Grupo Costa coleta e usa dados pessoais: adesão ao Plano Costa, contato do Centro Clínico, cookies e seus direitos pela LGPD.",
+    path: "/politica-de-privacidade",
+  }),
 };

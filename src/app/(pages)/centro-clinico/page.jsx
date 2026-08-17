@@ -909,6 +909,12 @@ export default function CentroClinicoLight() {
                     <span className="relative z-10">{isSendingContato ? "Enviando..." : "Solicitar Contato"}</span>
                     <ArrowRight size={16} className="relative z-10 group-hover:translate-x-1 transition-transform" />
                   </button>
+                  <p className="text-center text-[10px] md:text-xs font-medium text-[#79776E]">
+                    Ao enviar, você concorda com o uso desses dados para retorno do contato.{" "}
+                    <Link href="/politica-de-privacidade" className="underline underline-offset-2 hover:text-[#1C1C15]">
+                      Política de privacidade
+                    </Link>
+                  </p>
                </div>
             </form>
           </div>

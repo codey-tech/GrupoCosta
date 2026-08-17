@@ -7,6 +7,7 @@ export default function sitemap() {
     "/ambulancias",
     "/funeraria",
     "/memorial",
+    "/politica-de-privacidade",
   ];
 
   return routes.map((route) => ({
