@@ -43,6 +43,14 @@ export default function GrupoCostaFooter({ atual, className = "" }) {
           </li>
         ))}
       </ul>
+      <p className="mt-4 text-[10px] md:text-xs font-light tracking-wide">
+        <Link
+          href="/politica-de-privacidade"
+          className="opacity-70 underline-offset-2 hover:opacity-100 hover:underline"
+        >
+          Política de privacidade
+        </Link>
+      </p>
     </nav>
   );
 }
