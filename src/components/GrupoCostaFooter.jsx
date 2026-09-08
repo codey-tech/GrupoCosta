@@ -51,6 +51,9 @@ export default function GrupoCostaFooter({ atual, className = "" }) {
           Política de privacidade
         </Link>
       </p>
+      <p className="mt-3 text-[10px] md:text-xs font-light tracking-wide opacity-70">
+        Costa Assistencial Ltda · CNPJ 25.529.733/0001-49
+      </p>
     </nav>
   );
 }
