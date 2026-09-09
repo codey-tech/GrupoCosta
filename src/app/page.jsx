@@ -1,7 +1,7 @@
 import JsonLd from "@/components/JsonLd";
 import { organizationSchema } from "@/lib/schema";
 import HomeExperience from "./HomeExperience";
-import { UNIDADES, EMERGENCIA } from "./home-content";
+import { UNIDADES, EMERGENCIA, EMPRESA } from "./home-content";
 
 /**
  * Camada semântica.
@@ -24,6 +24,9 @@ export default function Home() {
           familiar, atendimento clínico, remoções e transporte de pacientes,
           serviços funerários e cemitério. Emergência 24 horas:{" "}
           <a href={EMERGENCIA.href}>{EMERGENCIA.numero}</a>.
+        </p>
+        <p>
+          {EMPRESA.razaoSocial}. CNPJ {EMPRESA.cnpj}.
         </p>
 
         {UNIDADES.map((u) => (
