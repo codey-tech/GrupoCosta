@@ -158,3 +158,9 @@ export const ABERTURA = {
   local: "Taquari — RS",
   dica: "Escolha um lado",
 };
+
+/** Razão social e CNPJ — presentes na home para verificação (Meta) e nos rodapés. */
+export const EMPRESA = {
+  razaoSocial: "Costa Assistencial Ltda",
+  cnpj: "25.529.733/0001-49",
+};

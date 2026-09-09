@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
-import { UNIDADES, TERRITORIOS, EMERGENCIA, ABERTURA } from "./home-content";
+import { UNIDADES, TERRITORIOS, EMERGENCIA, ABERTURA, EMPRESA } from "./home-content";
 
 /**
  * GRUPO COSTA — página inicial
@@ -397,11 +397,19 @@ export default function HomeExperience() {
       {/* ============ DICA ============ */}
       <p
         aria-hidden
-        className="pointer-events-none absolute bottom-6 left-1/2 z-30 hidden -translate-x-1/2 text-[10px] uppercase tracking-[0.3em] text-[#f4f4f5] mix-blend-difference transition-opacity duration-500 lg:block"
+        className="pointer-events-none absolute bottom-10 left-1/2 z-30 hidden -translate-x-1/2 text-[10px] uppercase tracking-[0.3em] text-[#f4f4f5] mix-blend-difference transition-opacity duration-500 lg:block"
         style={{ opacity: lado ? 0 : 0.55 }}
       >
         {ABERTURA.dica}
       </p>
+
+      {/* Mini rodapé legal: Meta pede razão social e CNPJ visíveis na home.
+          `mix-blend-difference` para atravessar a costura, como o 0800. */}
+      <footer className="pointer-events-none absolute inset-x-0 bottom-3 z-30 px-5 text-center mix-blend-difference md:bottom-4 md:px-10">
+        <p className="text-[9px] leading-snug tracking-wide text-[#f4f4f5] opacity-45 md:text-[10px]">
+          {EMPRESA.razaoSocial} · CNPJ {EMPRESA.cnpj}
+        </p>
+      </footer>
 
       {/* ============ SAÍDA ============ */}
       {saindo && (
